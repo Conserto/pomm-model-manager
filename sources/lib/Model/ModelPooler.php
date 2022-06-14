@@ -9,8 +9,10 @@
  */
 namespace PommProject\ModelManager\Model;
 
+use PommProject\Foundation\Client\ClientInterface;
 use PommProject\Foundation\Client\ClientPooler;
 use PommProject\Foundation\Client\ClientPoolerInterface;
+use PommProject\Foundation\Exception\FoundationException;
 use PommProject\ModelManager\Exception\ModelException;
 
 /**
@@ -29,7 +31,7 @@ class ModelPooler extends ClientPooler
     /**
      * @see ClientPoolerInterface
      */
-    public function getPoolerType()
+    public function getPoolerType(): string
     {
         return 'model';
     }
@@ -37,41 +39,44 @@ class ModelPooler extends ClientPooler
     /**
      * getClientFromPool
      *
+     * @param string $identifier
+     * @return ClientInterface|null
+     * @throws FoundationException
      * @see    ClientPooler
-     * @return Model|null
      */
-    protected function getClientFromPool($class)
+    protected function getClientFromPool(string $identifier): ?ClientInterface
     {
-        return $this->getSession()->getClient($this->getPoolerType(), trim($class, "\\"));
+        return $this->getSession()->getClient($this->getPoolerType(), trim($identifier, "\\"));
     }
 
     /**
      * createModel
      *
-     * @see    ClientPooler
-     * @throws ModelException if incorrect
+     * @param object|string $identifier
      * @return Model
+     * @throws ModelException if incorrect
+     * @see    ClientPooler
      */
-    protected function createClient($class)
+    protected function createClient(object|string $identifier): Model
     {
         try {
-            $reflection = new \ReflectionClass($class);
+            $reflection = new \ReflectionClass($identifier);
         } catch (\ReflectionException $e) {
             throw new ModelException(sprintf(
                 "Could not instantiate Model class '%s'. (Reason: '%s').",
-                $class,
+                $identifier,
                 $e->getMessage()
             ));
         }
 
-        if (!$reflection->implementsInterface('\PommProject\Foundation\Client\ClientInterface')) {
-            throw new ModelException(sprintf("'%s' class does not implement the ClientInterface interface.", $class));
+        if (!$reflection->implementsInterface(ClientInterface::class)) {
+            throw new ModelException(sprintf("'%s' class does not implement the ClientInterface interface.", $identifier));
         }
 
-        if (!$reflection->isSubclassOf('\PommProject\ModelManager\Model\Model')) {
-            throw new ModelException(sprintf("'%s' class does not extend \PommProject\ModelManager\Model.", $class));
+        if (!$reflection->isSubclassOf(\PommProject\ModelManager\Model\Model::class)) {
+            throw new ModelException(sprintf("'%s' class does not extend \PommProject\ModelManager\Model.", $identifier));
         }
 
-        return new $class();
+        return new $identifier();
     }
 }

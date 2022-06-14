@@ -26,16 +26,16 @@ abstract class FlexibleContainer implements FlexibleEntityInterface, \IteratorAg
 {
     use StatefulEntityTrait;
 
-    protected $container = [];
+    protected array $container = [];
 
     /**
      * hydrate
      *
      * @see FlexibleEntityInterface
      */
-    public function hydrate(array $values)
+    public function hydrate(array $fields): FlexibleContainer
     {
-        $this->container = array_merge($this->container, $values);
+        $this->container = array_merge($this->container, $fields);
 
         return $this;
     }
@@ -49,7 +49,7 @@ abstract class FlexibleContainer implements FlexibleEntityInterface, \IteratorAg
      * @throws  \InvalidArgumentException
      * @see     FlexibleEntityInterface
      */
-    public function fields(array $fields = null)
+    public function fields(array $fields = null): array
     {
         if ($fields === null) {
             return $this->container;
@@ -80,7 +80,7 @@ abstract class FlexibleContainer implements FlexibleEntityInterface, \IteratorAg
      *
      * @see FlexibleEntityInterface
      */
-    public function extract()
+    public function extract(): array
     {
         return $this->fields();
     }
@@ -90,7 +90,7 @@ abstract class FlexibleContainer implements FlexibleEntityInterface, \IteratorAg
      *
      * @see FlexibleEntityInterface
      */
-    public function getIterator()
+    public function getIterator(): \Traversable
     {
         return new \ArrayIterator($this->extract());
     }
@@ -106,9 +106,9 @@ abstract class FlexibleContainer implements FlexibleEntityInterface, \IteratorAg
      * @param  mixed $arguments
      * @return mixed
      */
-    public function __call($method, $arguments)
+    public function __call(mixed $method, mixed $arguments)
     {
-        list($operation, $attribute) = $this->extractMethodName($method);
+        [$operation, $attribute] = $this->extractMethodName($method);
 
         switch ($operation) {
         case 'set':
@@ -127,7 +127,7 @@ abstract class FlexibleContainer implements FlexibleEntityInterface, \IteratorAg
 
             return $this;
         default:
-            throw new ModelException(sprintf('No such method "%s:%s()"', get_class($this), $method));
+            throw new ModelException(sprintf('No such method "%s:%s()"', $this::class, $method));
         }
     }
 
@@ -137,11 +137,11 @@ abstract class FlexibleContainer implements FlexibleEntityInterface, \IteratorAg
      * Check if the attribute exist. Throw an exception if not.
      *
      * @access protected
-     * @param  string $attribute
+     * @param string $attribute
      * @return FlexibleContainer    $this
      * @throws ModelException
      */
-    protected function checkAttribute($attribute)
+    protected function checkAttribute(string $attribute): FlexibleContainer
     {
         if (!(isset($this->container[$attribute]) || array_key_exists($attribute, $this->container))) {
             throw new ModelException(
@@ -164,16 +164,16 @@ abstract class FlexibleContainer implements FlexibleEntityInterface, \IteratorAg
      * and the name of the attribute as second member.
      *
      * @access protected
-     * @param  string   $argument
+     * @param string $argument
      * @return array
      * @throws ModelException
      */
-    protected function extractMethodName($argument)
+    protected function extractMethodName(string $argument): array
     {
         $split = preg_split('/(?=[A-Z])/', $argument, 2);
 
-        if (count($split) !== 2) {
-            throw new ModelException(sprintf('No such argument "%s:%s()"', get_class($this), $argument));
+        if ((is_countable($split) ? count($split) : 0) !== 2) {
+            throw new ModelException(sprintf('No such argument "%s:%s()"', $this::class, $argument));
         }
 
         return [$split[0], Inflector::underscore($split[1])];

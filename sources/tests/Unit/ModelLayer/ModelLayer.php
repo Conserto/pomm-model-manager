@@ -53,10 +53,10 @@ EOSQL
 
     public function getModelLayer()
     {
-        $model_layer = $this->buildSession()->getModelLayer('PommProject\ModelManager\Test\Fixture\SimpleModelLayer');
+        $model_layer = $this->buildSession()->getModelLayer(\PommProject\ModelManager\Test\Fixture\SimpleModelLayer::class);
         $this
             ->object($model_layer)
-            ->isInstanceOf('\PommProject\ModelManager\ModelLayer\ModelLayer')
+            ->isInstanceOf(\PommProject\ModelManager\ModelLayer\ModelLayer::class)
             ;
 
         return $model_layer;
@@ -74,7 +74,7 @@ EOSQL
             ->exception(function () use ($model_layer) {
                 $model_layer->setDeferrable(['pomm_test.chu_pika_id_fkey'], 'chu');
             })
-            ->isInstanceOf('\PommProject\ModelManager\Exception\ModelLayerException')
+            ->isInstanceOf(\PommProject\ModelManager\Exception\ModelLayerException::class)
             ->message->contains("'chu' is not a valid constraint modifier")
             ;
     }
@@ -83,29 +83,34 @@ EOSQL
     {
         $model_layer = $this->getModelLayer();
         $this
-            ->boolean($model_layer->startTransaction())
+            ->object($model_layer->startTransaction())
+            ->boolean($model_layer->isInTransaction())
             ->isTrue()
-            ->boolean($model_layer->setSavepoint('12 345'))
+            ->object($model_layer->setSavepoint('12 345'))
+            ->boolean($model_layer->isInTransaction())
             ->isTrue()
-            ->boolean($model_layer->releaseSavepoint('12 345'))
+            ->object($model_layer->releaseSavepoint('12 345'))
+            ->boolean($model_layer->isInTransaction())
             ->isTrue()
-            ->boolean($model_layer->setSavepoint('chu'))
+            ->object($model_layer->setSavepoint('chu'))
+            ->boolean($model_layer->isInTransaction())
             ->isTrue()
-            ->boolean($model_layer->rollbackTransaction('chu'))
+            ->object($model_layer->rollbackTransaction('chu'))
+            ->boolean($model_layer->isInTransaction())
             ->isTrue()
-            ->variable($model_layer->sendNotify('plop', 'whatever'))
+            ->variable($model_layer->sendNotifyWithObserver('plop', 'whatever'))
             ->isNull()
             ->boolean($model_layer->isTransactionOk())
             ->isTrue()
             ->exception(function () use ($model_layer) { $model_layer->releaseSavepoint('not exist'); })
-            ->isInstanceOf('\PommProject\Foundation\Exception\SqlException')
+            ->isInstanceOf(\PommProject\Foundation\Exception\SqlException::class)
             ->boolean($model_layer->isInTransaction())
             ->isTrue()
             ->boolean($model_layer->isTransactionOk())
             ->isFalse()
             ->object($model_layer->commitTransaction())
             ->isIdenticalTo($model_layer)
-            ->array($model_layer->sendNotify('plop', 'whatever'))
+            ->array($model_layer->sendNotifyWithObserver('plop', 'whatever'))
             ->contains('whatever')
             ;
     }
@@ -126,7 +131,7 @@ EOSQL
         $this
             ->object($model_layer->setTransactionIsolationLevel($level))
             ->string($this->getTransactionIsolationLevel($model_layer))
-            ->isEqualTo(strtolower($level))
+            ->isEqualTo(strtolower((string) $level))
             ;
         $model_layer->rollbackTransaction();
     }

@@ -9,6 +9,9 @@
  */
 namespace PommProject\ModelManager\Test\Fixture;
 
+use PommProject\Foundation\Exception\FoundationException;
+use PommProject\Foundation\Session\ResultHandler;
+use PommProject\Foundation\Session\Session;
 use PommProject\ModelManager\ModelLayer\ModelLayer;
 
 /**
@@ -26,85 +29,81 @@ use PommProject\ModelManager\ModelLayer\ModelLayer;
  */
 class SimpleModelLayer extends ModelLayer
 {
-    public function startTransaction()
+
+    public function startTransaction(): ModelLayer
     {
-        return parent::startTransaction()
-            ->isInTransaction()
-            ;
+        return parent::startTransaction();
     }
 
-    public function rollbackTransaction($name = null)
+    public function rollbackTransaction($name = null): ModelLayer
     {
-        return parent::rollbackTransaction($name)
-            ->isInTransaction()
-            ;
+        return parent::rollbackTransaction($name);
     }
 
-    public function setSavepoint($name)
+    public function setSavepoint($name): ModelLayer
     {
-        return parent::setSavepoint($name)
-            ->isInTransaction()
-            ;
+        return parent::setSavepoint($name);
     }
 
-    public function releaseSavepoint($name)
+    public function releaseSavepoint($name): ModelLayer
     {
-        return parent::releaseSavepoint($name)
-            ->isInTransaction()
-            ;
+        return parent::releaseSavepoint($name);
     }
 
-    public function commitTransaction()
+    public function commitTransaction(): ModelLayer
     {
         return parent::commitTransaction();
     }
 
-    public function sendNotify($channel, $data = '')
+    /**
+     * @throws FoundationException
+     */
+    public function sendNotifyWithObserver(string $channel, string $data = ''): ?array
     {
         $observer = $this
             ->getSession()
             ->getObserver($channel)
             ->RestartListening()
-            ;
-        parent::sendNotify($channel, $data);
-        sleep(0.3);
+        ;
+        $this->sendNotify($channel, $data);
+        usleep(300000);
 
         return $observer
             ->getNotification()
             ;
     }
 
-    public function isInTransaction()
+    public function isInTransaction(): bool
     {
         return parent::isInTransaction();
     }
 
-    public function isTransactionOk()
+    public function isTransactionOk(): bool
     {
         return parent::isTransactionOk();
     }
 
-    public function setDeferrable(array $keys, $state)
+    public function setDeferrable(array $keys, string $state): ModelLayer
     {
         return parent::setDeferrable($keys, $state);
     }
 
-    public function setTransactionIsolationLevel($level)
+    public function setTransactionIsolationLevel(string $isolation_level): ModelLayer
     {
-        return parent::setTransactionIsolationLevel($level);
+        return parent::setTransactionIsolationLevel($isolation_level);
     }
 
-    public function setTransactionAccessMode($level)
+    public function setTransactionAccessMode($access_mode): ModelLayer
     {
-        return parent::setTransactionAccessMode($level);
+        return parent::setTransactionAccessMode($access_mode);
     }
 
-    public function executeAnonymousQuery($sql)
+    public function executeAnonymousQuery(string $sql): ResultHandler
     {
         return parent::executeAnonymousQuery($sql);
     }
 
-    public function getSession()
+    public function getSession(): Session
     {
         return parent::getSession();
     }

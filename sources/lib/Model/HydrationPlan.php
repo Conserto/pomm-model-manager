@@ -9,8 +9,11 @@
  */
 namespace PommProject\ModelManager\Model;
 
-use PommProject\Foundation\Session\Session;
 use PommProject\Foundation\Converter\ConverterClient;
+use PommProject\Foundation\Converter\ConverterInterface;
+use PommProject\Foundation\Exception\FoundationException;
+use PommProject\Foundation\Session\Session;
+use PommProject\ModelManager\Exception\ModelException;
 use PommProject\ModelManager\Model\FlexibleEntity\FlexibleEntityInterface;
 
 /**
@@ -25,24 +28,21 @@ use PommProject\ModelManager\Model\FlexibleEntity\FlexibleEntityInterface;
  */
 class HydrationPlan
 {
-    protected $session;
-    protected $projection;
-    protected $converters = [];
-    protected $field_types = [];
+    protected array $converters = [];
+    protected array $field_types = [];
 
 
     /**
      * Construct
      *
      * @access  public
-     * @param   Projection $projection
-     * @param   Session    $session
+     * @param Projection $projection
+     * @param Session $session
+     * @throws FoundationException
+     * @throws ModelException
      */
-    public function __construct(Projection $projection, Session $session)
+    public function __construct(protected Projection $projection, protected Session $session)
     {
-        $this->projection = $projection;
-        $this->session    = $session;
-
         $this->loadConverters();
     }
 
@@ -53,24 +53,19 @@ class HydrationPlan
      *
      * @access protected
      * @return HydrationPlan    $this
+     * @throws FoundationException|ModelException
      */
-    protected function loadConverters()
+    protected function loadConverters(): HydrationPlan
     {
         foreach ($this->projection as $name => $type) {
-            if ($this->projection->isArray($name)) {
-                $this->converters[$name] = $this
-                    ->session
-                    ->getClientUsingPooler('converter', 'array')
-                    ->getConverter()
-                    ;
-            } else {
-                $this->converters[$name] = $this
-                    ->session
-                    ->getClientUsingPooler('converter', $type)
-                    ->getConverter()
-                    ;
-            }
+            $identifier = $this->projection->isArray($name) ? 'array' : $type;
 
+            /** @var ConverterClient $converterClient */
+            $converterClient = $this
+                ->session
+                ->getClientUsingPooler('converter', $identifier);
+
+            $this->converters[$name] = $converterClient->getConverter();
             $this->field_types[$name] = $type;
         }
 
@@ -84,10 +79,11 @@ class HydrationPlan
      * Return the type of the given field. Proxy to Projection::getFieldType().
      *
      * @access public
-     * @param  string $name
+     * @param string $name
      * @return string
+     * @throws ModelException
      */
-    public function getFieldType($name)
+    public function getFieldType(string $name): string
     {
         return $this->projection->getFieldType($name);
     }
@@ -98,10 +94,11 @@ class HydrationPlan
      * Tell if the given field is an array or not.
      *
      * @access public
-     * @param  string $name
+     * @param string $name
      * @return bool
+     * @throws ModelException
      */
-    public function isArray($name)
+    public function isArray(string $name): bool
     {
         return $this->projection->isArray($name);
     }
@@ -117,7 +114,7 @@ class HydrationPlan
      * @param  array $values
      * @return FlexibleEntityInterface
      */
-    public function hydrate(array $values)
+    public function hydrate(array $values): FlexibleEntityInterface
     {
         $values = $this->convert('fromPg', $values);
 
@@ -133,7 +130,7 @@ class HydrationPlan
      * @param  array    $values
      * @return array
      */
-    public function dry(array $values)
+    public function dry(array $values): array
     {
         return $this->convert('toPg', $values);
     }
@@ -147,7 +144,7 @@ class HydrationPlan
      * @param  array $values
      * @return array converted values
      */
-    public function freeze(array $values)
+    public function freeze(array $values): array
     {
         return $this->convert('toPgStandardFormat', $values);
     }
@@ -158,11 +155,11 @@ class HydrationPlan
      * Convert values from / to postgres.
      *
      * @access protected
-     * @param  string   $from_to
+     * @param string $from_to
      * @param  array    $values
      * @return array
      */
-    protected function convert($from_to, array $values)
+    protected function convert(string $from_to, array $values): array
     {
         $out_values = [];
 
@@ -189,7 +186,7 @@ class HydrationPlan
      * @param  array $values
      * @return FlexibleEntityInterface
      */
-    protected function createEntity(array $values)
+    protected function createEntity(array $values): FlexibleEntityInterface
     {
         $class = $this->projection->getFlexibleEntityClass();
 
@@ -204,10 +201,10 @@ class HydrationPlan
      * Return the converter client associated with a field.
      *
      * @access public
-     * @param  string $field_name
-     * @return ConverterClient
+     * @param string $field_name
+     * @return ConverterInterface
      */
-    public function getConverterForField($field_name)
+    public function getConverterForField(string $field_name): ConverterInterface
     {
         if (!isset($this->converters[$field_name])) {
             throw new \RuntimeException(

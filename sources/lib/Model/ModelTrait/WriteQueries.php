@@ -36,10 +36,11 @@ trait WriteQueries
      * It is updated with values returned by the database (ie, default values).
      *
      * @access public
-     * @param  FlexibleEntityInterface  $entity
-     * @return Model                    $this
+     * @param FlexibleEntityInterface $entity
+     * @return WriteQueries                    $this
+     * @throws ModelException
      */
-    public function insertOne(FlexibleEntityInterface &$entity)
+    public function insertOne(FlexibleEntityInterface &$entity): Model
     {
         $values = $entity->fields(
             array_intersect(
@@ -74,11 +75,12 @@ trait WriteQueries
      * primary key is not fully set, an exception is thrown.
      *
      * @access public
-     * @param  FlexibleEntityInterface  $entity
-     * @param  array                    $fields
-     * @return Model                    $this
+     * @param FlexibleEntityInterface $entity
+     * @param array $fields
+     * @return WriteQueries                    $this
+     * @throws ModelException
      */
-    public function updateOne(FlexibleEntityInterface &$entity, array $fields)
+    public function updateOne(FlexibleEntityInterface &$entity, array $fields): static
     {
         $entity = $this->updateByPk(
             $entity->fields($this->getStructure()->getPrimaryKey()),
@@ -95,12 +97,12 @@ trait WriteQueries
      * the given key, null is returned.
      *
      * @access public
-     * @param  array          $primary_key
-     * @param  array          $updates
+     * @param array $primary_key
+     * @param array $updates
+     * @return FlexibleEntityInterface|null
      * @throws ModelException
-     * @return FlexibleEntityInterface
      */
-    public function updateByPk(array $primary_key, array $updates)
+    public function updateByPk(array $primary_key, array $updates): ?FlexibleEntityInterface
     {
         $where = $this
             ->checkPrimaryKey($primary_key)
@@ -143,10 +145,11 @@ trait WriteQueries
      * updated with the values fetched from the deleted record.
      *
      * @access public
-     * @param  FlexibleEntityInterface  $entity
+     * @param FlexibleEntityInterface $entity
      * @return Model                    $this
+     * @throws ModelException
      */
-    public function deleteOne(FlexibleEntityInterface &$entity)
+    public function deleteOne(FlexibleEntityInterface &$entity): Model
     {
         $entity = $this->deleteByPK($entity->fields($this->getStructure()->getPrimaryKey()));
 
@@ -161,10 +164,10 @@ trait WriteQueries
      *
      * @access public
      * @param  array          $primary_key
+     * @return FlexibleEntityInterface|null
      * @throws ModelException
-     * @return FlexibleEntityInterface
      */
-    public function deleteByPK(array $primary_key)
+    public function deleteByPK(array $primary_key): ?FlexibleEntityInterface
     {
         $where = $this
             ->checkPrimaryKey($primary_key)
@@ -179,11 +182,11 @@ trait WriteQueries
      *
      * Delete records by a given condition. A collection of all deleted entries is returned.
      *
-     * @param        $where
-     * @param  array $values
+     * @param string|Where $where
+     * @param array $values
      * @return CollectionIterator
      */
-    public function deleteWhere($where, array $values = [])
+    public function deleteWhere(string|Where $where, array $values = []): CollectionIterator
     {
         if (!$where instanceof Where) {
             $where = new Where($where, $values);
@@ -216,7 +219,7 @@ trait WriteQueries
      * @param  array          $values
      * @return FlexibleEntityInterface
      */
-    public function createAndSave(array $values)
+    public function createAndSave(array $values): FlexibleEntityInterface
     {
         $entity = $this->createEntity($values);
         $this->insertOne($entity);
@@ -233,12 +236,12 @@ trait WriteQueries
      * @param  array  $fields
      * @return string
      */
-    public function getEscapedFieldList(array $fields)
+    public function getEscapedFieldList(array $fields): string
     {
         return join(
             ', ',
             array_map(
-                function ($field) { return $this->escapeIdentifier($field); },
+                fn($field) => $this->escapeIdentifier($field),
                 $fields
             ));
     }
@@ -249,10 +252,11 @@ trait WriteQueries
      * Create a parameters list from values.
      *
      * @access protected
-     * @param  array    $values
+     * @param array $values
      * @return array    $escape codes
+     * @throws ModelException
      */
-    protected function getParametersList(array $values)
+    protected function getParametersList(array $values): array
     {
         $parameters = [];
 

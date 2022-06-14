@@ -9,6 +9,7 @@
  */
 namespace PommProject\ModelManager;
 
+use PommProject\Foundation\Exception\FoundationException;
 use PommProject\Foundation\Session as FoundationSession;
 use PommProject\ModelManager\Model\Model;
 use PommProject\ModelManager\ModelLayer\ModelLayer;
@@ -34,12 +35,15 @@ class Session extends FoundationSession
      * Return a model instance
      *
      * @access public
-     * @param  string   $class
+     * @param string $class
      * @return Model
+     * @throws FoundationException
      */
-    public function getModel($class)
+    public function getModel(string $class): Model
     {
-        return $this->getClientUsingPooler('model', $class);
+        /** @var Model $modelManager */
+        $modelManager = $this->getClientUsingPooler('model', $class);
+        return $modelManager;
     }
 
     /**
@@ -48,11 +52,14 @@ class Session extends FoundationSession
      * Return a model layer instance
      *
      * @access public
-     * @param  string   $class
+     * @param string $class
      * @return ModelLayer
+     * @throws FoundationException
      */
-    public function getModelLayer($class)
+    public function getModelLayer(string $class): ModelLayer
     {
-        return $this->getClientUsingPooler('model_layer', $class);
+        /** @var ModelLayer $modelLayerManager */
+        $modelLayerManager = $this->getClientUsingPooler('model_layer', $class);
+        return $modelLayerManager;
     }
 }

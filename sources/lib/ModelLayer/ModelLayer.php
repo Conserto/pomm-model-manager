@@ -11,6 +11,7 @@ namespace PommProject\ModelManager\ModelLayer;
 
 use PommProject\Foundation\Client\Client;
 use PommProject\Foundation\Client\ClientInterface;
+use PommProject\Foundation\Exception\FoundationException;
 use PommProject\Foundation\Session\Connection;
 use PommProject\Foundation\Session\ResultHandler;
 use PommProject\ModelManager\Exception\ModelLayerException;
@@ -35,7 +36,7 @@ abstract class ModelLayer extends Client
      *
      * @see ClientInterface
      */
-    public function getClientType()
+    public function getClientType(): string
     {
         return 'model_layer';
     }
@@ -45,9 +46,9 @@ abstract class ModelLayer extends Client
      *
      * @see ClientInterface
      */
-    public function getClientIdentifier()
+    public function getClientIdentifier(): string
     {
-        return get_class($this);
+        return $this::class;
     }
 
     /**
@@ -55,7 +56,7 @@ abstract class ModelLayer extends Client
      *
      * @see ClientInterface
      */
-    public function shutdown()
+    public function shutdown(): void
     {
     }
 
@@ -66,8 +67,9 @@ abstract class ModelLayer extends Client
      *
      * @access protected
      * @return ModelLayer $this
+     * @throws FoundationException
      */
-    protected function startTransaction()
+    protected function startTransaction(): ModelLayer
     {
         $this->executeAnonymousQuery('begin transaction');
 
@@ -84,11 +86,11 @@ abstract class ModelLayer extends Client
      *
      * @access protected
      * @param  array      $keys
-     * @param  string     $state
-     * @throws  ModelLayerException if not valid state
+     * @param string $state
+     * @throws  ModelLayerException|FoundationException if not valid state
      * @return ModelLayer $this
      */
-    protected function setDeferrable(array $keys, $state)
+    protected function setDeferrable(array $keys, string $state): ModelLayer
     {
         if (count($keys) === 0) {
             $string = 'ALL';
@@ -142,11 +144,11 @@ EOMSG
      * @see http://www.postgresql.org/docs/9.0/static/sql-set-transaction.html
      *
      * @access protected
-     * @param   string     $isolation_level
-     * @throws  ModelLayerException if not valid isolation level
+     * @param string $isolation_level
+     * @throws  ModelLayerException|FoundationException if not valid isolation level
      * @return  ModelLayer $this
      */
-    protected function setTransactionIsolationLevel($isolation_level)
+    protected function setTransactionIsolationLevel(string $isolation_level): ModelLayer
     {
         $valid_isolation_levels =
             [
@@ -182,11 +184,11 @@ EOMSG
      * @see http://www.postgresql.org/docs/9.0/static/sql-set-transaction.html
      *
      * @access protected
-     * @param   string     $access_mode
-     * @throws  ModelLayerException if not valid access mode
+     * @param string $access_mode
+     * @throws  ModelLayerException|FoundationException if not valid access mode
      * @return  ModelLayer $this
      */
-    protected function setTransactionAccessMode($access_mode)
+    protected function setTransactionAccessMode(string $access_mode): ModelLayer
     {
         $valid_access_modes =
             [
@@ -219,10 +221,11 @@ EOMSG
      * Set a savepoint in a transaction.
      *
      * @access protected
-     * @param  string     $name
+     * @param string $name
      * @return ModelLayer $this
+     * @throws FoundationException
      */
-    protected function setSavepoint($name)
+    protected function setSavepoint(string $name): ModelLayer
     {
         return $this->sendParameter(
             "savepoint %s",
@@ -236,10 +239,11 @@ EOMSG
      * Drop a savepoint.
      *
      * @access protected
-     * @param  string     $name
+     * @param string $name
      * @return ModelLayer $this
+     * @throws FoundationException
      */
-    protected function releaseSavepoint($name)
+    protected function releaseSavepoint(string $name): ModelLayer
     {
         return $this->sendParameter(
             "release savepoint %s",
@@ -255,10 +259,11 @@ EOMSG
      * rollback.
      *
      * @access protected
-     * @param  string|null $name
+     * @param string|null $name
      * @return ModelLayer  $this
+     * @throws FoundationException
      */
-    protected function rollbackTransaction($name = null)
+    protected function rollbackTransaction(string $name = null): ModelLayer
     {
         $sql = "rollback transaction";
         if ($name !== null) {
@@ -277,8 +282,9 @@ EOMSG
      *
      * @access protected
      * @return ModelLayer $this
+     * @throws FoundationException
      */
-    protected function commitTransaction()
+    protected function commitTransaction(): ModelLayer
     {
         $this->executeAnonymousQuery('commit transaction');
 
@@ -290,11 +296,12 @@ EOMSG
      *
      * Tell if a transaction is open or not.
      *
+     * @return bool
+     * @throws FoundationException
      * @see    Cient
      * @access protected
-     * @return bool
      */
-    protected function isInTransaction()
+    protected function isInTransaction(): bool
     {
         $status = $this
             ->getSession()
@@ -302,7 +309,7 @@ EOMSG
             ->getTransactionStatus()
             ;
 
-        return (bool) ($status === \PGSQL_TRANSACTION_INTRANS || $status === \PGSQL_TRANSACTION_INERROR || $status === \PGSQL_TRANSACTION_ACTIVE);
+        return $status === \PGSQL_TRANSACTION_INTRANS || $status === \PGSQL_TRANSACTION_INERROR || $status === \PGSQL_TRANSACTION_ACTIVE;
     }
 
     /**
@@ -314,8 +321,9 @@ EOMSG
      *
      * @access public
      * @return bool|null
+     * @throws FoundationException
      */
-    protected function isTransactionOk()
+    protected function isTransactionOk(): ?bool
     {
         if (!$this->isInTransaction()) {
             return null;
@@ -327,7 +335,7 @@ EOMSG
             ->getTransactionStatus()
             ;
 
-        return (bool) ($status === \PGSQL_TRANSACTION_INTRANS);
+        return $status === \PGSQL_TRANSACTION_INTRANS;
     }
 
     /**
@@ -337,11 +345,12 @@ EOMSG
      * with the notification.
      *
      * @access protected
-     * @param  string     $channel
-     * @param  string     $data
+     * @param string $channel
+     * @param string $data
      * @return ModelLayer $this
+     * @throws FoundationException
      */
-    protected function sendNotify($channel, $data = '')
+    protected function sendNotify(string $channel, string $data = ''): ModelLayer
     {
         return $this->sendParameter(
             'notify %s, %s',
@@ -356,10 +365,11 @@ EOMSG
      * Proxy to Connection::executeAnonymousQuery()
      *
      * @access protected
-     * @param  string        $sql
+     * @param string $sql
      * @return ResultHandler
+     * @throws FoundationException
      */
-    protected function executeAnonymousQuery($sql)
+    protected function executeAnonymousQuery(string $sql): ResultHandler
     {
         return $this
             ->getSession()
@@ -374,10 +384,11 @@ EOMSG
      * Proxy to Connection::escapeIdentifier()
      *
      * @access protected
-     * @param  string $string
+     * @param string $string
      * @return string
+     * @throws FoundationException
      */
-    protected function escapeIdentifier($string)
+    protected function escapeIdentifier(string $string): string
     {
         return $this
             ->getSession()
@@ -392,10 +403,11 @@ EOMSG
      * Proxy to Connection::escapeLiteral()
      *
      * @access protected
-     * @param  string $string
+     * @param string $string
      * @return string
+     * @throws FoundationException
      */
-    protected function escapeLiteral($string)
+    protected function escapeLiteral(string $string): string
     {
         return $this
             ->getSession()
@@ -410,14 +422,18 @@ EOMSG
      * Proxy to Session::getModel();
      *
      * @access protected
-     * @param  string    model identifier
+     * @param string $identifier
      * @return Model
+     * @throws FoundationException
      */
-    protected function getModel($identifier)
+    protected function getModel(string $identifier): Model
     {
-        return $this
+        /** @var Model $modelManager */
+        $modelManager = $this
             ->getSession()
             ->getClientUsingPooler('model', $identifier);
+
+        return $modelManager;
     }
 
     /**
@@ -429,12 +445,13 @@ EOMSG
      * parameters may lead to potential SQL injection.
      *
      * @access private
-     * @param  string     $sql
-     * @param  string     $identifier
-     * @param  string     $parameter
+     * @param string $sql
+     * @param string $identifier
+     * @param string|null $parameter
      * @return ModelLayer $this
+     * @throws FoundationException
      */
-    private function sendParameter($sql, $identifier, $parameter = null)
+    private function sendParameter(string $sql, string $identifier, string $parameter = null): ModelLayer
     {
         $this
             ->executeAnonymousQuery(

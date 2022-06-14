@@ -10,7 +10,6 @@
 namespace PommProject\ModelManager;
 
 use PommProject\Foundation\Client\ClientHolder;
-use PommProject\Foundation\Session as FoundationSession;
 use PommProject\Foundation\Session\Connection;
 use PommProject\Foundation\Session\Session;
 use PommProject\Foundation\SessionBuilder as FoundationSessionBuilder;
@@ -40,7 +39,7 @@ class SessionBuilder extends FoundationSessionBuilder
      * @param  Session          $session
      * @return SessionBuilder
      */
-    protected function postConfigure(Session $session)
+    protected function postConfigure(Session $session): SessionBuilder
     {
         parent::postConfigure($session);
         $session
@@ -55,16 +54,18 @@ class SessionBuilder extends FoundationSessionBuilder
     /**
      * createSession
      *
-     * @param Connection   $connection
+     * @param Connection $connection
      * @param ClientHolder $client_holder
-     * @param null|string  $stamp
+     * @param string|null $stamp
      * @return  ModelManagerSession
      * @see     VanillaSessionBuilder
      */
-    protected function createSession(Connection $connection, ClientHolder $client_holder, $stamp)
+    protected function createSession(Connection $connection, ClientHolder $client_holder, ?string $stamp): Session
     {
-        $this->configuration->setDefaultValue('class:session', '\PommProject\ModelManager\Session');
+        $this->configuration->setDefaultValue('class:session', \PommProject\ModelManager\Session::class);
 
-        return parent::createSession($connection, $client_holder, $stamp);
+        /** @var \PommProject\ModelManager\Session $session */
+        $session = parent::createSession($connection, $client_holder, $stamp);
+        return $session;
     }
 }

@@ -48,7 +48,7 @@ SQL;
 
     protected function getQueryResult($sql)
     {
-        $sql = $sql === null ? $this->getSql() : $sql;
+        $sql ??= $this->getSql();
 
         return $this->getSession()->getConnection()->sendQueryWithParameters($sql);
     }
@@ -58,7 +58,7 @@ SQL;
         return new CollectionIteratorMock(
             $this->getQueryResult($sql),
             $this->getSession(),
-            new ProjectionMock('\PommProject\ModelManager\Test\Fixture\SimpleFixture', ['id' => 'int4', 'some_data' => 'varchar'])
+            new ProjectionMock(\PommProject\ModelManager\Test\Fixture\SimpleFixture::class, ['id' => 'int4', 'some_data' => 'varchar'])
         );
     }
 
@@ -67,7 +67,7 @@ SQL;
         $collection = $this->getCollectionMock();
         $this
             ->object($collection->get(0))
-            ->isInstanceOf('\PommProject\ModelManager\Test\Fixture\SimpleFixture')
+            ->isInstanceOf(\PommProject\ModelManager\Test\Fixture\SimpleFixture::class)
             ->mock($collection)
             ->call('parseRow')
             ->atLeastOnce()
@@ -87,7 +87,7 @@ SQL;
             ->registerFilter(
                 function ($values) {
                     $values['some_data'] =
-                        strlen($values['some_data']) > 3
+                        strlen((string) $values['some_data']) > 3
                         ? null
                         : $values['some_data'];
                     ++$values['id'];
@@ -107,23 +107,11 @@ SQL;
     public function testGetWithWrongFilter()
     {
         $collection = $this->getCollectionMock();
-        $collection->registerFilter(function ($values) { return $values['id']; });
+        $collection->registerFilter(fn($values) => $values['id']);
         $this
             ->exception(function () use ($collection) { $collection->get(2); })
-            ->isInstanceOf('\PommProject\ModelManager\Exception\ModelException')
+            ->isInstanceOf(\PommProject\ModelManager\Exception\ModelException::class)
             ->message->contains('Filters MUST return an array')
-            ;
-    }
-
-    public function testRegisterBadFilters()
-    {
-        $collection = $this->getCollectionMock();
-        $this
-            ->exception(function () use ($collection) {
-                $collection->registerFilter('whatever');
-            })
-            ->isInstanceOf('\PommProject\ModelManager\Exception\ModelException')
-            ->message->contains('is not a callable')
             ;
     }
 

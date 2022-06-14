@@ -10,34 +10,40 @@
 namespace PommProject\ModelManager\Test\Fixture;
 
 use PommProject\Foundation\Client\Client;
+use PommProject\Foundation\Exception\ConnectionException;
+use PommProject\Foundation\Exception\FoundationException;
 use PommProject\Foundation\Exception\SqlException;
+use PommProject\Foundation\Session\ResultHandler;
 use PommProject\Foundation\Session\Session;
 
 class ModelSchemaClient extends Client
 {
-    public function getClientType()
+    public function getClientType(): string
     {
         return 'test';
     }
 
-    public function getClientIdentifier()
+    public function getClientIdentifier(): string
     {
         return 'complex_fixture';
     }
 
-    public function initialize(Session $session)
+    public function initialize(Session $session): void
     {
         parent::initialize($session);
 
         $this->createSchema();
     }
 
-    public function shutdown()
+    public function shutdown(): void
     {
         $this->dropSchema();
     }
 
-    public function createSchema()
+    /**
+     * @throws SqlException
+     */
+    public function createSchema(): static
     {
         $sql =
             [
@@ -60,7 +66,7 @@ class ModelSchemaClient extends Client
         return $this;
     }
 
-    public function dropSchema()
+    public function dropSchema(): static
     {
         $sql = "drop schema if exists pomm_test cascade";
         $this->executeSql($sql);
@@ -68,7 +74,12 @@ class ModelSchemaClient extends Client
         return $this;
     }
 
-    protected function executeSql($sql)
+    /**
+     * @throws SqlException
+     * @throws FoundationException
+     * @throws ConnectionException
+     */
+    protected function executeSql($sql): ResultHandler|array
     {
         return $this
             ->getSession()

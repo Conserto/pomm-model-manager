@@ -26,7 +26,7 @@ use PommProject\ModelManager\SessionBuilder;
  */
 abstract class ModelSessionAtoum extends FoundationSessionAtoum
 {
-    protected function createSessionBuilder(array $configuration)
+    protected function createSessionBuilder(array $configuration): SessionBuilder
     {
         return new SessionBuilder($configuration);
     }

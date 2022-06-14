@@ -23,12 +23,12 @@ namespace PommProject\ModelManager\Model\FlexibleEntity;
  */
 trait StatefulEntityTrait
 {
-    private $status = FlexibleEntityInterface::STATUS_NONE;
+    private int $status = FlexibleEntityInterface::STATUS_NONE;
 
     /**
      * @see FlexibleEntityInterface
      */
-    public function status($status = null)
+    public function status($status = null): int|FlexibleEntityInterface
     {
         if ($status !== null) {
             $this->status = (int) $status;
@@ -47,7 +47,7 @@ trait StatefulEntityTrait
      * @access public
      * @return FlexibleEntityInterface
      */
-    public function touch()
+    public function touch(): FlexibleEntityInterface
     {
         $this->status |= FlexibleEntityInterface::STATUS_MODIFIED;
 
