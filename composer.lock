@@ -4,59 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "3b2e186f392c3698686b7d76077f173f",
+    "content-hash": "1a05af028b6165ccca5e390696dc6190",
     "packages": [
-        {
-            "name": "pomm-project/foundation",
-            "version": "dev-php_8_1",
-            "dist": {
-                "type": "path",
-                "url": "../Foundation",
-                "reference": "82358ea0aa0cb013a6b5b50159701cf0e14de055"
-            },
-            "require": {
-                "ext-pgsql": "*",
-                "php": ">=8.1",
-                "psr/log": "~1.0"
-            },
-            "require-dev": {
-                "atoum/atoum": "^2.8 || ^4.0",
-                "phpstan/phpstan": "^1.7",
-                "rector/rector": "^0.13.4"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "PommProject\\Foundation\\": "sources/lib"
-                }
-            },
-            "autoload-dev": {
-                "psr-4": {
-                    "PommProject\\Foundation\\Test\\": "sources/tests"
-                }
-            },
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Grégoire HUBERT",
-                    "email": "hubert.greg@gmail.com",
-                    "homepage": "http://www.coolkeums.org"
-                }
-            ],
-            "description": "Pomm connection manager for Postgresql",
-            "homepage": "http://www.pomm-project.org",
-            "keywords": [
-                "database",
-                "framework",
-                "pomm",
-                "postgresql"
-            ],
-            "transport-options": {
-                "relative": true
-            }
-        },
         {
             "name": "psr/log",
             "version": "1.1.4",
@@ -111,7 +60,7 @@
     "packages-dev": [
         {
             "name": "atoum/atoum",
-            "version": "4.0.3",
+            "version": "dev-master",
             "source": {
                 "type": "git",
                 "url": "https://github.com/atoum/atoum.git",
@@ -141,6 +90,7 @@
                 "ext-mbstring": "Provides support for UTF-8 strings",
                 "ext-xdebug": "Provides code coverage report (>= 2.3)"
             },
+            "default-branch": true,
             "bin": [
                 "bin/atoum"
             ],
@@ -197,17 +147,71 @@
             "time": "2021-10-22T08:10:33+00:00"
         },
         {
+            "name": "conserto/pomm-foundation",
+            "version": "dev-main",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/Conserto/pomm-foundation.git",
+                "reference": "0666d7276b2347ff5b9b820ec53b5e259a7f8ef5"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/Conserto/pomm-foundation/zipball/0666d7276b2347ff5b9b820ec53b5e259a7f8ef5",
+                "reference": "0666d7276b2347ff5b9b820ec53b5e259a7f8ef5",
+                "shasum": ""
+            },
+            "require": {
+                "ext-pgsql": "*",
+                "php": ">=8.1",
+                "psr/log": "~1.0"
+            },
+            "require-dev": {
+                "atoum/atoum": "^4.0",
+                "phpstan/phpstan": "^1.7",
+                "rector/rector": "^0.13.4"
+            },
+            "default-branch": true,
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "PommProject\\Foundation\\": "sources/lib"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Grégoire HUBERT",
+                    "email": "hubert.greg@gmail.com"
+                }
+            ],
+            "description": "Pomm connection manager for Postgresql",
+            "homepage": "http://www.pomm-project.org",
+            "keywords": [
+                "database",
+                "framework",
+                "pomm",
+                "postgresql"
+            ],
+            "support": {
+                "source": "https://github.com/Conserto/pomm-foundation/tree/main"
+            },
+            "time": "2022-06-22T12:52:23+00:00"
+        },
+        {
             "name": "phpstan/phpstan",
             "version": "1.7.x-dev",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpstan/phpstan.git",
-                "reference": "758a795cbacb075c7f7dfe6ebf04db3f27db8d0c"
+                "reference": "b197c18e36aca264d48338bb42c229ca377d224e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/758a795cbacb075c7f7dfe6ebf04db3f27db8d0c",
-                "reference": "758a795cbacb075c7f7dfe6ebf04db3f27db8d0c",
+                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/b197c18e36aca264d48338bb42c229ca377d224e",
+                "reference": "b197c18e36aca264d48338bb42c229ca377d224e",
                 "shasum": ""
             },
             "require": {
@@ -254,74 +258,14 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2022-06-20T10:57:13+00:00"
-        },
-        {
-            "name": "rector/rector",
-            "version": "0.13.5",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/rectorphp/rector.git",
-                "reference": "4170aad2943b150149ba9594c34539e06ced6c6b"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/rectorphp/rector/zipball/4170aad2943b150149ba9594c34539e06ced6c6b",
-                "reference": "4170aad2943b150149ba9594c34539e06ced6c6b",
-                "shasum": ""
-            },
-            "require": {
-                "php": "^7.2|^8.0",
-                "phpstan/phpstan": "^1.7.10"
-            },
-            "conflict": {
-                "phpstan/phpdoc-parser": "<1.2",
-                "rector/rector-cakephp": "*",
-                "rector/rector-doctrine": "*",
-                "rector/rector-laravel": "*",
-                "rector/rector-nette": "*",
-                "rector/rector-phpoffice": "*",
-                "rector/rector-phpunit": "*",
-                "rector/rector-prefixed": "*",
-                "rector/rector-symfony": "*"
-            },
-            "bin": [
-                "bin/rector"
-            ],
-            "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-main": "0.13-dev"
-                }
-            },
-            "autoload": {
-                "files": [
-                    "bootstrap.php"
-                ]
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "description": "Instant Upgrade and Automated Refactoring of any PHP code",
-            "support": {
-                "issues": "https://github.com/rectorphp/rector/issues",
-                "source": "https://github.com/rectorphp/rector/tree/0.13.5"
-            },
-            "funding": [
-                {
-                    "url": "https://github.com/tomasvotruba",
-                    "type": "github"
-                }
-            ],
-            "time": "2022-06-09T12:54:02+00:00"
+            "time": "2022-06-22T13:04:39+00:00"
         }
     ],
     "aliases": [],
     "minimum-stability": "dev",
     "stability-flags": {
-        "pomm-project/foundation": 20,
-        "phpstan/phpstan": 20
+        "phpstan/phpstan": 20,
+        "conserto/pomm-foundation": 20
     },
     "prefer-stable": false,
     "prefer-lowest": false,
