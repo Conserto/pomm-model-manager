@@ -1,5 +1,5 @@
 {
-    "name": "pomm-project/model-manager",
+    "name": "conserto/pomm-model-manager",
     "type": "library",
     "description":  "PHP Object Model Manager for Postgresql",
     "keywords": ["orm", "postgresql", "database", "pomm"],
