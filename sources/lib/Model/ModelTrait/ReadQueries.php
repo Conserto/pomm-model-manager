@@ -9,6 +9,7 @@
  */
 namespace PommProject\ModelManager\Model\ModelTrait;
 
+use PommProject\Foundation\Exception\FoundationException;
 use PommProject\Foundation\Pager;
 use PommProject\Foundation\PreparedQuery\PreparedQueryManager;
 use PommProject\Foundation\Where;
@@ -124,9 +125,10 @@ trait ReadQueries
      * Return the number of records matching a condition.
      *
      * @access public
-     * @param  string|Where $where
-     * @param  array        $values
+     * @param string|Where $where
+     * @param array $values
      * @return int
+     * @throws FoundationException
      */
     public function countWhere(string|Where $where, array $values = []): int
     {
@@ -144,9 +146,10 @@ trait ReadQueries
      * Check if rows matching the given condition do exist or not.
      *
      * @access public
-     * @param  string|Where $where
-     * @param  array $values
+     * @param string|Where $where
+     * @param array $values
      * @return bool
+     * @throws FoundationException
      */
     public function existWhere(string|Where $where, array $values = []): bool
     {
@@ -171,9 +174,9 @@ trait ReadQueries
      * @param string|Where $where
      * @param array $values
      * @return mixed
-     * @throws \PommProject\Foundation\Exception\FoundationException
+     * @throws FoundationException
      */
-    protected function fetchSingleValue(string $sql, string|Where $where, array $values)
+    protected function fetchSingleValue(string $sql, string|Where $where, array $values): mixed
     {
         if (!$where instanceof Where) {
             $where = new Where($where, $values);
@@ -195,11 +198,12 @@ trait ReadQueries
      * Paginate a query.
      *
      * @access public
-     * @param  Where    $where
+     * @param Where $where
      * @param int $item_per_page
      * @param int $page
      * @param string $suffix
      * @return Pager
+     * @throws FoundationException
      */
     public function paginateFindWhere(Where $where, int $item_per_page, int $page = 1, string $suffix = ''): Pager
     {

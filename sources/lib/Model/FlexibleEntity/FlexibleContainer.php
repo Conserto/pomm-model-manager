@@ -106,7 +106,7 @@ abstract class FlexibleContainer implements FlexibleEntityInterface, \IteratorAg
      * @param  mixed $arguments
      * @return mixed
      */
-    public function __call(mixed $method, mixed $arguments)
+    public function __call(mixed $method, mixed $arguments): mixed
     {
         [$operation, $attribute] = $this->extractMethodName($method);
 

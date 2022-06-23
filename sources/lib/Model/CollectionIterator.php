@@ -72,11 +72,12 @@ class CollectionIterator extends ResultIterator
     /**
      * get
      *
-     * @param $index
+     * @param int $index
      * @return  FlexibleEntityInterface
+     * @throws ModelException
      * @see     ResultIterator
      */
-    public function get($index): FlexibleEntityInterface
+    public function get(int $index): FlexibleEntityInterface
     {
         return $this->parseRow(parent::get($index));
     }

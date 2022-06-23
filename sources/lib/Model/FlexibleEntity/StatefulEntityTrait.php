@@ -28,10 +28,10 @@ trait StatefulEntityTrait
     /**
      * @see FlexibleEntityInterface
      */
-    public function status($status = null): int|FlexibleEntityInterface
+    public function status(int $status = null): int|FlexibleEntityInterface
     {
         if ($status !== null) {
-            $this->status = (int) $status;
+            $this->status = $status;
 
             return $this;
         }

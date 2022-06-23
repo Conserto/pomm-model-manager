@@ -37,7 +37,7 @@ trait WriteQueries
      *
      * @access public
      * @param FlexibleEntityInterface $entity
-     * @return WriteQueries                    $this
+     * @return Model $this
      * @throws ModelException
      */
     public function insertOne(FlexibleEntityInterface &$entity): Model
@@ -216,8 +216,9 @@ trait WriteQueries
      * Create a new entity from given values and save it in the database.
      *
      * @access public
-     * @param  array          $values
+     * @param array $values
      * @return FlexibleEntityInterface
+     * @throws ModelException
      */
     public function createAndSave(array $values): FlexibleEntityInterface
     {

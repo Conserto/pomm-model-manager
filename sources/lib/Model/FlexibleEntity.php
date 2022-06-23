@@ -7,6 +7,7 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
+
 namespace PommProject\ModelManager\Model;
 
 use PommProject\Foundation\Inflector;
@@ -52,20 +53,18 @@ abstract class FlexibleEntity extends FlexibleContainer implements \ArrayAccess
      *
      * @final
      * @access public
-     * @param  string|array $var Key(s) you want to retrieve value from.
-     * @throws  ModelException if strict and the attribute does not exist.
+     * @param string|array $var Key(s) you want to retrieve value from.
      * @return mixed
+     * @throws  ModelException if strict and the attribute does not exist.
      */
     final public function get(string|array $var): mixed
     {
-        if (is_scalar($var)) {
-            if ($this->has($var)) {
-                return $this->container[$var];
-            } elseif (static::$strict === true) {
-                throw new ModelException(sprintf("No such key '%s'.", $var));
-            }
-        } elseif (is_array($var)) {
+        if (is_array($var)) {
             return array_intersect_key($this->container, array_flip($var));
+        } elseif ($this->has($var)) {
+            return $this->container[$var];
+        } elseif (static::$strict === true) {
+            throw new ModelException(sprintf("No such key '%s'.", $var));
         }
 
         return null;
@@ -93,8 +92,8 @@ abstract class FlexibleEntity extends FlexibleContainer implements \ArrayAccess
      *
      * @final
      * @access public
-     * @param String $var   Attribute name.
-     * @param  Mixed          $value Attribute value.
+     * @param string $var Attribute name.
+     * @param mixed $value Attribute value.
      * @return FlexibleEntity $this
      */
     final public function set(string $var, mixed $value): FlexibleEntity
@@ -113,7 +112,7 @@ abstract class FlexibleEntity extends FlexibleContainer implements \ArrayAccess
      *
      * @access public
      * @param string $var
-     * @param  mixed          $value
+     * @param mixed $value
      * @return FlexibleEntity $this
      * @throws ModelException
      */
@@ -140,7 +139,7 @@ abstract class FlexibleEntity extends FlexibleContainer implements \ArrayAccess
      *
      * @final
      * @access public
-     * @param String $offset Attribute name.
+     * @param string $offset Attribute name.
      * @return FlexibleEntity $this
      */
     final public function clear(string $offset): FlexibleEntity
@@ -159,12 +158,12 @@ abstract class FlexibleEntity extends FlexibleContainer implements \ArrayAccess
      * Allows dynamic methods getXxx, setXxx, hasXxx, addXxx or clearXxx.
      *
      * @access  public
-     * @param   mixed $method
+     * @param mixed $method
      * @param mixed $arguments
      * @return  mixed
-     *@throws  ModelException if method does not exist.
+     * @throws  ModelException if method does not exist.
      */
-    public function __call(mixed $method, mixed $arguments)
+    public function __call(mixed $method, mixed $arguments): mixed
     {
         [$operation, $attribute] = $this->extractMethodName($method);
 
@@ -192,7 +191,7 @@ abstract class FlexibleEntity extends FlexibleContainer implements \ArrayAccess
         $tmp = [];
 
         foreach ($values as $key => $value) {
-            $tmp[strtolower((string) $key)] = $value;
+            $tmp[strtolower((string)$key)] = $value;
         }
 
         return $this->hydrate($tmp);
@@ -217,7 +216,7 @@ abstract class FlexibleEntity extends FlexibleContainer implements \ArrayAccess
             }
 
             if (is_array($val)) {
-                if (is_array(current($val)) || (is_object(current($val)) && current($val) instanceof FlexibleEntityInterface)) {
+                if (is_array(current($val)) || (current($val) instanceof FlexibleEntityInterface)) {
                     return array_map($array_recurse, $val);
                 } else {
                     return $val;
@@ -276,16 +275,14 @@ abstract class FlexibleEntity extends FlexibleContainer implements \ArrayAccess
      * PHP magic to set attributes.
      *
      * @access  public
-     * @param String $var   Attribute name.
-     * @param   Mixed          $value Attribute value.
-     * @return  FlexibleEntity $this
+     * @param string $var Attribute name.
+     * @param mixed $value Attribute value.
+     * @return void
      */
-    public function __set(string $var, mixed $value)
+    public function __set(string $var, mixed $value): void
     {
-        $method_name = "set".Inflector::studlyCaps($var);
+        $method_name = "set" . Inflector::studlyCaps($var);
         $this->$method_name($value);
-
-        return $this;
     }
 
     /**
@@ -294,12 +291,12 @@ abstract class FlexibleEntity extends FlexibleContainer implements \ArrayAccess
      * PHP magic to get attributes.
      *
      * @access  public
-     * @param String $var Attribute name.
-     * @return  Mixed  Attribute value.
+     * @param string $var Attribute name.
+     * @return mixed Attribute value.
      */
-    public function __get(string $var)
+    public function __get(string $var): mixed
     {
-        $method_name = "get".Inflector::studlyCaps($var);
+        $method_name = "get" . Inflector::studlyCaps($var);
 
         return $this->$method_name();
     }
@@ -313,9 +310,9 @@ abstract class FlexibleEntity extends FlexibleContainer implements \ArrayAccess
      * @param string $var
      * @return  bool
      */
-    public function __isset(string $var)
+    public function __isset(string $var): bool
     {
-        $method_name = "has".Inflector::studlyCaps($var);
+        $method_name = "has" . Inflector::studlyCaps($var);
 
         return $this->$method_name();
     }
@@ -327,11 +324,11 @@ abstract class FlexibleEntity extends FlexibleContainer implements \ArrayAccess
      *
      * @access  public
      * @param string $var
-     * @return void $this
+     * @return void
      */
     public function __unset(string $var): void
     {
-        $method_name = "clear".Inflector::studlyCaps($var);
+        $method_name = "clear" . Inflector::studlyCaps($var);
         $this->$method_name();
     }
 
@@ -340,7 +337,7 @@ abstract class FlexibleEntity extends FlexibleContainer implements \ArrayAccess
      */
     public function offsetExists(mixed $offset): bool
     {
-        $method_name = "has".Inflector::studlyCaps($offset);
+        $method_name = "has" . Inflector::studlyCaps($offset);
 
         return $this->$method_name();
     }
@@ -376,7 +373,7 @@ abstract class FlexibleEntity extends FlexibleContainer implements \ArrayAccess
      * set in a static attribute to boost performances.
      *
      * @access  protected
-     * @param   FlexibleEntity   $entity
+     * @param FlexibleEntity $entity
      * @return  void
      */
     protected static function fillHasMethods(FlexibleEntity $entity): void
@@ -384,7 +381,7 @@ abstract class FlexibleEntity extends FlexibleContainer implements \ArrayAccess
         static::$has_methods = [];
 
         foreach (get_class_methods($entity) as $method) {
-            if (preg_match('/^has([A-Z].*)$/', (string) $method, $matches)) {
+            if (preg_match('/^has([A-Z].*)$/', (string)$method, $matches)) {
                 static::$has_methods[] = $matches[1];
             }
         }

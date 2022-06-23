@@ -308,12 +308,15 @@ class Projection implements \IteratorAggregate, \Stringable
      * Check if $name is not null
      *
      * @access private
-     * @param string $name
+     * @param string|null $name
      * @return Projection $this
-     *@throws \InvalidArgumentException if name is null
      */
-    private function checkField(string $name): Projection
+    private function checkField(?string $name): Projection
     {
+        if ($name === null) {
+            throw new \InvalidArgumentException("Field name cannot be null.");
+        }
+
         return $this;
     }
 

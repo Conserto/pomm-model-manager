@@ -20,7 +20,7 @@ class ComplexFixtureModel extends Model
     public function __construct()
     {
         $this->structure = new ComplexFixtureStructure();
-        $this->flexible_entity_class = \PommProject\ModelManager\Test\Fixture\ComplexFixture::class;
+        $this->flexible_entity_class = ComplexFixture::class;
     }
 
     public function initialize(Session $session): void

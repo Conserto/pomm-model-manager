@@ -328,9 +328,7 @@ abstract class Model implements ClientInterface
      * @access protected
      * @param string $sql
      * @return Model  $this
-     * @throws ConnectionException
-     * @throws ModelException
-     * @throws SqlException
+     * @throws ConnectionException|ModelException|SqlException|FoundationException
      */
     protected function executeAnonymousQuery(string $sql): Model
     {

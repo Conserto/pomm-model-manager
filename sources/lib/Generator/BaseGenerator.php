@@ -37,7 +37,7 @@ abstract class BaseGenerator
      * @param string $relation
      * @param string $filename
      * @param string $namespace
-     * @param          $flexible_container
+     * @param ?string $flexible_container
      */
     public function __construct(
         private Session $session,
@@ -45,7 +45,7 @@ abstract class BaseGenerator
         protected string $relation,
         protected string $filename,
         protected string $namespace,
-        protected $flexible_container = null
+        protected ?string $flexible_container = null
     )
     {
     }
@@ -106,7 +106,6 @@ abstract class BaseGenerator
      *
      * @access protected
      * @return Inspector
-     * @throws GeneratorException
      * @throws FoundationException
      */
     protected function getInspector(): Inspector

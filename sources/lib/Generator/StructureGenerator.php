@@ -223,7 +223,7 @@ TEXT;
      * @access protected
      * @param int $table_oid
      * @return array  $primary_key
-     * @throws FoundationException|GeneratorException
+     * @throws FoundationException
      */
     protected function getPrimaryKey(int $table_oid): array
     {

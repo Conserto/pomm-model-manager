@@ -48,7 +48,7 @@ class ModelLayerPooler extends ClientPooler
     {
         try {
             $reflection = new \ReflectionClass($identifier);
-            if (!$reflection->isSubclassOf(\PommProject\ModelManager\ModelLayer\ModelLayer::class)) {
+            if (!$reflection->isSubclassOf(ModelLayer::class)) {
                 throw new ModelLayerException(sprintf("Class '%s' is not a subclass of ModelLayer.", $identifier));
             }
         } catch (\ReflectionException $e) {
