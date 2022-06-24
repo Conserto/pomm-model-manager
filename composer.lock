@@ -1,84 +1,37 @@
 {
     "_readme": [
         "This file locks the dependencies of your project to a known state",
-        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "hash": "5fdb0da3f01bb06094652b118f3d4d77",
-    "content-hash": "9d427cdd6a8e6ed0317227dee3ad2480",
+    "content-hash": "1a05af028b6165ccca5e390696dc6190",
     "packages": [
         {
-            "name": "pomm-project/foundation",
-            "version": "dev-master",
+            "name": "psr/log",
+            "version": "1.1.4",
             "source": {
                 "type": "git",
-                "url": "https://github.com/pomm-project/Foundation.git",
-                "reference": "ab114b4f1dc8cb131fbf8ab93823b34620880376"
+                "url": "https://github.com/php-fig/log.git",
+                "reference": "d49695b909c3b7628b6289db5479a1c204601f11"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pomm-project/Foundation/zipball/ab114b4f1dc8cb131fbf8ab93823b34620880376",
-                "reference": "ab114b4f1dc8cb131fbf8ab93823b34620880376",
+                "url": "https://api.github.com/repos/php-fig/log/zipball/d49695b909c3b7628b6289db5479a1c204601f11",
+                "reference": "d49695b909c3b7628b6289db5479a1c204601f11",
                 "shasum": ""
             },
             "require": {
-                "ext-pgsql": "*",
-                "php": ">=5.4.4",
-                "psr/log": "~1.0"
-            },
-            "require-dev": {
-                "atoum/atoum": "dev-master"
+                "php": ">=5.3.0"
             },
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "2.0-dev"
+                    "dev-master": "1.1.x-dev"
                 }
             },
             "autoload": {
                 "psr-4": {
-                    "PommProject\\Foundation\\": "sources/lib"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Grégoire HUBERT",
-                    "email": "hubert.greg@gmail.com",
-                    "homepage": "http://www.coolkeums.org"
-                }
-            ],
-            "description": "Pomm connection manager for Postgresql",
-            "homepage": "http://www.pomm-project.org",
-            "keywords": [
-                "database",
-                "framework",
-                "pomm",
-                "postgresql"
-            ],
-            "time": "2015-10-06 14:32:14"
-        },
-        {
-            "name": "psr/log",
-            "version": "1.0.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/php-fig/log.git",
-                "reference": "fe0936ee26643249e916849d48e3a51d5f5e278b"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/php-fig/log/zipball/fe0936ee26643249e916849d48e3a51d5f5e278b",
-                "reference": "fe0936ee26643249e916849d48e3a51d5f5e278b",
-                "shasum": ""
-            },
-            "type": "library",
-            "autoload": {
-                "psr-0": {
-                    "Psr\\Log\\": ""
+                    "Psr\\Log\\": "Psr/Log/"
                 }
             },
             "notification-url": "https://packagist.org/downloads/",
@@ -88,16 +41,20 @@
             "authors": [
                 {
                     "name": "PHP-FIG",
-                    "homepage": "http://www.php-fig.org/"
+                    "homepage": "https://www.php-fig.org/"
                 }
             ],
             "description": "Common interface for logging libraries",
+            "homepage": "https://github.com/php-fig/log",
             "keywords": [
                 "log",
                 "psr",
                 "psr-3"
             ],
-            "time": "2012-12-21 11:40:51"
+            "support": {
+                "source": "https://github.com/php-fig/log/tree/1.1.4"
+            },
+            "time": "2021-05-03T11:20:27+00:00"
         }
     ],
     "packages-dev": [
@@ -107,36 +64,40 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/atoum/atoum.git",
-                "reference": "e6aab9a885c3133419a48df858bd4481a3505552"
+                "reference": "0fe4495643f6a529f9e304ea6933d29733253489"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/atoum/atoum/zipball/e6aab9a885c3133419a48df858bd4481a3505552",
-                "reference": "e6aab9a885c3133419a48df858bd4481a3505552",
+                "url": "https://api.github.com/repos/atoum/atoum/zipball/0fe4495643f6a529f9e304ea6933d29733253489",
+                "reference": "0fe4495643f6a529f9e304ea6933d29733253489",
                 "shasum": ""
             },
             "require": {
                 "ext-hash": "*",
                 "ext-json": "*",
-                "ext-session": "*",
                 "ext-tokenizer": "*",
                 "ext-xml": "*",
-                "php": ">=5.3.3"
+                "php": "^7.2 || ^8.0"
             },
             "replace": {
                 "mageekguy/atoum": "*"
             },
+            "require-dev": {
+                "friendsofphp/php-cs-fixer": "^3.2"
+            },
             "suggest": {
                 "atoum/stubs": "Provides IDE support (like autocompletion) for atoum",
-                "ext-mbstring": "Provides support for UTF-8 strings"
+                "ext-mbstring": "Provides support for UTF-8 strings",
+                "ext-xdebug": "Provides code coverage report (>= 2.3)"
             },
+            "default-branch": true,
             "bin": [
                 "bin/atoum"
             ],
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "2.x-dev"
+                    "dev-master": "4.x-dev"
                 }
             },
             "autoload": {
@@ -146,7 +107,7 @@
             },
             "notification-url": "https://packagist.org/downloads/",
             "license": [
-                "BSD"
+                "BSD-3-Clause"
             ],
             "authors": [
                 {
@@ -179,20 +140,139 @@
                 "test",
                 "unit testing"
             ],
-            "time": "2015-10-23 07:26:05"
+            "support": {
+                "issues": "https://github.com/atoum/atoum/issues",
+                "source": "https://github.com/atoum/atoum/tree/4.0.3"
+            },
+            "time": "2021-10-22T08:10:33+00:00"
+        },
+        {
+            "name": "conserto/pomm-foundation",
+            "version": "dev-main",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/Conserto/pomm-foundation.git",
+                "reference": "0666d7276b2347ff5b9b820ec53b5e259a7f8ef5"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/Conserto/pomm-foundation/zipball/0666d7276b2347ff5b9b820ec53b5e259a7f8ef5",
+                "reference": "0666d7276b2347ff5b9b820ec53b5e259a7f8ef5",
+                "shasum": ""
+            },
+            "require": {
+                "ext-pgsql": "*",
+                "php": ">=8.1",
+                "psr/log": "~1.0"
+            },
+            "require-dev": {
+                "atoum/atoum": "^4.0",
+                "phpstan/phpstan": "^1.7",
+                "rector/rector": "^0.13.4"
+            },
+            "default-branch": true,
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "PommProject\\Foundation\\": "sources/lib"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Grégoire HUBERT",
+                    "email": "hubert.greg@gmail.com"
+                }
+            ],
+            "description": "Pomm connection manager for Postgresql",
+            "homepage": "http://www.pomm-project.org",
+            "keywords": [
+                "database",
+                "framework",
+                "pomm",
+                "postgresql"
+            ],
+            "support": {
+                "source": "https://github.com/Conserto/pomm-foundation/tree/main"
+            },
+            "time": "2022-06-22T12:52:23+00:00"
+        },
+        {
+            "name": "phpstan/phpstan",
+            "version": "1.7.x-dev",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/phpstan/phpstan.git",
+                "reference": "b197c18e36aca264d48338bb42c229ca377d224e"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/b197c18e36aca264d48338bb42c229ca377d224e",
+                "reference": "b197c18e36aca264d48338bb42c229ca377d224e",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^7.2|^8.0"
+            },
+            "conflict": {
+                "phpstan/phpstan-shim": "*"
+            },
+            "default-branch": true,
+            "bin": [
+                "phpstan",
+                "phpstan.phar"
+            ],
+            "type": "library",
+            "autoload": {
+                "files": [
+                    "bootstrap.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "PHPStan - PHP Static Analysis Tool",
+            "support": {
+                "issues": "https://github.com/phpstan/phpstan/issues",
+                "source": "https://github.com/phpstan/phpstan/tree/1.7.x"
+            },
+            "funding": [
+                {
+                    "url": "https://github.com/ondrejmirtes",
+                    "type": "github"
+                },
+                {
+                    "url": "https://github.com/phpstan",
+                    "type": "github"
+                },
+                {
+                    "url": "https://www.patreon.com/phpstan",
+                    "type": "patreon"
+                },
+                {
+                    "url": "https://tidelift.com/funding/github/packagist/phpstan/phpstan",
+                    "type": "tidelift"
+                }
+            ],
+            "time": "2022-06-22T13:04:39+00:00"
         }
     ],
     "aliases": [],
-    "minimum-stability": "stable",
+    "minimum-stability": "dev",
     "stability-flags": {
-        "pomm-project/foundation": 20,
-        "atoum/atoum": 20
+        "phpstan/phpstan": 20,
+        "conserto/pomm-foundation": 20
     },
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
-        "php": ">=5.4.4",
+        "php": ">=8.1",
         "ext-pgsql": "*"
     },
-    "platform-dev": []
+    "platform-dev": [],
+    "plugin-api-version": "2.1.0"
 }

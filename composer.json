@@ -1,5 +1,5 @@
 {
-    "name": "pomm-project/model-manager",
+    "name": "conserto/pomm-model-manager",
     "type": "library",
     "description":  "PHP Object Model Manager for Postgresql",
     "keywords": ["orm", "postgresql", "database", "pomm"],
@@ -7,13 +7,14 @@
     "license":  "MIT",
     "authors":  [ { "name": "Grégoire HUBERT", "email": "hubert.greg@gmail.com", "homepage": "http://www.pomm-project.org" } ],
     "require": {
-        "php": ">=5.4.4",
+        "php": ">=8.1",
         "ext-pgsql": "*",
-        "psr/log": "~1.0",
-        "pomm-project/foundation": "~2.0"
+        "psr/log": "~1.0"
     },
     "require-dev": {
-        "atoum/atoum" : "dev-master"
+        "atoum/atoum": "^4.0",
+        "phpstan/phpstan": "1.7.x-dev",
+        "conserto/pomm-foundation": "dev-main"
     },
     "suggest": {
         "pomm-project/cli": "dev-master"
@@ -28,5 +29,5 @@
             "PommProject\\ModelManager\\Test\\": "sources/tests"
         }
     },
-    "minimum-stability": "stable"
+    "minimum-stability": "dev"
 }

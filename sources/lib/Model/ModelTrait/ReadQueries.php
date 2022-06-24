@@ -9,12 +9,16 @@
  */
 namespace PommProject\ModelManager\Model\ModelTrait;
 
+use PommProject\Foundation\Exception\FoundationException;
 use PommProject\Foundation\Pager;
+use PommProject\Foundation\PreparedQuery\PreparedQueryManager;
 use PommProject\Foundation\Where;
 use PommProject\ModelManager\Exception\ModelException;
 use PommProject\ModelManager\Model\CollectionIterator;
 use PommProject\ModelManager\Model\FlexibleEntity\FlexibleEntityInterface;
+use PommProject\ModelManager\Model\Model;
 use PommProject\ModelManager\Model\Projection;
+use PommProject\ModelManager\Model\RowStructure;
 
 /**
  * ReadQueries
@@ -35,14 +39,14 @@ trait ReadQueries
      *
      * @see Model
      */
-    abstract protected function escapeIdentifier($string);
+    abstract protected function escapeIdentifier(string $string): string;
 
     /**
      * getStructure
      *
      * @see Model
      */
-    abstract public function getStructure();
+    abstract public function getStructure(): RowStructure;
 
     /**
      * findAll
@@ -53,10 +57,10 @@ trait ReadQueries
      * "where" condition nor any untrusted params.
      *
      * @access public
-     * @param  string             $suffix
+     * @param string|null $suffix
      * @return CollectionIterator
      */
-    public function findAll($suffix = null)
+    public function findAll(?string $suffix = null): CollectionIterator
     {
         $sql = strtr(
             "select :fields from :table :suffix",
@@ -78,12 +82,12 @@ trait ReadQueries
      * "where" condition nor any untrusted params.
      *
      * @access public
-     * @param  mixed              $where
+     * @param  Where|string              $where
      * @param  array              $values
-     * @param  string             $suffix order by, limit, etc.
+     * @param string $suffix order by, limit, etc.
      * @return CollectionIterator
      */
-    public function findWhere($where, array $values = [], $suffix = '')
+    public function findWhere(string|Where $where, array $values = [], string $suffix = ''): CollectionIterator
     {
         if (!$where instanceof Where) {
             $where = new Where($where, $values);
@@ -99,10 +103,11 @@ trait ReadQueries
      * returned.
      *
      * @access public
-     * @param  array          $primary_key
-     * @return FlexibleEntityInterface
+     * @param array $primary_key
+     * @return array|null
+     * @throws ModelException
      */
-    public function findByPK(array $primary_key)
+    public function findByPK(array $primary_key): ?FlexibleEntityInterface
     {
         $where = $this
             ->checkPrimaryKey($primary_key)
@@ -120,11 +125,12 @@ trait ReadQueries
      * Return the number of records matching a condition.
      *
      * @access public
-     * @param  string|Where $where
-     * @param  array        $values
+     * @param string|Where $where
+     * @param array $values
      * @return int
+     * @throws FoundationException
      */
-    public function countWhere($where, array $values = [])
+    public function countWhere(string|Where $where, array $values = []): int
     {
         $sql = sprintf(
             "select count(*) as result from %s where :condition",
@@ -140,11 +146,12 @@ trait ReadQueries
      * Check if rows matching the given condition do exist or not.
      *
      * @access public
-     * @param  mixed $where
-     * @param  array $values
+     * @param string|Where $where
+     * @param array $values
      * @return bool
+     * @throws FoundationException
      */
-    public function existWhere($where, array $values = [])
+    public function existWhere(string|Where $where, array $values = []): bool
     {
         $sql = sprintf(
             "select exists (select true from %s where :condition) as result",
@@ -163,12 +170,13 @@ trait ReadQueries
      * Where instance.
      *
      * @access protected
-     * @param  string       $sql
-     * @param  mixed        $where
-     * @param  array        $values
+     * @param string $sql
+     * @param string|Where $where
+     * @param array $values
      * @return mixed
+     * @throws FoundationException
      */
-    protected function fetchSingleValue($sql, $where, array $values)
+    protected function fetchSingleValue(string $sql, string|Where $where, array $values): mixed
     {
         if (!$where instanceof Where) {
             $where = new Where($where, $values);
@@ -178,7 +186,7 @@ trait ReadQueries
 
         return $this
             ->getSession()
-            ->getClientUsingPooler('query_manager', '\PommProject\Foundation\PreparedQuery\PreparedQueryManager')
+            ->getClientUsingPooler('query_manager', PreparedQueryManager::class)
             ->query($sql, $where->getValues())
             ->current()['result']
             ;
@@ -190,13 +198,14 @@ trait ReadQueries
      * Paginate a query.
      *
      * @access public
-     * @param  Where    $where
-     * @param  int      $item_per_page
-     * @param  int      $page
-     * @param  string   $suffix
+     * @param Where $where
+     * @param int $item_per_page
+     * @param int $page
+     * @param string $suffix
      * @return Pager
+     * @throws FoundationException
      */
-    public function paginateFindWhere(Where $where, $item_per_page, $page = 1, $suffix = '')
+    public function paginateFindWhere(Where $where, int $item_per_page, int $page = 1, string $suffix = ''): Pager
     {
         $projection = $this->createProjection();
 
@@ -218,16 +227,15 @@ trait ReadQueries
      * query.
      *
      * @access  protected
-     * @param   string       $sql
-     * @param   array        $values parameters
-     * @param   int          $count
-     * @param   int          $item_per_page
-     * @param   int          $page
-     * @param   Projection   $projection
-     * @throws  \InvalidArgumentException if pager args are invalid.
+     * @param string $sql
+     * @param array $values parameters
+     * @param int $count
+     * @param int $item_per_page
+     * @param int $page
+     * @param Projection|null $projection
      * @return  Pager
      */
-    protected function paginateQuery($sql, array $values, $count, $item_per_page, $page = 1, Projection $projection = null)
+    protected function paginateQuery(string $sql, array $values, int $count, int $item_per_page, int $page = 1, Projection $projection = null): Pager
     {
         if ($page < 1) {
             throw new \InvalidArgumentException(
@@ -265,10 +273,10 @@ trait ReadQueries
      * @access protected
      * @param  Where        $where
      * @param  Projection   $projection
-     * @param  string       $suffix
+     * @param string $suffix
      * @return string
      */
-    protected function getFindWhereSql(Where $where, Projection $projection, $suffix = '')
+    protected function getFindWhereSql(Where $where, Projection $projection, string $suffix = ''): string
     {
         return strtr(
             'select :projection from :relation where :condition :suffix',
@@ -289,7 +297,7 @@ trait ReadQueries
      * @access protected
      * @return bool
      */
-    protected function hasPrimaryKey()
+    protected function hasPrimaryKey(): bool
     {
         $primaryKeys = $this->getStructure()->getPrimaryKey();
 
@@ -303,17 +311,17 @@ trait ReadQueries
      * ModelException if not.
      *
      * @access private
-     * @param  array $values
+     * @param array $values
+     * @return Model
      * @throws ModelException
-     * @return $this
      */
-    protected function checkPrimaryKey(array $values)
+    protected function checkPrimaryKey(array $values): Model
     {
         if (!$this->hasPrimaryKey()) {
             throw new ModelException(
                 sprintf(
                     "Attached structure '%s' has no primary key.",
-                    get_class($this->getStructure())
+                    $this->getStructure()::class
                 )
             );
         }
@@ -339,10 +347,11 @@ trait ReadQueries
      * Build a condition on given values.
      *
      * @access protected
-     * @param  array $values
+     * @param array $values
      * @return Where
+     * @throws ModelException
      */
-    protected function getWhereFrom(array $values)
+    protected function getWhereFrom(array $values): Where
     {
         $where = new Where();
 

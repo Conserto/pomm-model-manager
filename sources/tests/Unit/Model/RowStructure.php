@@ -18,7 +18,7 @@ class RowStructure extends Atoum
     {
         $structure = new GoodStructure();
         $this->object($structure->inherits(new ChuStructure()))
-            ->isInstanceOf('\PommProject\ModelManager\Model\RowStructure')
+            ->isInstanceOf(\PommProject\ModelManager\Model\RowStructure::class)
             ->array($structure->getDefinition())
             ->isIdenticalTo(['pika' => 'int4', 'chu' => 'bool'])
             ;
@@ -31,12 +31,6 @@ class RowStructure extends Atoum
             ->isIdenticalTo(['pika' => 'int4'])
             ->array($structure->addField('chu', 'bool')->getDefinition())
             ->isIdenticalTo(['pika' => 'int4', 'chu' => 'bool'])
-            ->exception(function () use ($structure) { $structure->addField(null, 'int4'); })
-            ->isinstanceof('\InvalidArgumentException')
-            ->message->contains("'name' cannot be null")
-            ->exception(function () use ($structure) { $structure->addField('name', null); })
-            ->isinstanceof('\InvalidArgumentException')
-            ->message->contains("'type' cannot be null")
             ;
     }
 
@@ -67,11 +61,8 @@ class RowStructure extends Atoum
         $structure = new GoodStructure();
         $this->string($structure->getTypeFor('pika'))
             ->isEqualTo('int4')
-            ->exception(function () use ($structure) { $structure->getTypeFor(null); })
-            ->isinstanceof('\InvalidArgumentException')
-            ->message->contains("'name' cannot be null")
             ->exception(function () use ($structure) { $structure->getTypeFor('chu'); })
-            ->isinstanceof('\PommProject\ModelManager\Exception\ModelException')
+            ->isinstanceof(\PommProject\ModelManager\Exception\ModelException::class)
             ->message->contains("Field 'chu' is not defined")
             ->string($structure->addField('chu', 'bool')->getTypeFor('chu'))
             ->isEqualTo('bool')
@@ -118,7 +109,7 @@ class RowStructure extends Atoum
         $this->boolean(isset($structure['chu']))
             ->isTrue()
             ->exception(function () use ($structure) { unset($structure['chu']); })
-            ->isInstanceOf('\PommProject\ModelManager\Exception\ModelException')
+            ->isInstanceOf(\PommProject\ModelManager\Exception\ModelException::class)
             ->message->contains('Cannot unset a structure field')
             ;
     }

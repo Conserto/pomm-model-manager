@@ -7,9 +7,15 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
+
 namespace PommProject\ModelManager\Model;
 
 use PommProject\Foundation\Client\ClientInterface;
+use PommProject\Foundation\Converter\ConverterPooler;
+use PommProject\Foundation\Exception\ConnectionException;
+use PommProject\Foundation\Exception\FoundationException;
+use PommProject\Foundation\Exception\SqlException;
+use PommProject\Foundation\PreparedQuery\PreparedQuery;
 use PommProject\Foundation\Session\Session;
 use PommProject\ModelManager\Converter\PgEntity;
 use PommProject\ModelManager\Exception\ModelException;
@@ -29,14 +35,14 @@ use PommProject\ModelManager\Model\FlexibleEntity\FlexibleEntityInterface;
  */
 abstract class Model implements ClientInterface
 {
-    protected $session;
-    protected $flexible_entity_class;
+    protected ?Session $session = null;
+    protected ?string $flexible_entity_class = null;
 
 
     /**
-     * @var RowStructure
+     * @var RowStructure|null
      */
-    protected $structure;
+    protected ?RowStructure $structure = null;
 
     /**
      * getSession
@@ -48,10 +54,10 @@ abstract class Model implements ClientInterface
      * @return Session
      * @throws ModelException
      */
-    public function getSession()
+    public function getSession(): Session
     {
         if ($this->session === null) {
-            throw new ModelException(sprintf("Model class '%s' is not registered against the session.", get_class($this)));
+            throw new ModelException(sprintf("Model class '%s' is not registered against the session.", $this::class));
         }
 
         return $this->session;
@@ -62,7 +68,7 @@ abstract class Model implements ClientInterface
      *
      * @see ClientInterface
      */
-    public function getClientType()
+    public function getClientType(): string
     {
         return 'model';
     }
@@ -72,33 +78,33 @@ abstract class Model implements ClientInterface
      *
      * @see ClientInterface
      */
-    public function getClientIdentifier()
+    public function getClientIdentifier(): string
     {
-        return trim(get_class($this), "\\");
+        return trim($this::class, "\\");
     }
 
     /**
      * initialize
      *
+     * @param Session $session
+     * @throws ModelException
+     * @throws FoundationException|\ReflectionException
      * @see ClientInterface
      */
-    public function initialize(Session $session)
+    public function initialize(Session $session): void
     {
         $this->session = $session;
 
-        if ($this->structure === null) {
-            throw new ModelException(sprintf("Structure not set while initializing Model class '%s'.", get_class($this)));
-        }
+        // Check structure is set
+        $this->getStructure();
 
-        if ($this->flexible_entity_class == null) {
-            throw new ModelException(sprintf("Flexible entity not set while initializing Model class '%s'.", get_class($this)));
-        } elseif (!(new \ReflectionClass($this->flexible_entity_class))
-            ->implementsInterface('\PommProject\ModelManager\Model\FlexibleEntity\FlexibleEntityInterface')
-        ) {
-            throw new ModelException(sprintf("Flexible entity must implement FlexibleEntityInterface."));
-        }
+        // Check flexible entity class is set
+        $this->getFlexibleEntityClass();
 
-        $session->getPoolerForType('converter')
+        /** @var ConverterPooler $converterPooler */
+        $converterPooler = $session->getPoolerForType('converter');
+
+        $converterPooler
             ->getConverterHolder()
             ->registerConverter(
                 $this->flexible_entity_class,
@@ -110,7 +116,7 @@ abstract class Model implements ClientInterface
                     $this->getStructure()->getRelation(),
                     $this->flexible_entity_class,
                 ]
-        );
+            );
     }
 
     /**
@@ -118,7 +124,7 @@ abstract class Model implements ClientInterface
      *
      * @see ClientInterface
      */
-    public function shutdown()
+    public function shutdown(): void
     {
     }
 
@@ -130,14 +136,15 @@ abstract class Model implements ClientInterface
      * @access public
      * @param array $values
      * @return FlexibleEntityInterface
+     * @throws ModelException
+     * @throws \ReflectionException
      */
-    public function createEntity(array $values = [])
+    public function createEntity(array $values = []): FlexibleEntityInterface
     {
         $class_name = $this->getFlexibleEntityClass();
 
         return (new $class_name)
-            ->hydrate($values)
-            ;
+            ->hydrate($values);
     }
 
     /**
@@ -148,30 +155,31 @@ abstract class Model implements ClientInterface
      * createProjection() method.
      *
      * @access protected
-     * @param  string             $sql
-     * @param  array              $values
-     * @param  Projection         $projection
+     * @param string $sql
+     * @param array $values
+     * @param Projection|null $projection
      * @return CollectionIterator
+     * @throws FoundationException
+     * @throws ModelException
      */
-    protected function query($sql, array $values = [], Projection $projection = null)
+    protected function query(string $sql, array $values = [], Projection $projection = null): CollectionIterator
     {
         if ($projection === null) {
             $projection = $this->createProjection();
         }
 
-        $result = $this
+        /** @var PreparedQuery $prepareQuery */
+        $prepareQuery = $this
             ->getSession()
-            ->getClientUsingPooler('prepared_query', $sql)
-            ->execute($values)
-            ;
+            ->getClientUsingPooler('prepared_query', $sql);
 
-        $collection = new CollectionIterator(
+        $result = $prepareQuery->execute($values);
+
+        return new CollectionIterator(
             $result,
             $this->getSession(),
             $projection
         );
-
-        return $collection;
     }
 
     /**
@@ -187,7 +195,7 @@ abstract class Model implements ClientInterface
      * @access public
      * @return Projection
      */
-    final public function createDefaultProjection()
+    final public function createDefaultProjection(): Projection
     {
         return new Projection($this->flexible_entity_class, $this->structure->getDefinition());
     }
@@ -201,7 +209,7 @@ abstract class Model implements ClientInterface
      * @access  public
      * @return  Projection
      */
-    public function createProjection()
+    public function createProjection(): Projection
     {
         return $this->createDefaultProjection();
     }
@@ -213,16 +221,19 @@ abstract class Model implements ClientInterface
      * If not an exception is thrown.
      *
      * @access protected
-     * @param  FlexibleEntityInterface $entity
-     * @throws \InvalidArgumentException
+     * @param FlexibleEntityInterface $entity
      * @return Model          $this
+     * @throws ModelException
+     * @throws \ReflectionException
      */
-    protected function checkFlexibleEntity(FlexibleEntityInterface $entity)
+    protected function checkFlexibleEntity(FlexibleEntityInterface $entity): Model
     {
-        if (!($entity instanceof $this->flexible_entity_class)) {
+        $flexibleEntityClass = $this->getFlexibleEntityClass();
+
+        if (!($entity instanceof $flexibleEntityClass)) {
             throw new \InvalidArgumentException(sprintf(
                 "Entity class '%s' is not a '%s'.",
-                get_class($entity),
+                $entity::class,
                 $this->flexible_entity_class
             ));
         }
@@ -237,9 +248,14 @@ abstract class Model implements ClientInterface
      *
      * @access public
      * @return RowStructure
+     * @throws ModelException
      */
-    public function getStructure()
+    public function getStructure(): RowStructure
     {
+        if ($this->structure === null) {
+            throw new ModelException(sprintf("Structure not set while initializing Model class '%s'.", $this::class));
+        }
+
         return $this->structure;
     }
 
@@ -251,9 +267,18 @@ abstract class Model implements ClientInterface
      *
      * @access public
      * @return string
+     * @throws \ReflectionException|ModelException
      */
-    public function getFlexibleEntityClass()
+    public function getFlexibleEntityClass(): string
     {
+        if ($this->flexible_entity_class == null) {
+            throw new ModelException(sprintf("Flexible entity not set while initializing Model class '%s'.", $this::class));
+        } elseif (!(new \ReflectionClass($this->flexible_entity_class))
+            ->implementsInterface(FlexibleEntityInterface::class)
+        ) {
+            throw new ModelException("Flexible entity must implement FlexibleEntityInterface.");
+        }
+
         return $this->flexible_entity_class;
     }
 
@@ -263,10 +288,12 @@ abstract class Model implements ClientInterface
      * Handy method to escape strings.
      *
      * @access protected
-     * @param  string $string
+     * @param string $string
      * @return string
+     * @throws ConnectionException
+     * @throws ModelException
      */
-    protected function escapeLiteral($string)
+    protected function escapeLiteral(string $string): string
     {
         return $this
             ->getSession()
@@ -280,10 +307,12 @@ abstract class Model implements ClientInterface
      * Handy method to escape strings.
      *
      * @access protected
-     * @param  string $string
+     * @param string $string
      * @return string
+     * @throws ModelException
+     * @throws ConnectionException
      */
-    protected function escapeIdentifier($string)
+    protected function escapeIdentifier(string $string): string
     {
         return $this
             ->getSession()
@@ -297,10 +326,11 @@ abstract class Model implements ClientInterface
      * Handy method for DDL statements.
      *
      * @access protected
-     * @param  string $sql
+     * @param string $sql
      * @return Model  $this
+     * @throws ConnectionException|ModelException|SqlException|FoundationException
      */
-    protected function executeAnonymousQuery($sql)
+    protected function executeAnonymousQuery(string $sql): Model
     {
         $this
             ->getSession()

@@ -20,22 +20,22 @@ class WithoutPKFixtureModel extends Model
     public function __construct()
     {
         $this->structure = new WithoutPKFixtureStructure();
-        $this->flexible_entity_class = '\PommProject\ModelManager\Test\Fixture\WithoutPKFixture';
+        $this->flexible_entity_class = \PommProject\ModelManager\Test\Fixture\WithoutPKFixture::class;
     }
 
-    public function initialize(Session $session)
+    public function initialize(Session $session): void
     {
         parent::initialize($session);
         $this->dropTable();
         $this->createTable();
     }
 
-    public function shutdown()
+    public function shutdown(): void
     {
         $this->dropTable();
     }
 
-    protected function createTable()
+    protected function createTable(): static
     {
         $this->executeAnonymousQuery(
             sprintf(
@@ -46,7 +46,7 @@ class WithoutPKFixtureModel extends Model
         return $this;
     }
 
-    protected function dropTable()
+    protected function dropTable(): static
     {
         $this
             ->executeAnonymousQuery(

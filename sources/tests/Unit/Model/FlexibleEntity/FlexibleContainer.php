@@ -18,7 +18,7 @@ class FlexibleContainer extends Atoum
         $container = $this->newTestedInstance();
         $this
             ->object($container->hydrate(["a" => "one"]))
-            ->isInstanceOf('\PommProject\ModelManager\Model\FlexibleEntity\FlexibleContainer')
+            ->isInstanceOf(\PommProject\ModelManager\Model\FlexibleEntity\FlexibleContainer::class)
             ->array($container->fields())
             ->isIdenticalTo(["a" => "one"])
             ->object($container->hydrate(["b" => "two"]))
@@ -44,8 +44,8 @@ class FlexibleContainer extends Atoum
             ->isIdenticalTo(["a" => "one", "c" => null])
             ->array($container->fields([]))
             ->isIdenticalTo([])
-            ->exception(function () use ($container) { return $container->fields(["d"]); })
-            ->isInstanceOf("\InvalidArgumentException")
+            ->exception(fn() => $container->fields(["d"]))
+            ->isInstanceOf(\InvalidArgumentException::class)
             ->message->contains("{a, b, c}")
             ;
     }
@@ -68,7 +68,7 @@ class FlexibleContainer extends Atoum
             ;
         $this
             ->object($container->getIterator())
-            ->isInstanceOf('\ArrayIterator')
+            ->isInstanceOf(\ArrayIterator::class)
             ->array($container->getIterator()->getArrayCopy())
             ->isIdenticalTo(["a" => "one", "b" => "two", "c" => "three"])
             ;
@@ -85,7 +85,7 @@ class FlexibleContainer extends Atoum
             ->string($container->getC())
             ->isEqualTo("three")
             ->exception(function () use ($container) { $container->getPika(); })
-            ->isInstanceOf('\PommProject\ModelManager\Exception\ModelException')
+            ->isInstanceOf(\PommProject\ModelManager\Exception\ModelException::class)
             ->message->contains("{a, b, c")
             ;
     }
@@ -97,7 +97,7 @@ class FlexibleContainer extends Atoum
             ;
         $this
             ->object($container->setPika('chu'))
-            ->isInstanceOf('\PommProject\ModelManager\Model\FlexibleEntity\FlexibleContainer')
+            ->isInstanceOf(\PommProject\ModelManager\Model\FlexibleEntity\FlexibleContainer::class)
             ->array($container->fields())
             ->isIdenticalTo(["a" => "one", "b" => "two", "c" => "three", "pika" => "chu"])
             ->object($container->setA("four"))
@@ -131,11 +131,11 @@ class FlexibleContainer extends Atoum
             ;
         $this
             ->object($container->clearA())
-            ->isInstanceOf('\PommProject\ModelManager\Model\FlexibleEntity\FlexibleContainer')
+            ->isInstanceOf(\PommProject\ModelManager\Model\FlexibleEntity\FlexibleContainer::class)
             ->array($container->fields())
             ->isIdenticalTo(["b" => "two", "c" => "three"])
             ->exception(function () use ($container) { $container->clearA(); })
-            ->isInstanceOf('\PommProject\ModelManager\Exception\ModelException')
+            ->isInstanceOf(\PommProject\ModelManager\Exception\ModelException::class)
             ->message->contains("{b, c")
             ;
     }
@@ -147,10 +147,10 @@ class FlexibleContainer extends Atoum
             ;
         $this
             ->exception(function () use ($container) { $container->pika(); })
-            ->isInstanceOf('\PommProject\ModelManager\Exception\ModelException')
+            ->isInstanceOf(\PommProject\ModelManager\Exception\ModelException::class)
             ->message->contains("No such argument")
             ->exception(function () use ($container) { $container->cliPika(); })
-            ->isInstanceOf('\PommProject\ModelManager\Exception\ModelException')
+            ->isInstanceOf(\PommProject\ModelManager\Exception\ModelException::class)
             ->message->contains("No such method")
             ;
     }

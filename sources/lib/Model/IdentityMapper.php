@@ -27,7 +27,7 @@ class IdentityMapper
     /**
      * @var FlexibleEntityInterface[]
      */
-    protected $instances = [];
+    protected array $instances = [];
 
     /**
      * getSignature
@@ -37,17 +37,17 @@ class IdentityMapper
      *
      * @static
      * @access public
-     * @param  FlexibleEntityInterface  $entity
-     * @param  array                    $primary_key
-     * @return string
+     * @param FlexibleEntityInterface $entity
+     * @param array $primary_key
+     * @return string|null
      */
-    public static function getSignature(FlexibleEntityInterface $entity, array $primary_key)
+    public static function getSignature(FlexibleEntityInterface $entity, array $primary_key): ?string
     {
         if (count($primary_key) === 0) {
             return null;
         }
 
-        return sha1(sprintf("%s|%s", serialize($entity->fields($primary_key)), get_class($entity)));
+        return sha1(sprintf("%s|%s", serialize($entity->fields($primary_key)), $entity::class));
     }
 
     /**
@@ -60,7 +60,7 @@ class IdentityMapper
      * @param  array                    $primary_key
      * @return FlexibleEntityInterface
      */
-    public function fetch(FlexibleEntityInterface $entity, array $primary_key)
+    public function fetch(FlexibleEntityInterface $entity, array $primary_key): FlexibleEntityInterface
     {
         $signature = self::getSignature($entity, $primary_key);
 
@@ -86,7 +86,7 @@ class IdentityMapper
      * @access public
      * @return IdentityMapper $this
      */
-    public function clear()
+    public function clear(): IdentityMapper
     {
         $this->instances = [];
 

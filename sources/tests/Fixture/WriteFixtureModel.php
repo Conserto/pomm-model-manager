@@ -22,7 +22,7 @@ class WriteFixtureModel extends SimpleFixtureModel
         $this->getStructure()->setRelation('write_fixture');
     }
 
-    public function initialize(Session $session)
+    public function initialize(Session $session): void
     {
         parent::initialize($session);
         $this
@@ -31,12 +31,12 @@ class WriteFixtureModel extends SimpleFixtureModel
             ;
     }
 
-    public function shutdown()
+    public function shutdown(): void
     {
         $this->dropTable();
     }
 
-    protected function createTable()
+    protected function createTable(): static
     {
         $this->executeAnonymousQuery(
             sprintf(
@@ -48,12 +48,12 @@ class WriteFixtureModel extends SimpleFixtureModel
         return $this;
     }
 
-    public function truncate()
+    public function truncate(): void
     {
         $this->executeAnonymousQuery(sprintf("truncate %s", $this->getStructure()->getRelation()));
     }
 
-    protected function dropTable()
+    protected function dropTable(): static
     {
         $this
             ->executeAnonymousQuery(

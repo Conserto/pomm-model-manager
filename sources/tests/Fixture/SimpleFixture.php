@@ -14,7 +14,7 @@ use PommProject\Foundation\Inflector;
 
 class SimpleFixture extends FlexibleEntity
 {
-    public function extract()
+    public function extract(): array
     {
         $fields = parent::extract();
         $new_fiels = [];

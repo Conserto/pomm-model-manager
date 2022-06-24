@@ -9,6 +9,7 @@
  */
 namespace PommProject\ModelManager\Generator;
 
+use PommProject\Foundation\Exception\FoundationException;
 use PommProject\Foundation\Inflector;
 use PommProject\Foundation\ParameterHolder;
 use PommProject\Foundation\Where;
@@ -33,9 +34,10 @@ class ModelGenerator extends BaseGenerator
      *
      * Generate structure file.
      *
+     * @throws GeneratorException|FoundationException
      * @see BaseGenerator
      */
-    public function generate(ParameterHolder $input, array $output = [])
+    public function generate(ParameterHolder $input, array $output = []): array
     {
         $schema_oid = $this
             ->getSession()
@@ -80,9 +82,9 @@ class ModelGenerator extends BaseGenerator
      *
      * @see BaseGenerator
      */
-    protected function getCodeTemplate()
+    protected function getCodeTemplate(): string
     {
-        return <<<'_'
+        return <<<'__WRAP'
 <?php
 
 namespace {:namespace:};
@@ -121,6 +123,6 @@ class {:entity:}Model extends Model
     }
 }
 
-_;
+__WRAP;
     }
 }

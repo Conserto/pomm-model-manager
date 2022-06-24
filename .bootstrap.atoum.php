@@ -8,6 +8,6 @@ if (file_exists($file)) {
     require $file;
 } else {
     // we are using travis configuration by default
-    require __DIR__.'/sources/tests/config.travis.php';
+    require __DIR__.'/sources/tests/config.github.php';
 }
 

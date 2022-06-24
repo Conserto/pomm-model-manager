@@ -7,11 +7,14 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
+
 namespace PommProject\ModelManager\Converter;
 
 use PommProject\Foundation\Converter\ConverterInterface;
 use PommProject\Foundation\Exception\ConverterException;
+use PommProject\Foundation\Exception\FoundationException;
 use PommProject\Foundation\Session\Session;
+use PommProject\ModelManager\Exception\ModelException;
 use PommProject\ModelManager\Model\FlexibleEntity\FlexibleEntityInterface;
 use PommProject\ModelManager\Model\HydrationPlan;
 use PommProject\ModelManager\Model\IdentityMapper;
@@ -32,30 +35,23 @@ use PommProject\ModelManager\Model\RowStructure;
  */
 class PgEntity implements ConverterInterface
 {
-    protected $row_structure;
-    protected $identity_mapper;
-    protected $flexible_entity_class;
+    protected IdentityMapper $identity_mapper;
 
 
     /**
      * Constructor.
      *
      * @access public
-     * @param                $flexible_entity_class
-     * @param RowStructure   $structure
-     * @param IdentityMapper $identity_mapper
+     * @param string $flexible_entity_class
+     * @param RowStructure $row_structure
+     * @param IdentityMapper|null $identity_mapper
      */
     public function __construct(
-        $flexible_entity_class,
-        RowStructure $structure,
+        protected string $flexible_entity_class,
+        protected RowStructure $row_structure,
         IdentityMapper $identity_mapper = null
     ) {
-        $this->flexible_entity_class    = $flexible_entity_class;
-        $this->row_structure            = $structure;
-        $this->identity_mapper          = $identity_mapper === null
-            ? new IdentityMapper()
-            : $identity_mapper
-            ;
+        $this->identity_mapper = $identity_mapper ?? new IdentityMapper();
     }
 
     /**
@@ -63,9 +59,15 @@ class PgEntity implements ConverterInterface
      *
      * Embeddable entities are converted here.
      *
+     * @param string|null $data
+     * @param string $type
+     * @param Session $session
+     * @return FlexibleEntityInterface|null
+     * @throws FoundationException
+     * @throws ModelException
      * @see ConverterInterface
      */
-    public function fromPg($data, $type, Session $session)
+    public function fromPg(?string $data, string $type, Session $session): ?FlexibleEntityInterface
     {
         if (empty($data)) {
             return null;
@@ -73,14 +75,10 @@ class PgEntity implements ConverterInterface
 
         $data = trim($data, '()');
 
-        if ($type instanceof Projection) {
-            $projection = $type;
-        } else {
-            $projection = new Projection(
-                $this->flexible_entity_class,
-                $this->row_structure->getDefinition()
-            );
-        }
+        $projection = new Projection(
+            $this->flexible_entity_class,
+            $this->row_structure->getDefinition()
+        );
 
         $entity = (new HydrationPlan(
             $projection,
@@ -96,22 +94,21 @@ class PgEntity implements ConverterInterface
      * Split data into an array prefixed with field names.
      *
      * @access private
-     * @param  string       $data
-     * @param  Projection   $projection
+     * @param string $data
+     * @param Projection $projection
      * @return array
      */
-    private function transformData($data, Projection $projection)
+    private function transformData(string $data, Projection $projection): array
     {
-        $values         = str_getcsv($data);
-        $definition     = $projection->getFieldNames();
-        $out_values     = [];
-        $values_count   = count($values);
+        $values = str_getcsv($data);
+        $definition = $projection->getFieldNames();
+        $out_values = [];
+        $values_count = count($values);
 
         for ($index = 0; $index < $values_count; $index++) {
             $out_values[$definition[$index]] = preg_match(':^{.*}$:', $values[$index])
                 ? stripcslashes($values[$index])
-                : $values[$index]
-                ;
+                : $values[$index];
         }
 
         return $out_values;
@@ -123,23 +120,29 @@ class PgEntity implements ConverterInterface
      * Check entity against the cache.
      *
      * @access public
-     * @param  FlexibleEntityInterface   $entity
+     * @param FlexibleEntityInterface $entity
      * @return FlexibleEntityInterface
      */
-    public function cacheEntity(FlexibleEntityInterface $entity)
+    public function cacheEntity(FlexibleEntityInterface $entity): FlexibleEntityInterface
     {
         return $this
             ->identity_mapper
-            ->fetch($entity, $this->row_structure->getPrimaryKey())
-            ;
+            ->fetch($entity, $this->row_structure->getPrimaryKey());
     }
 
     /**
      * toPg
      *
+     * @param mixed $data
+     * @param string $type
+     * @param Session $session
+     * @return string
+     * @throws ConverterException
+     * @throws FoundationException
+     * @throws ModelException
      * @see ConverterInterface
      */
-    public function toPg($data, $type, Session $session)
+    public function toPg(mixed $data, string $type, Session $session): string
     {
         if ($data === null) {
             return sprintf("NULL::%s", $type);
@@ -161,10 +164,12 @@ class PgEntity implements ConverterInterface
      * Create a new hydration plan.
      *
      * @access protected
-     * @param  Session          $session
+     * @param Session $session
      * @return HydrationPlan
+     * @throws FoundationException
+     * @throws ModelException
      */
-    protected function createHydrationPlan(Session $session)
+    protected function createHydrationPlan(Session $session): HydrationPlan
     {
         return new HydrationPlan(
             new Projection($this->flexible_entity_class, $this->row_structure->getDefinition()),
@@ -180,8 +185,9 @@ class PgEntity implements ConverterInterface
      * @access protected
      * @param mixed $data
      * @return array
+     * @throws ConverterException
      */
-    protected function getFields($data)
+    protected function getFields(mixed $data): array
     {
         if (is_array($data)) {
             $fields = $data;
@@ -199,18 +205,18 @@ class PgEntity implements ConverterInterface
      * Check if the given data is the right entity.
      *
      * @access protected
-     * @param  mixed        $data
-     * @throws  ConverterException
+     * @param mixed $data
      * @return PgEntity     $this
+     * @throws  ConverterException
      */
-    protected function checkData($data)
+    protected function checkData(mixed $data): PgEntity
     {
         if (!$data instanceof $this->flexible_entity_class) {
             throw new ConverterException(
                 sprintf(
                     "This converter only knows how to convert entities of type '%s' ('%s' given).",
                     $this->flexible_entity_class,
-                    get_class($data)
+                    $data::class
                 )
             );
         }
@@ -221,9 +227,16 @@ class PgEntity implements ConverterInterface
     /**
      * toPgStandardFormat
      *
+     * @param mixed $data
+     * @param string $type
+     * @param Session $session
+     * @return string|null
+     * @throws ConverterException
+     * @throws FoundationException
+     * @throws ModelException
      * @see ConverterInterface
      */
-    public function toPgStandardFormat($data, $type, Session $session)
+    public function toPgStandardFormat(mixed $data, string $type, Session $session): ?string
     {
         if ($data === null) {
             return null;

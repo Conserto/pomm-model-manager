@@ -9,7 +9,10 @@
  */
 namespace PommProject\ModelManager\Test\Fixture;
 
+use PommProject\Foundation\Exception\FoundationException;
 use PommProject\Foundation\Where;
+use PommProject\ModelManager\Exception\ModelException;
+use PommProject\ModelManager\Model\CollectionIterator;
 use PommProject\ModelManager\Model\Model;
 
 class SimpleFixtureModel extends Model
@@ -17,10 +20,14 @@ class SimpleFixtureModel extends Model
     public function __construct()
     {
         $this->structure = new SimpleFixtureStructure();
-        $this->flexible_entity_class = '\PommProject\ModelManager\Test\Fixture\SimpleFixture';
+        $this->flexible_entity_class = SimpleFixture::class;
     }
 
-    public function doSimpleQuery(Where $where = null)
+    /**
+     * @throws FoundationException
+     * @throws ModelException
+     */
+    public function doSimpleQuery(Where $where = null): CollectionIterator
     {
         if ($where === null) {
             $where = new Where();

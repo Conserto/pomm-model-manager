@@ -20,7 +20,7 @@ class FlexibleEntity extends Atoum
         $entity = new PikaEntity();
         $this
             ->object($entity)
-            ->isInstanceOf('\PommProject\ModelManager\Model\FlexibleEntity')
+            ->isInstanceOf(\PommProject\ModelManager\Model\FlexibleEntity::class)
             ->array($entity->fields())
             ->isEmpty()
             ;
@@ -49,7 +49,7 @@ class FlexibleEntity extends Atoum
             ->array($entity->get('an_array'))
             ->isIdenticalTo([1, 2])
             ->exception(function () use ($entity) { $entity->get('no_such_key'); })
-            ->isInstanceOf('\PommProject\ModelManager\Exception\ModelException')
+            ->isInstanceOf(\PommProject\ModelManager\Exception\ModelException::class)
             ->message->contains('No such key')
             ;
         PommFlexibleEntity::$strict = false;
@@ -99,7 +99,7 @@ class FlexibleEntity extends Atoum
             ->array($entity->add('an_array', 2)->get('an_array'))
             ->isIdenticalTo([1, 2])
             ->Exception(function () use ($entity) { $entity->add('pika', 3); })
-            ->isInstanceOf('\PommProject\ModelManager\Exception\ModelException')
+            ->isInstanceOf(\PommProject\ModelManager\Exception\ModelException::class)
             ->message->contains('is not an array')
             ->array($entity->add('whatever', 1)->get('whatever'))
             ->isIdenticalTo([1])
@@ -124,10 +124,10 @@ class FlexibleEntity extends Atoum
         $entity = new PikaEntity();
         $this
             ->exception(function () use ($entity) { $entity->eDqSdgeDsTfd(); })
-            ->isInstanceOf('\PommProject\ModelManager\Exception\ModelException')
+            ->isInstanceOf(\PommProject\ModelManager\Exception\ModelException::class)
             ->message->contains('No such method')
             ->exception(function () use ($entity) { $entity->sefPika(); })
-            ->isInstanceOf('\PommProject\ModelManager\Exception\ModelException')
+            ->isInstanceOf(\PommProject\ModelManager\Exception\ModelException::class)
             ->message->contains('No such method')
             ;
     }
@@ -141,7 +141,7 @@ class FlexibleEntity extends Atoum
             ->array($entity->getChu())
             ->isIdenticalTo([1, 2])
             ->exception(function () use ($entity) { $entity->getNoSuchKey(); })
-            ->isInstanceOf('\PommProject\ModelManager\Exception\ModelException')
+            ->isInstanceOf(\PommProject\ModelManager\Exception\ModelException::class)
             ->message->contains('No such key')
             ;
     }
@@ -252,7 +252,7 @@ class FlexibleEntity extends Atoum
             ->string($entity->chu)
             ->isEqualTo('WoW')
             ->exception(function () use ($entity) { $entity->whatever; })
-            ->isInstanceOf('\PommProject\ModelManager\Exception\ModelException')
+            ->isInstanceOf(\PommProject\ModelManager\Exception\ModelException::class)
             ->message->contains('No such key')
             ;
     }
@@ -281,7 +281,7 @@ class FlexibleEntity extends Atoum
             ->string($entity['chu'])
             ->isEqualTo('wow')
             ->exception(function () use ($entity) { $entity['no_such_key']; })
-            ->isInstanceOf('\PommProject\ModelManager\Exception\ModelException')
+            ->isInstanceOf(\PommProject\ModelManager\Exception\ModelException::class)
             ->message->contains('No such key')
             ->boolean(isset($entity['chu']))
             ->isTrue()
@@ -302,13 +302,13 @@ class FlexibleEntity extends Atoum
         $entity = new PikaEntity();
         $this
             ->object($entity->getIterator())
-            ->isInstanceOf('\ArrayIterator')
+            ->isInstanceOf(\ArrayIterator::class)
             ->array($entity->getIterator()->getArrayCopy())
             ->isEmpty()
             ->array($entity->setPika('chu')->getIterator()->getArrayCopy())
             ->isIdenticalTo(['pika' => 'chu', 'pika_hash' => 'cbcefaf71b4677cb8bcc006e0aeaa34a'])
             ->object($entity->set('an_entity', new ChuEntity())->getIterator()->getArrayCopy()['an_entity'])
-            ->isInstanceOf('\PommProject\ModelManager\Model\FlexibleEntity')
+            ->isInstanceOf(\PommProject\ModelManager\Model\FlexibleEntity::class)
             ->array($entity->set('an_array', [1, 2])->getIterator()->getArrayCopy()['an_array'])
             ->isIdenticalTo([1, 2])
             ;
@@ -344,12 +344,12 @@ class PikaEntity extends PommFlexibleEntity
 {
     public function getPika()
     {
-        return strtoupper($this->get('pika'));
+        return strtoupper((string) $this->get('pika'));
     }
 
     public function setChu($val)
     {
-        $this->set('chu', strtolower($val));
+        $this->set('chu', strtolower((string) $val));
 
         return $this;
     }

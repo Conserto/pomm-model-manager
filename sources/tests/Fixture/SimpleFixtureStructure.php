@@ -15,7 +15,7 @@ class SimpleFixtureStructure extends RowStructure
 {
     public function __construct()
     {
-        $this->relation = <<<_
+        $this->relation = <<<__WRAP
 (values
     (1::int4,'one'::varchar, bool 't'),
     (2,'two', 'f'),
@@ -23,7 +23,7 @@ class SimpleFixtureStructure extends RowStructure
     (4,'four', 't')
 )
     simple_fixture (id, a_varchar, a_boolean)
-_;
+__WRAP;
         $this
             ->addField('id', 'int4')
             ->addField('a_varchar', 'varchar')

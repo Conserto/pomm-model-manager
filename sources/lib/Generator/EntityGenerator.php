@@ -11,6 +11,7 @@ namespace PommProject\ModelManager\Generator;
 
 use PommProject\Foundation\Inflector;
 use PommProject\Foundation\ParameterHolder;
+use PommProject\ModelManager\Exception\GeneratorException;
 
 /**
  * EntityGenerator
@@ -30,9 +31,10 @@ class EntityGenerator extends BaseGenerator
      *
      * Generate Entity file.
      *
+     * @throws GeneratorException
      * @see BaseGenerator
      */
-    public function generate(ParameterHolder $input, array $output = [])
+    public function generate(ParameterHolder $input, array $output = []): array
     {
         $this
             ->checkOverwrite($input)
@@ -46,7 +48,7 @@ class EntityGenerator extends BaseGenerator
                         'relation'  => $this->relation,
                         'schema'    => $this->schema,
                         'flexible_container' => $this->flexible_container,
-                        'flexible_container_class' => array_reverse(explode('\\', $this->flexible_container))[0]
+                        'flexible_container_class' => array_reverse(explode('\\', (string) $this->flexible_container))[0]
                     ]
                 )
             );
@@ -59,9 +61,9 @@ class EntityGenerator extends BaseGenerator
      *
      * @see BaseGenerator
      */
-    protected function getCodeTemplate()
+    protected function getCodeTemplate(): string
     {
-        return <<<'_'
+        return <<<'__WRAP'
 <?php
 
 namespace {:namespace:};
@@ -80,6 +82,6 @@ class {:entity:} extends {:flexible_container_class:}
 {
 }
 
-_;
+__WRAP;
     }
 }

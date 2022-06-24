@@ -1,3 +1,9 @@
+== VERSION 3.0.0
+
+ * Support PHP >= 8.1 and remove old versions support
+ * Add PHPStan on CI
+ * Move CI from Travis to Github
+
 == VERSION 2.0.2
 
  * fix the insertOne method using extract

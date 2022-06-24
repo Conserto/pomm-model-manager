@@ -23,9 +23,9 @@ use PommProject\ModelManager\Exception\ModelException;
  */
 class RowStructure implements \ArrayAccess
 {
-    protected $primary_key       = [];
-    protected $field_definitions = [];
-    protected $relation;
+    protected array $primary_key       = [];
+    protected array $field_definitions = [];
+    protected string $relation;
 
     /**
      * setDefinition
@@ -36,7 +36,7 @@ class RowStructure implements \ArrayAccess
      * @param  array        $definition
      * @return RowStructure $this
      */
-    public function setDefinition(array $definition)
+    public function setDefinition(array $definition): RowStructure
     {
         $this->field_definitions = $definition;
 
@@ -49,10 +49,10 @@ class RowStructure implements \ArrayAccess
      * Add inherited structure.
      *
      * @access public
-     * @param  RowStructure $structure
+     * @param RowStructure $structure
      * @return RowStructure $this
      */
-    public function inherits(RowStructure $structure)
+    public function inherits(RowStructure $structure): RowStructure
     {
         foreach ($structure->getDefinition() as $field => $type) {
             $this->addField($field, $type);
@@ -67,10 +67,10 @@ class RowStructure implements \ArrayAccess
      * Set or change the relation.
      *
      * @access public
-     * @param  string       $relation
+     * @param string $relation
      * @return RowStructure $this
      */
-    public function setRelation($relation)
+    public function setRelation(string $relation): RowStructure
     {
         $this->relation = $relation;
 
@@ -86,7 +86,7 @@ class RowStructure implements \ArrayAccess
      * @param  array        $primary_key
      * @return RowStructure $this
      */
-    public function setPrimaryKey(array $primary_key)
+    public function setPrimaryKey(array $primary_key): RowStructure
     {
         $this->primary_key = $primary_key;
 
@@ -99,12 +99,11 @@ class RowStructure implements \ArrayAccess
      * Add a new field structure.
      *
      * @access public
-     * @param  string       $name
-     * @param  string       $type
-     * @throws ModelException if type or name is null
+     * @param string $name
+     * @param string $type
      * @return RowStructure $this
      */
-    public function addField($name, $type)
+    public function addField(string $name, string $type): RowStructure
     {
         $this->checkNotNull($type, 'type')
             ->checkNotNull($name, 'name')
@@ -121,7 +120,7 @@ class RowStructure implements \ArrayAccess
      * @access public
      * @return array
      */
-    public function getFieldNames()
+    public function getFieldNames(): array
     {
         return array_keys($this->field_definitions);
     }
@@ -132,11 +131,10 @@ class RowStructure implements \ArrayAccess
      * Check if a field exist in the structure
      *
      * @access public
-     * @param  string $name
-     * @throws ModelException if $name is null
+     * @param string $name
      * @return bool
      */
-    public function hasField($name)
+    public function hasField(string $name): bool
     {
         return array_key_exists($name, $this->checkNotNull($name, 'name')->field_definitions);
     }
@@ -147,11 +145,11 @@ class RowStructure implements \ArrayAccess
      * Return the type associated with the field
      *
      * @access public
-     * @param  string $name
-     * @throws ModelException if $name is null or name does not exist.
+     * @param string $name
      * @return string $type
+     *@throws ModelException if $name is null or name does not exist.
      */
-    public function getTypeFor($name)
+    public function getTypeFor(string $name): string
     {
         return $this->checkExist($name)->field_definitions[$name];
     }
@@ -163,7 +161,7 @@ class RowStructure implements \ArrayAccess
      *
      * @return array
      */
-    public function getDefinition()
+    public function getDefinition(): array
     {
         return $this->field_definitions;
     }
@@ -176,7 +174,7 @@ class RowStructure implements \ArrayAccess
      * @access public
      * @return string
      */
-    public function getRelation()
+    public function getRelation(): string
     {
         return $this->relation;
     }
@@ -189,7 +187,7 @@ class RowStructure implements \ArrayAccess
      * @access public
      * @return array
      */
-    public function getPrimaryKey()
+    public function getPrimaryKey(): array
     {
         return $this->primary_key;
     }
@@ -200,15 +198,14 @@ class RowStructure implements \ArrayAccess
      * Test if given value is null.
      *
      * @access              private
-     * @param  string       $val
-     * @param  string       $name
-     * @throws \InvalidArgumentException if $val is null
+     * @param string|null $val
+     * @param string $name
      * @return RowStructure $this
      */
-    private function checkNotNull($val, $name)
+    private function checkNotNull(?string $val, string $name): RowStructure
     {
         if ($val === null) {
-            throw new \InvalidArgumentException(sprintf("'%s' cannot be null in '%s'.", $name, get_class($this)));
+            throw new \InvalidArgumentException(sprintf("'%s' cannot be null in '%s'.", $name, $this::class));
         }
 
         return $this;
@@ -220,18 +217,18 @@ class RowStructure implements \ArrayAccess
      * Test if a field exist.
      *
      * @access private
-     * @param  string       $name
-     * @throws ModelException if $name does not exist.
+     * @param string $name
      * @return RowStructure $this
+     *@throws ModelException if $name does not exist.
      */
-    private function checkExist($name)
+    private function checkExist(string $name): RowStructure
     {
         if (!$this->hasField($name)) {
             throw new ModelException(
                 sprintf(
                     "Field '%s' is not defined in structure '%s'. Defined fields are {%s}",
                     $name,
-                    get_class($this),
+                    $this::class,
                     join(', ', array_keys($this->field_definitions))
                 )
             );
@@ -243,32 +240,34 @@ class RowStructure implements \ArrayAccess
     /**
      * @see \ArrayAccess
      */
-    public function offsetSet($name, $type)
+    public function offsetSet(mixed $offset, mixed $value): void
     {
-        $this->addField($name, $type);
+        $this->addField($offset, $value);
+    }
+
+    /**
+     * @throws ModelException
+     * @see \ArrayAccess
+     */
+    public function offsetGet(mixed $offset): string
+    {
+        return $this->getTypeFor($offset);
     }
 
     /**
      * @see \ArrayAccess
      */
-    public function offsetGet($name)
+    public function offsetExists(mixed $offset): bool
     {
-        return $this->getTypeFor($name);
+        return $this->hasField($offset);
     }
 
     /**
+     * @throws ModelException
      * @see \ArrayAccess
      */
-    public function offsetExists($name)
+    public function offsetUnset(mixed $offset): void
     {
-        return $this->hasField($name);
-    }
-
-    /**
-     * @see \ArrayAccess
-     */
-    public function offsetUnset($name)
-    {
-        throw new ModelException(sprintf("Cannot unset a structure field ('%s').", $name));
+        throw new ModelException(sprintf("Cannot unset a structure field ('%s').", $offset));
     }
 }

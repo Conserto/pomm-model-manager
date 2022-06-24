@@ -33,7 +33,7 @@ abstract class BaseTest extends ModelSessionAtoum
             ->registerConverter(
                 'ComplexNumber',
                 $this->newTestedInstance(
-                    'PommProject\ModelManager\Test\Fixture\ComplexNumber',
+                    \PommProject\ModelManager\Test\Fixture\ComplexNumber::class,
                     new ComplexNumberStructure()
                 ),
                 ['pomm_test.complex_number']
@@ -41,7 +41,7 @@ abstract class BaseTest extends ModelSessionAtoum
             ->registerConverter(
                 'ComplexFixture',
                 $this->newTestedInstance(
-                    '\PommProject\ModelManager\Test\Fixture\ComplexFixture',
+                    \PommProject\ModelManager\Test\Fixture\ComplexFixture::class,
                     new ComplexFixtureStructure()
                 ),
                 ['complex_fixture']

@@ -1,3 +1,5 @@
 vendor/*
 sources/tests/config.php
 .ctags
+
+.idea

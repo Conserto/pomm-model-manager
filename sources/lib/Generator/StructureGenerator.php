@@ -10,6 +10,7 @@
 namespace PommProject\ModelManager\Generator;
 
 use PommProject\Foundation\ConvertedResultIterator;
+use PommProject\Foundation\Exception\FoundationException;
 use PommProject\Foundation\Inflector;
 use PommProject\Foundation\ParameterHolder;
 use PommProject\ModelManager\Exception\GeneratorException;
@@ -31,9 +32,10 @@ class StructureGenerator extends BaseGenerator
      *
      * Generate structure file.
      *
+     * @throws GeneratorException|FoundationException
      * @see BaseGenerator
      */
-    public function generate(ParameterHolder $input, array $output = [])
+    public function generate(ParameterHolder $input, array $output = []): array
     {
         $table_oid          = $this->checkRelationInformation();
         $field_information = $this->getFieldInformation($table_oid);
@@ -60,7 +62,7 @@ TEXT;
                         'primary_key'    => join(
                             ', ',
                             array_map(
-                                function ($val) { return sprintf("'%s'", $val); },
+                                fn($val) => sprintf("'%s'", $val),
                                 $primary_key
                             )
                         ),
@@ -83,12 +85,12 @@ TEXT;
      * @param  ConvertedResultIterator $field_information
      * @return string
      */
-    protected function formatAddFields(ConvertedResultIterator $field_information)
+    protected function formatAddFields(ConvertedResultIterator $field_information): string
     {
         $strings = [];
 
         foreach ($field_information as $info) {
-            if (preg_match('/^(?:(.*)\.)?_(.*)$/', $info['type'], $matches)) {
+            if (preg_match('/^(?:(.*)\.)?_(.*)$/', (string) $info['type'], $matches)) {
                 if ($matches[1] !== '') {
                     $info['type'] = sprintf("%s.%s[]", $matches[1], $matches[2]);
                 } else {
@@ -118,7 +120,7 @@ TEXT;
      * @param  ConvertedResultIterator $field_information
      * @return string
      */
-    protected function formatFieldsComment(ConvertedResultIterator $field_information)
+    protected function formatFieldsComment(ConvertedResultIterator $field_information): string
     {
         $comments = [];
         foreach ($field_information as $info) {
@@ -139,15 +141,15 @@ TEXT;
      * Format a text into a PHPDoc comment block.
      *
      * @access protected
-     * @param  string $text
+     * @param string $text
      * @return string
      */
-    protected function createPhpDocBlockFromText($text)
+    protected function createPhpDocBlockFromText(string $text): string
     {
         return join(
             "\n",
             array_map(
-                function ($line) { return ' * '.$line; },
+                fn($line) => ' * '.$line,
                 explode("\n", wordwrap($text))
             )
         );
@@ -160,10 +162,10 @@ TEXT;
      * returned, otherwise a GeneratorException is thrown.
      *
      * @access private
-     * @throws GeneratorException
      * @return int $oid
+     * @throws GeneratorException|FoundationException
      */
-    private function checkRelationInformation()
+    private function checkRelationInformation(): int
     {
         if ($this->getInspector()->getSchemaOid($this->schema) === null) {
             throw new GeneratorException(sprintf("Schema '%s' not found.", $this->schema));
@@ -190,11 +192,11 @@ TEXT;
      * Fetch a table field information.
      *
      * @access protected
-     * @param  int   $table_oid
-     * @throws GeneratorException
+     * @param int $table_oid
      * @return ConvertedResultIterator $fields_info
+     * @throws GeneratorException|FoundationException
      */
-    protected function getFieldInformation($table_oid)
+    protected function getFieldInformation(int $table_oid): ConvertedResultIterator
     {
         $fields_info = $this
             ->getInspector()
@@ -219,17 +221,16 @@ TEXT;
      * Return the primary key of a relation if any.
      *
      * @access protected
-     * @param  string $table_oid
+     * @param int $table_oid
      * @return array  $primary_key
+     * @throws FoundationException
      */
-    protected function getPrimaryKey($table_oid)
+    protected function getPrimaryKey(int $table_oid): array
     {
-        $primary_key = $this
+        return $this
             ->getInspector()
             ->getPrimaryKey($table_oid)
             ;
-
-        return $primary_key;
     }
 
     /**
@@ -238,17 +239,16 @@ TEXT;
      * Grab table comment from database.
      *
      * @access protected
-     * @param  int         $table_oid
+     * @param int $table_oid
      * @return string|null
+     * @throws FoundationException|GeneratorException
      */
-    protected function getTableComment($table_oid)
+    protected function getTableComment(int $table_oid): ?string
     {
-        $comment = $this
+        return $this
             ->getInspector()
             ->getTableComment($table_oid)
             ;
-
-        return $comment;
     }
 
     /**
@@ -256,9 +256,9 @@ TEXT;
      *
      * @see BaseGenerator
      */
-    protected function getCodeTemplate()
+    protected function getCodeTemplate(): string
     {
-        return <<<'_'
+        return <<<'__WRAP'
 <?php
 /**
  * This file has been automatically generated by Pomm's generator.
@@ -299,6 +299,6 @@ class {:class_name:} extends RowStructure
     }
 }
 
-_;
+__WRAP;
     }
 }

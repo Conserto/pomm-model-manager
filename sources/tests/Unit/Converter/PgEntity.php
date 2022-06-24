@@ -33,7 +33,7 @@ class PgEntity extends BaseTest
     protected function getComplexNumberConverter()
     {
         return $this->newTestedInstance(
-            'PommProject\ModelManager\Test\Fixture\ComplexNumber',
+            \PommProject\ModelManager\Test\Fixture\ComplexNumber::class,
             new ComplexNumberStructure()
         );
     }
@@ -41,7 +41,7 @@ class PgEntity extends BaseTest
     protected function getComplexFixtureConverter()
     {
         return $this->newTestedInstance(
-            'PommProject\ModelManager\Test\Fixture\ComplexFixture',
+            \PommProject\ModelManager\Test\Fixture\ComplexFixture::class,
             new ComplexFixtureStructure()
         );
     }
@@ -58,7 +58,7 @@ class PgEntity extends BaseTest
                 )
             )
                 ->object($entity)
-                    ->isInstanceOf('PommProject\ModelManager\Test\Fixture\ComplexNumber')
+                    ->isInstanceOf(\PommProject\ModelManager\Test\Fixture\ComplexNumber::class)
                 ->float($entity['real'])
                     ->isEqualTo(1.233)
                 ->float($entity['imaginary'])
@@ -88,11 +88,11 @@ class PgEntity extends BaseTest
 
         $this
             ->object($entity)
-            ->isInstanceOf('PommProject\ModelManager\Test\Fixture\ComplexFixture')
+            ->isInstanceOf(\PommProject\ModelManager\Test\Fixture\ComplexFixture::class)
             ->integer($entity['id'])
             ->isEqualTo(1)
             ->object($entity['complex_number'])
-            ->isInstanceOf('PommProject\ModelManager\Test\Fixture\ComplexNumber')
+            ->isInstanceOf(\PommProject\ModelManager\Test\Fixture\ComplexNumber::class)
             ->array($entity['complex_numbers'])
             ->hasSize(3)
             ->variable($entity['version_id'])
@@ -101,7 +101,7 @@ class PgEntity extends BaseTest
             ->isNull()
             ;
         $converter = $this->newTestedInstance(
-            'PommProject\ModelManager\Test\Fixture\ComplexFixture',
+            \PommProject\ModelManager\Test\Fixture\ComplexFixture::class,
             (new RowStructure())
             ->setRelation('some_type')
             ->addField('a_field', 'int4')
@@ -115,7 +115,7 @@ ROW;
         $entity = $converter->fromPg($line, 'some_type', $session);
         $this
             ->object($entity)
-            ->isInstanceOf('PommProject\ModelManager\Test\Fixture\ComplexFixture')
+            ->isInstanceOf(\PommProject\ModelManager\Test\Fixture\ComplexFixture::class)
             ->integer($entity['a_field'])
             ->isEqualTo(34)
             ->variable($entity['a_null_field'])
@@ -131,7 +131,7 @@ ROW;
     {
         $session = $this->setUpSession($this->buildSession());
         $converter = $this->newTestedInstance(
-            'PommProject\ModelManager\Test\Fixture\ComplexFixture',
+            \PommProject\ModelManager\Test\Fixture\ComplexFixture::class,
             (new RowStructure())
             ->setRelation('some_type')
             ->addField('a_field', 'int4')
@@ -201,7 +201,7 @@ ROW;
         $session            = $this->setUpSession($this->buildSession());
         $row                = '(1,,"(1.233,2.344)","{""(3.455,4.566)"",""(5.677,6.788)"",NULL}","2014-10-24 12:44:40.021324+00:00","{""1982-04-21 23:12:43.000000+00:00""}")';
         $model              = $session
-            ->getModel('\PommProject\ModelManager\Test\Fixture\ComplexFixtureModel')
+            ->getModel(\PommProject\ModelManager\Test\Fixture\ComplexFixtureModel::class)
             ;
 
         $this
@@ -210,7 +210,7 @@ ROW;
             ->string($converter->toPgStandardFormat($complex_fixture, 'complex_fixture', $session))
             ->isEqualTo($row)
             ->object($this->sendAsPostgresParameter($complex_fixture, 'complex_fixture', $session))
-            ->isInstanceOf('\PommProject\ModelManager\Test\Fixture\ComplexFixture')
+            ->isInstanceOf(\PommProject\ModelManager\Test\Fixture\ComplexFixture::class)
             ;
     }
 

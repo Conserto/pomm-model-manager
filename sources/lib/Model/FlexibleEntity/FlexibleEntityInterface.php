@@ -30,9 +30,9 @@ interface FlexibleEntityInterface
      * When status is MODIFIED, the entity has been modified since creation or
      * last persist operation.
      */
-    const STATUS_NONE     = 0;
-    const STATUS_EXIST    = 1;
-    const STATUS_MODIFIED = 2;
+    public const STATUS_NONE     = 0;
+    public const STATUS_EXIST    = 1;
+    public const STATUS_MODIFIED = 2;
 
     /**
      * hydrate
@@ -44,7 +44,7 @@ interface FlexibleEntityInterface
      * @param  array    $fields
      * @return FlexibleEntityInterface
      */
-    public function hydrate(array $fields);
+    public function hydrate(array $fields): FlexibleEntityInterface;
 
     /**
      * fields
@@ -55,10 +55,10 @@ interface FlexibleEntityInterface
      * one's choice.
      *
      * @access public
-     * @param  array    $fields
+     * @param array|null $fields
      * @return array
      */
-    public function fields(array $fields = null);
+    public function fields(array $fields = null): array;
 
     /**
      * extract
@@ -69,7 +69,7 @@ interface FlexibleEntityInterface
      * @access public
      * @return array
      */
-    public function extract();
+    public function extract(): array;
 
     /**
      * status
@@ -88,8 +88,8 @@ interface FlexibleEntityInterface
      * status.
      *
      * @access public
-     * @param  int (null)
+     * @param int|null $status
      * @return int|FlexibleEntityInterface
      */
-    public function status($status = null);
+    public function status(int $status = null): int|FlexibleEntityInterface;
 }

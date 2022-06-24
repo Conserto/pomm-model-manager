@@ -9,6 +9,7 @@
  */
 namespace PommProject\ModelManager\Generator;
 
+use PommProject\Foundation\Exception\FoundationException;
 use PommProject\Foundation\Inspector\Inspector;
 use PommProject\Foundation\ParameterHolder;
 use PommProject\ModelManager\Exception\GeneratorException;
@@ -28,36 +29,25 @@ use PommProject\ModelManager\Session;
 abstract class BaseGenerator
 {
     /**
-     * @var Session
-     */
-    private $session;
-
-    protected $schema;
-    protected $relation;
-    protected $filename;
-    protected $namespace;
-    protected $flexible_container;
-
-
-    /**
      * Constructor
      *
      * @access public
      * @param  Session $session
-     * @param  string  $schema
-     * @param  string  $relation
-     * @param  string  $filename
-     * @param  string  $namespace
-     * @param          $flexible_container
+     * @param string $schema
+     * @param string $relation
+     * @param string $filename
+     * @param string $namespace
+     * @param ?string $flexible_container
      */
-    public function __construct(Session $session, $schema, $relation, $filename, $namespace, $flexible_container = null)
+    public function __construct(
+        private Session $session,
+        protected string $schema,
+        protected string $relation,
+        protected string $filename,
+        protected string $namespace,
+        protected ?string $flexible_container = null
+    )
     {
-        $this->session   = $session;
-        $this->schema    = $schema;
-        $this->relation  = $relation;
-        $this->filename  = $filename;
-        $this->namespace = $namespace;
-        $this->flexible_container = $flexible_container;
     }
 
     /**
@@ -69,7 +59,7 @@ abstract class BaseGenerator
      * @param  array            $output
      * @return BaseGenerator    $this
      */
-    protected function outputFileCreation(array &$output)
+    protected function outputFileCreation(array &$output): BaseGenerator
     {
         if (file_exists($this->filename)) {
             $output[] = ['status' => 'ok', 'operation' => 'overwriting', 'file' => $this->filename];
@@ -89,7 +79,7 @@ abstract class BaseGenerator
      * @param  Session       $session
      * @return BaseGenerator $this
      */
-    protected function setSession(Session $session)
+    protected function setSession(Session $session): BaseGenerator
     {
         $this->session = $session;
 
@@ -102,15 +92,10 @@ abstract class BaseGenerator
      * Return the session is set. Throw an exception otherwise.
      *
      * @access protected
-     * @throws GeneratorException
      * @return Session
      */
-    protected function getSession()
+    protected function getSession(): Session
     {
-        if ($this->session === null) {
-            throw new GeneratorException(sprintf("Session is not set."));
-        }
-
         return $this->session;
     }
 
@@ -121,10 +106,13 @@ abstract class BaseGenerator
      *
      * @access protected
      * @return Inspector
+     * @throws FoundationException
      */
-    protected function getInspector()
+    protected function getInspector(): Inspector
     {
-        return $this->getSession()->getClientUsingPooler('inspector', null);
+        /** @var Inspector $inspector */
+        $inspector = $this->getSession()->getClientUsingPooler('inspector', null);
+        return $inspector;
     }
 
     /**
@@ -140,7 +128,7 @@ abstract class BaseGenerator
      * @throws GeneratorException
      * @return array              $output
      */
-    abstract public function generate(ParameterHolder $input, array $output = []);
+    abstract public function generate(ParameterHolder $input, array $output = []): array;
 
     /**
      * getCodeTemplate
@@ -150,7 +138,7 @@ abstract class BaseGenerator
      * @access protected
      * @return string
      */
-    abstract protected function getCodeTemplate();
+    abstract protected function getCodeTemplate(): string;
 
     /**
      * mergeTemplate
@@ -161,7 +149,7 @@ abstract class BaseGenerator
      * @param  array  $variables
      * @return string
      */
-    protected function mergeTemplate(array $variables)
+    protected function mergeTemplate(array $variables): string
     {
         $prepared_variables = [];
         foreach ($variables as $name => $value) {
@@ -180,12 +168,12 @@ abstract class BaseGenerator
      * Write the generated content to a file.
      *
      * @access protected
-     * @param  string        $filename
-     * @param  string        $content
-     * @throws GeneratorException
+     * @param string $filename
+     * @param string $content
      * @return BaseGenerator $this
+     *@throws GeneratorException
      */
-    protected function saveFile($filename, $content)
+    protected function saveFile(string $filename, string $content): BaseGenerator
     {
         if (!file_exists(dirname($filename))
             && mkdir(dirname($filename), 0777, true) === false
@@ -220,7 +208,7 @@ abstract class BaseGenerator
      * @throws GeneratorException
      * @return BaseGenerator      $this
      */
-    protected function checkOverwrite(ParameterHolder $input)
+    protected function checkOverwrite(ParameterHolder $input): BaseGenerator
     {
         if (file_exists($this->filename) && $input->getParameter('force') !== true) {
             throw new GeneratorException(sprintf("Cannot overwrite file '%s' without --force option.", $this->filename));

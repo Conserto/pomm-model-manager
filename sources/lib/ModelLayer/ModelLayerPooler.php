@@ -31,7 +31,7 @@ class ModelLayerPooler extends ClientPooler
      *
      * @see ClientPoolerInterface
      */
-    public function getPoolerType()
+    public function getPoolerType(): string
     {
         return 'model_layer';
     }
@@ -39,15 +39,16 @@ class ModelLayerPooler extends ClientPooler
     /**
      * createClient
      *
-     * @see    ClientPooler
+     * @param object|string $identifier
      * @return ModelLayer
      * @throws ModelLayerException
+     * @see    ClientPooler
      */
-    protected function createClient($identifier)
+    protected function createClient(object|string $identifier): ModelLayer
     {
         try {
             $reflection = new \ReflectionClass($identifier);
-            if (!$reflection->isSubclassOf('\PommProject\ModelManager\ModelLayer\ModelLayer')) {
+            if (!$reflection->isSubclassOf(ModelLayer::class)) {
                 throw new ModelLayerException(sprintf("Class '%s' is not a subclass of ModelLayer.", $identifier));
             }
         } catch (\ReflectionException $e) {
