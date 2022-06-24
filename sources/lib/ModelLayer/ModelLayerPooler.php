@@ -39,12 +39,12 @@ class ModelLayerPooler extends ClientPooler
     /**
      * createClient
      *
-     * @param object|string $identifier
+     * @param string $identifier
      * @return ModelLayer
      * @throws ModelLayerException
      * @see    ClientPooler
      */
-    protected function createClient(object|string $identifier): ModelLayer
+    protected function createClient(string $identifier): ModelLayer
     {
         try {
             $reflection = new \ReflectionClass($identifier);
