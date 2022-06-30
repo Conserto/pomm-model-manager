@@ -13,8 +13,8 @@
     },
     "require-dev": {
         "atoum/atoum": "^4.0",
-        "phpstan/phpstan": "1.7.x-dev",
-        "conserto/pomm-foundation": "^3.0"
+        "conserto/pomm-foundation": "^3.0",
+        "phpstan/phpstan": "^1.8"
     },
     "suggest": {
         "pomm-project/cli": "dev-main"

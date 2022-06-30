@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "814c168eb84cc6b2866a1f39e0d369af",
+    "content-hash": "8fbcd7ee024a23993ff8f393e1846d36",
     "packages": [
         {
             "name": "psr/log",
@@ -199,16 +199,16 @@
         },
         {
             "name": "phpstan/phpstan",
-            "version": "1.7.x-dev",
+            "version": "1.8.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpstan/phpstan.git",
-                "reference": "60baecd9e48d79936222f190d8ddc94f2970d927"
+                "reference": "b7648d4ee9321665acaf112e49da9fd93df8fbd5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/60baecd9e48d79936222f190d8ddc94f2970d927",
-                "reference": "60baecd9e48d79936222f190d8ddc94f2970d927",
+                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/b7648d4ee9321665acaf112e49da9fd93df8fbd5",
+                "reference": "b7648d4ee9321665acaf112e49da9fd93df8fbd5",
                 "shasum": ""
             },
             "require": {
@@ -217,7 +217,6 @@
             "conflict": {
                 "phpstan/phpstan-shim": "*"
             },
-            "default-branch": true,
             "bin": [
                 "phpstan",
                 "phpstan.phar"
@@ -235,7 +234,7 @@
             "description": "PHPStan - PHP Static Analysis Tool",
             "support": {
                 "issues": "https://github.com/phpstan/phpstan/issues",
-                "source": "https://github.com/phpstan/phpstan/tree/1.7.x"
+                "source": "https://github.com/phpstan/phpstan/tree/1.8.0"
             },
             "funding": [
                 {
@@ -255,14 +254,12 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2022-06-28T20:43:15+00:00"
+            "time": "2022-06-29T08:53:31+00:00"
         }
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {
-        "phpstan/phpstan": 20
-    },
+    "stability-flags": [],
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
