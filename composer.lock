@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "bc1edd7d891e1a2583b6814b8b460836",
+    "content-hash": "8fbcd7ee024a23993ff8f393e1846d36",
     "packages": [
         {
             "name": "psr/log",
@@ -60,7 +60,7 @@
     "packages-dev": [
         {
             "name": "atoum/atoum",
-            "version": "dev-master",
+            "version": "4.0.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/atoum/atoum.git",
@@ -90,7 +90,6 @@
                 "ext-mbstring": "Provides support for UTF-8 strings",
                 "ext-xdebug": "Provides code coverage report (>= 2.3)"
             },
-            "default-branch": true,
             "bin": [
                 "bin/atoum"
             ],
@@ -148,16 +147,16 @@
         },
         {
             "name": "conserto/pomm-foundation",
-            "version": "3.0.x-dev",
+            "version": "3.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Conserto/pomm-foundation.git",
-                "reference": "0666d7276b2347ff5b9b820ec53b5e259a7f8ef5"
+                "reference": "a0eb5f0133993dee570c2813c0b36f296a826a76"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Conserto/pomm-foundation/zipball/0666d7276b2347ff5b9b820ec53b5e259a7f8ef5",
-                "reference": "0666d7276b2347ff5b9b820ec53b5e259a7f8ef5",
+                "url": "https://api.github.com/repos/Conserto/pomm-foundation/zipball/a0eb5f0133993dee570c2813c0b36f296a826a76",
+                "reference": "a0eb5f0133993dee570c2813c0b36f296a826a76",
                 "shasum": ""
             },
             "require": {
@@ -167,8 +166,7 @@
             },
             "require-dev": {
                 "atoum/atoum": "^4.0",
-                "phpstan/phpstan": "^1.7",
-                "rector/rector": "^0.13.4"
+                "phpstan/phpstan": "^1.7"
             },
             "type": "library",
             "autoload": {
@@ -195,22 +193,22 @@
                 "postgresql"
             ],
             "support": {
-                "source": "https://github.com/Conserto/pomm-foundation/tree/main"
+                "source": "https://github.com/Conserto/pomm-foundation/tree/3.0.0"
             },
-            "time": "2022-06-22T12:52:23+00:00"
+            "time": "2022-06-30T15:12:10+00:00"
         },
         {
             "name": "phpstan/phpstan",
-            "version": "1.7.x-dev",
+            "version": "1.8.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpstan/phpstan.git",
-                "reference": "cea61a280786ea9cb65500b1495ecab994474ca0"
+                "reference": "b7648d4ee9321665acaf112e49da9fd93df8fbd5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/cea61a280786ea9cb65500b1495ecab994474ca0",
-                "reference": "cea61a280786ea9cb65500b1495ecab994474ca0",
+                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/b7648d4ee9321665acaf112e49da9fd93df8fbd5",
+                "reference": "b7648d4ee9321665acaf112e49da9fd93df8fbd5",
                 "shasum": ""
             },
             "require": {
@@ -219,7 +217,6 @@
             "conflict": {
                 "phpstan/phpstan-shim": "*"
             },
-            "default-branch": true,
             "bin": [
                 "phpstan",
                 "phpstan.phar"
@@ -237,7 +234,7 @@
             "description": "PHPStan - PHP Static Analysis Tool",
             "support": {
                 "issues": "https://github.com/phpstan/phpstan/issues",
-                "source": "https://github.com/phpstan/phpstan/tree/1.7.x"
+                "source": "https://github.com/phpstan/phpstan/tree/1.8.0"
             },
             "funding": [
                 {
@@ -257,15 +254,12 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2022-06-24T11:43:58+00:00"
+            "time": "2022-06-29T08:53:31+00:00"
         }
     ],
     "aliases": [],
-    "minimum-stability": "dev",
-    "stability-flags": {
-        "phpstan/phpstan": 20,
-        "conserto/pomm-foundation": 20
-    },
+    "minimum-stability": "stable",
+    "stability-flags": [],
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
