@@ -33,7 +33,7 @@ Poolers for ``model`` and ``model_layer`` must be registered. A ``SessionBuilder
     <?php
     //…
 
-    $pomm = new Pomm(['my_database' => 
+    $pomm = new Pomm(['my_database' =>
         [
             'dsn' => 'pgsql://user:pass@host:port/db_name',
             'class:session_builder' => '\PommProject\ModelManager\SessionBuilder',
@@ -134,7 +134,7 @@ Although it is possible to use directly the ``RowStructure`` class, it can also 
         }
     }
 
-This way, database structure definitions are described in a unique defined place in the code. 
+This way, database structure definitions are described in a unique defined place in the code.
 
 Inheritance
 ~~~~~~~~~~~
@@ -177,27 +177,19 @@ The best place to set them up is in the constructor:
         public function __construct()
         {    // ↓ underlying database structure
             $this->structure = new EmployeeStructure;
-            $this->flexible_entity_class = '\Model\Company\PeopleSchema\Employee';
+            $this->flexible_entity_class = Employee::class;
         }   // ↑ associated entity
     }
 
-With PHP >= 5.5, it is possible to use the ``::class`` constant to name entity class:
+Assuming the model manager session builder is used, calling this (useless) model class is made through the ``Client`` pooler:
 
 .. code:: php
 
     <?php
     //…
-    use \Model\Company\PeopleSchema\Employee;
+    use \Model\Company\PeopleSchema\EmployeeModel;
     //…
-            $this->flexible_entity_class = Employee::class;
-
-Assuming the model manager session builder is used, calling this useless model class is made through the ``Client`` pooler:
-
-.. code:: php
-
-    <?php
-    //…
-    $model = $session->getModel('\My\Namespace\EmployeeModel')
+    $model = $session->getModel(EmployeeModel::class)
 
 Querying the database
 ---------------------
@@ -434,7 +426,7 @@ Drop an entity and makes it to reflect the last values according to the model’
     // …
     $employee = $employee_model->findByPK(['employee_id' => '…']);
     // delete from {relation} where employee_id = $* returning {projection}
-    $employee_model->deleteOne($employee->setName('whatever'), ['salary']);
+    $employee_model->deleteOne($employee);
     $employee->getName(); // john doe
 
 
@@ -486,14 +478,16 @@ When performing joins, there must be informations regarding the foreign relation
 
     <?php
     //…
+     use \Company\People\DepartmentModel;
+    //…
     class EmployeeModel extends Model
     {
     //…
         public function findWithDeparment($name)
         {
             $department_model = $this
-                ->getSession()
-                ->getModel('\Company\People\DepartmentModel')
+                ->getModel(DepartmentModel::class)
+                // ↑ using the getModel proxy method
                 ;
 
             $sql = <<<SQL

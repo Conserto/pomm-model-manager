@@ -11,17 +11,31 @@ namespace PommProject\ModelManager\Test\Unit\Model;
 
 use Mock\PommProject\ModelManager\Model\FlexibleEntity\FlexibleEntity as FlexibleEntityMock;
 use Mock\PommProject\ModelManager\Model\RowStructure as RowStructureMock;
+use PommProject\Foundation\Exception\FoundationException;
+use PommProject\Foundation\Pager;
 use PommProject\Foundation\Session\Session;
 use PommProject\Foundation\Where;
 use PommProject\ModelManager\Converter\PgEntity;
+use PommProject\ModelManager\Exception\ModelException;
 use PommProject\ModelManager\Model\FlexibleEntity\FlexibleEntityInterface;
 use PommProject\ModelManager\Model\Model as PommModel;
+use PommProject\ModelManager\Test\Fixture\ComplexFixtureModel;
+use PommProject\ModelManager\Test\Fixture\ComplexNumber;
 use PommProject\ModelManager\Test\Fixture\ComplexNumberStructure;
+use PommProject\ModelManager\Test\Fixture\ReadFixtureModel;
 use PommProject\ModelManager\Test\Fixture\SimpleFixture;
+use PommProject\ModelManager\Test\Fixture\SimpleFixtureModel;
+use PommProject\ModelManager\Test\Fixture\WeirdFixture;
+use PommProject\ModelManager\Test\Fixture\WeirdFixtureModel;
+use PommProject\ModelManager\Test\Fixture\WithoutPKFixtureModel;
+use PommProject\ModelManager\Test\Fixture\WriteFixtureModel;
 use PommProject\ModelManager\Test\Unit\BaseTest;
 
 class Model extends BaseTest
 {
+    /**
+     * @throws FoundationException
+     */
     protected function initializeSession(Session $session)
     {
         $session
@@ -29,7 +43,7 @@ class Model extends BaseTest
             ->getConverterHolder()
             ->registerConverter(
                 'ComplexNumber',
-                new PgEntity(\PommProject\ModelManager\Test\Fixture\ComplexNumber::class, new ComplexNumberStructure()),
+                new PgEntity(ComplexNumber::class, new ComplexNumberStructure()),
                 ['pomm_test.complex_number']
             )
             ;
@@ -38,41 +52,41 @@ class Model extends BaseTest
     protected function getSimpleFixtureModel(Session $session)
     {
         return $session
-            ->getModel(\PommProject\ModelManager\Test\Fixture\SimpleFixtureModel::class)
+            ->getModel(SimpleFixtureModel::class)
             ;
     }
 
     protected function getReadFixtureModel(Session $session)
     {
         return $session
-            ->getModel(\PommProject\ModelManager\Test\Fixture\ReadFixtureModel::class)
+            ->getModel(ReadFixtureModel::class)
             ;
     }
 
     protected function getWriteFixtureModel(Session $session)
     {
         return $session
-            ->getModel(\PommProject\ModelManager\Test\Fixture\WriteFixtureModel::class)
+            ->getModel(WriteFixtureModel::class)
             ;
     }
 
     protected function getWithoutPKFixtureModel(Session $session)
     {
         return $session
-            ->getModel(\PommProject\ModelManager\Test\Fixture\WithoutPKFixtureModel::class)
+            ->getModel(WithoutPKFixtureModel::class)
             ;
     }
 
     protected function getComplexFixtureModel(Session $session)
     {
         return $session
-            ->getModel(\PommProject\ModelManager\Test\Fixture\ComplexFixtureModel::class);
+            ->getModel(ComplexFixtureModel::class);
     }
 
     protected function getWeirdFixtureModel(Session $session)
     {
         return $session
-            ->getModel(\PommProject\ModelManager\Test\Fixture\WeirdFixtureModel::class);
+            ->getModel(WeirdFixtureModel::class);
     }
 
     public function testGetClientType()
@@ -87,10 +101,13 @@ class Model extends BaseTest
     {
         $this
             ->string($this->getSimpleFixtureModel($this->buildSession())->getClientIdentifier())
-            ->isEqualTo(\PommProject\ModelManager\Test\Fixture\SimpleFixtureModel::class)
+            ->isEqualTo(SimpleFixtureModel::class)
             ;
     }
 
+    /**
+     * @throws FoundationException
+     */
     public function testCreateProjection()
     {
         $session = $this->buildSession();
@@ -104,6 +121,9 @@ class Model extends BaseTest
             ;
     }
 
+    /**
+     * @throws FoundationException
+     */
     public function testGetStructure()
     {
         $session = $this->buildSession();
@@ -117,6 +137,11 @@ class Model extends BaseTest
             ;
     }
 
+    /**
+     * @throws FoundationException
+     * @throws ModelException
+     * @throws \ReflectionException
+     */
     public function testInitialize()
     {
         $session = $this->buildSession();
@@ -125,17 +150,17 @@ class Model extends BaseTest
                     $model = new NoStructureNoFlexibleEntityModel();
                     $model->initialize($session);
                 })
-            ->isInstanceOf(\PommProject\ModelManager\Exception\ModelException::class)
+            ->isInstanceOf(ModelException::class)
             ->exception(function () use ($session) {
                     $model = new NoFlexibleEntityModel();
                     $model->initialize($session);
                 })
-            ->isInstanceOf(\PommProject\ModelManager\Exception\ModelException::class)
+            ->isInstanceOf(ModelException::class)
             ->exception(function () use ($session) {
                     $model = new NoStructureModel();
                     $model->initialize($session);
                 })
-            ->isInstanceOf(\PommProject\ModelManager\Exception\ModelException::class)
+            ->isInstanceOf(ModelException::class)
             ;
     }
 
@@ -202,7 +227,7 @@ class Model extends BaseTest
         $model_weird = $this->getWeirdFixtureModel($this->buildSession());
         $this
             ->object($model->findByPK(['id' => 1]))
-            ->isInstanceOf(\PommProject\ModelManager\Test\Fixture\SimpleFixture::class)
+            ->isInstanceOf(SimpleFixture::class)
             ->integer($model->findByPK(['id' => 2])['id'])
             ->isEqualTo(2)
             ->variable($model->findByPK(['id' => 5]))
@@ -210,13 +235,13 @@ class Model extends BaseTest
             ->integer($model->findByPK(['id' => 3])->status())
             ->isEqualTo(FlexibleEntityInterface::STATUS_EXIST)
             ->exception(function () use ($model_without_pk) { $model_without_pk->findByPK(['id' => 1]); })
-            ->isInstanceOf(\PommProject\ModelManager\Exception\ModelException::class)
+            ->isInstanceOf(ModelException::class)
             ->message->contains("has no primary key.")
             ->exception(function () use ($model) { $model->findByPK(['a_varchar' => 'one']); })
-            ->isInstanceOf(\PommProject\ModelManager\Exception\ModelException::class)
+            ->isInstanceOf(ModelException::class)
             ->message->contains("Key 'id' is missing to fully describes the primary key")
             ->object($model_weird->findByPK(['field_a' => 2, 'field_b' => false]))
-            ->isInstanceOf(\PommProject\ModelManager\Test\Fixture\WeirdFixture::class)
+            ->isInstanceOf(WeirdFixture::class)
             ;
     }
 
@@ -267,7 +292,7 @@ class Model extends BaseTest
         $pager = $model->paginateFindWhere(new Where, 2);
         $this
             ->object($pager)
-            ->isInstanceOf(\PommProject\Foundation\Pager::class)
+            ->isInstanceOf(Pager::class)
             ->array($pager->getIterator()->slice('id'))
             ->isIdenticalTo([1, 2])
             ->array($model->paginateFindWhere(new Where, 2, 2, 'order by id desc')->getIterator()->slice('id'))
@@ -308,7 +333,7 @@ class Model extends BaseTest
             ->boolean($entity->status() === FlexibleEntityInterface::STATUS_EXIST)
             ->isTrue()
             ->exception(function () use ($model_without_pk, $entity_without_pk) { $model_without_pk->updateOne($entity_without_pk, ['a_varchar']); })
-            ->isInstanceOf(\PommProject\ModelManager\Exception\ModelException::class)
+            ->isInstanceOf(ModelException::class)
             ->message->contains("has no primary key.")
         ;
         $entity->set('a_boolean', ! $entity->get('a_boolean'));
@@ -317,6 +342,13 @@ class Model extends BaseTest
             ->boolean($entity->get('a_boolean'))
             ->isTrue()
             ;
+
+        $entity->set('a_boolean', false);
+        $model->updateOne($entity);
+        $this
+            ->boolean($entity->get('a_boolean'))
+            ->isFalse()
+        ;
     }
 
     public function testUpdateByPK()
@@ -327,7 +359,7 @@ class Model extends BaseTest
         $updated_entity = $model->updateByPk(['id' => $entity['id']], ['a_boolean' => true]);
         $this
             ->object($updated_entity)
-            ->isInstanceOf(\PommProject\ModelManager\Test\Fixture\SimpleFixture::class)
+            ->isInstanceOf(SimpleFixture::class)
             ->boolean($updated_entity['a_boolean'])
             ->isTrue()
             ->integer($updated_entity->status())
@@ -337,7 +369,7 @@ class Model extends BaseTest
             ->object($entity)
             ->isIdenticalTo($updated_entity)
             ->exception(function () use ($model_without_pk) { $model_without_pk->updateByPk(['id' => 1],  ['a_varchar' => 'whatever']); })
-            ->isInstanceOf(\PommProject\ModelManager\Exception\ModelException::class)
+            ->isInstanceOf(ModelException::class)
             ->message->contains("has no primary key.")
 
         ;
@@ -351,13 +383,13 @@ class Model extends BaseTest
         $entity = $model->createAndSave(['a_varchar' => 'mlkjhgf']);
         $this
             ->object($model->deleteOne($entity))
-            ->isInstanceOf(\PommProject\ModelManager\Test\Fixture\WriteFixtureModel::class)
+            ->isInstanceOf(WriteFixtureModel::class)
             ->variable($model->findByPK(['id' => $entity['id']]))
             ->isNull()
             ->integer($entity->status())
             ->isEqualTo(FlexibleEntityInterface::STATUS_NONE)
             ->exception(function () use ($model_without_pk, $entity_without_pk) { $model_without_pk->deleteOne($entity_without_pk); })
-            ->isInstanceOf(\PommProject\ModelManager\Exception\ModelException::class)
+            ->isInstanceOf(ModelException::class)
             ->message->contains("has no primary key.")
             ;
     }
@@ -371,7 +403,7 @@ class Model extends BaseTest
         $deleted_entity = $model->deleteByPK(['id' => $entity['id']]);
         $this
             ->object($deleted_entity)
-            ->isInstanceOf(\PommProject\ModelManager\Test\Fixture\SimpleFixture::class)
+            ->isInstanceOf(SimpleFixture::class)
             ->integer($deleted_entity->status())
             ->isEqualTo(FlexibleEntityInterface::STATUS_NONE)
             ->variable($model->deleteByPK(['id' => $entity['id']]))
@@ -381,7 +413,7 @@ class Model extends BaseTest
             ->integer($entity->status())
             ->isEqualTo(FlexibleEntityInterface::STATUS_NONE)
             ->exception(function () use ($model_without_pk, $entity_without_pk) { $model_without_pk->deleteOne($entity_without_pk); })
-            ->isInstanceOf(\PommProject\ModelManager\Exception\ModelException::class)
+            ->isInstanceOf(ModelException::class)
             ->message->contains("has no primary key.")
             ;
     }
@@ -398,7 +430,7 @@ class Model extends BaseTest
             ->integer($deleted_entities->count())
             ->isEqualTo(1)
             ->object($deleted_entities->get(0))
-            ->isInstanceOf(\PommProject\ModelManager\Test\Fixture\SimpleFixture::class)
+            ->isInstanceOf(SimpleFixture::class)
             ->isEqualTo($entity2)
             ->integer($deleted_entities->get(0)->status())
             ->isEqualTo(FlexibleEntityInterface::STATUS_NONE)
@@ -422,11 +454,14 @@ class Model extends BaseTest
             ->integer($deleted_entities3->count())
             ->isEqualTo(1)
             ->object($deleted_entities3->get(0))
-            ->isInstanceOf(\PommProject\ModelManager\Test\Fixture\SimpleFixture::class)
+            ->isInstanceOf(SimpleFixture::class)
             ->isEqualTo($entity1)
         ;
     }
 
+    /**
+     * @throws FoundationException
+     */
     public function testCreateAndSave()
     {
         $session = $this->buildSession();
@@ -444,6 +479,9 @@ class Model extends BaseTest
             ;
     }
 
+    /**
+     * @throws FoundationException
+     */
     public function testCreateEntity()
     {
         $session = $this->buildSession();
@@ -451,7 +489,19 @@ class Model extends BaseTest
         $entity  = $model->createEntity();
         $this
             ->object($entity)
-            ->isInstanceOf(\PommProject\ModelManager\Test\Fixture\SimpleFixture::class);
+            ->isInstanceOf(SimpleFixture::class);
+    }
+
+    /**
+     * @throws FoundationException
+     */
+    public function testGetModel()
+    {
+        $this
+            ->given($model = $this->getSimpleFixtureModel($this->buildSession()))
+            ->boolean($model->testGetModel())
+            ->isTrue()
+        ;
     }
 }
 
