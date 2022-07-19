@@ -44,4 +44,13 @@ class SimpleFixtureModel extends Model
 
         return $this->query($sql, $where->getValues());
     }
+
+    /**
+     * @throws FoundationException
+     * @throws ModelException
+     */
+    public function testGetModel(): bool
+    {
+        return $this === $this->getModel(self::class);
+    }
 }

@@ -10,6 +10,7 @@
 namespace PommProject\ModelManager\Test\Unit\Model;
 
 use Atoum;
+use PommProject\ModelManager\Exception\ModelException;
 
 class Projection extends Atoum
 {
@@ -83,6 +84,21 @@ class Projection extends Atoum
             ->isInstanceOf(\PommProject\ModelManager\Exception\ModelException::class)
             ->message->contains('does not exist')
             ;
+    }
+
+    public function testUnsetFields()
+    {
+        $projection = $this->newTestedInstance('whatever', ['pika' => 'int4', 'pok' => 'int4']);
+        $this
+            ->array($projection->unsetFields(['pika', 'pok'])->getFieldNames())
+            ->isEmpty()
+            ->exception(function () use ($projection) { $projection->getFieldType('pika'); })
+            ->isInstanceOf(ModelException::class)
+            ->message->contains('does not exist')
+            ->exception(function () use ($projection) { $projection->unsetField('pok'); })
+            ->isInstanceOf(ModelException::class)
+            ->message->contains('does not exist')
+        ;
     }
 
     public function testHasField()

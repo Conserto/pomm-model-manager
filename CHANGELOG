@@ -1,3 +1,14 @@
+== VERSION 3.1.0
+
+ * Fix the insertOne method using extract
+ * Change statut entity when add function is used
+ * Fix bug in PgEntity converter when data is null
+ * Switch Foundation package to 3.1
+ * Fix bug with unescaped transaction savepoints
+ * Update only modified columns in updateOne
+ * Add Model::getModel() proxy method
+ * Add unsetfields method
+
 == VERSION 3.0.0
 
  * Support PHP >= 8.1 and remove old versions support
