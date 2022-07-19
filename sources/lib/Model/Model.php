@@ -260,6 +260,22 @@ abstract class Model implements ClientInterface
     }
 
     /**
+     * Proxy to Session::getModel();
+     *
+     * @throws FoundationException
+     * @throws ModelException
+     */
+    protected function getModel(string $identifier): Model
+    {
+        /** @var Model $modelManager */
+        $modelManager = $this
+            ->getSession()
+            ->getClientUsingPooler('model', $identifier);
+
+        return $modelManager;
+    }
+
+    /**
      * getFlexibleEntityClass
      *
      * Return the according flexible entity class associate with this Model

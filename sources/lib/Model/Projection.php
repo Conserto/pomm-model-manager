@@ -7,6 +7,7 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
+
 namespace PommProject\ModelManager\Model;
 
 use PommProject\ModelManager\Exception\ModelException;
@@ -48,10 +49,10 @@ class Projection implements \IteratorAggregate, \Stringable
      *
      * This returns an ArrayIterator using the name => type association of the
      * projection.
+     * @return \ArrayIterator
      * @see IteratorAggregate
      *
      * @access public
-     * @return \ArrayIterator
      */
     public function getIterator(): \Traversable
     {
@@ -79,9 +80,9 @@ class Projection implements \IteratorAggregate, \Stringable
      * @access public
      * @param string $name
      * @param string $content
-     * @param string|null $type    (null)
+     * @param string|null $type (null)
      * @return Projection $this
-     *@throws \InvalidArgumentException if $name or $content is null
+     * @throws \InvalidArgumentException if $name or $content is null
      */
     public function setField(string $name, string $content, string $type = null): Projection
     {
@@ -117,12 +118,26 @@ class Projection implements \IteratorAggregate, \Stringable
      * @access public
      * @param string $name
      * @return Projection $this
-     *@throws ModelException if field $name does not exist.
+     * @throws ModelException if field $name does not exist.
      */
     public function unsetField(string $name): Projection
     {
         $this->checkFieldExist($name);
         unset($this->fields[$name], $this->types[$name]);
+
+        return $this;
+    }
+
+    /**
+     * Unset multiple existing fields
+     *
+     * @throws ModelException if one field of $fields does not exist.
+     */
+    public function unsetFields(array $fields): Projection
+    {
+        foreach ($fields as $field) {
+            $this->unsetField($field);
+        }
 
         return $this;
     }
@@ -171,7 +186,7 @@ class Projection implements \IteratorAggregate, \Stringable
      */
     public function isArray(string $name): bool
     {
-        return (bool) preg_match('/\[\]$/', (string) $this->checkFieldExist($name)->types[$name]);
+        return (bool)preg_match('/\[\]$/', (string)$this->checkFieldExist($name)->types[$name]);
     }
 
     /**
@@ -199,8 +214,7 @@ class Projection implements \IteratorAggregate, \Stringable
     {
         $fields = [];
         foreach ($this->fields as $name => $value) {
-            $fields[$name] = $this->types[$name] ?? null
-                ;
+            $fields[$name] = $this->types[$name] ?? null;
         }
 
         return $fields;
@@ -215,7 +229,7 @@ class Projection implements \IteratorAggregate, \Stringable
      * @param string $name
      * @param string|null $table_alias
      * @return string
-     *@throws \InvalidArgumentException if $name is null
+     * @throws \InvalidArgumentException if $name is null
      * @throws ModelException if $name does not exist.
      */
     public function getFieldWithTableAlias(string $name, string $table_alias = null): string
@@ -328,7 +342,7 @@ class Projection implements \IteratorAggregate, \Stringable
      * @access private
      * @param string $name
      * @return Projection $this
-     *@throws ModelException if field does not exist
+     * @throws ModelException if field does not exist
      */
     private function checkFieldExist(string $name): Projection
     {
@@ -346,7 +360,7 @@ class Projection implements \IteratorAggregate, \Stringable
      *
      * @access protected
      * @param string $string field definition
-     * @param string $prefix  optional unquoted prefix
+     * @param string $prefix optional unquoted prefix
      * @return string
      */
     protected function replaceToken(string $string, string $prefix = ''): string

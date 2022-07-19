@@ -7,6 +7,7 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
+
 namespace PommProject\ModelManager\Model\ModelTrait;
 
 use PommProject\Foundation\Where;
@@ -51,10 +52,10 @@ trait WriteQueries
         $sql = strtr(
             "insert into :relation (:fields) values (:values) returning :projection",
             [
-                ':relation'   => $this->getStructure()->getRelation(),
-                ':fields'     => $this->getEscapedFieldList(array_keys($values)),
+                ':relation' => $this->getStructure()->getRelation(),
+                ':fields' => $this->getEscapedFieldList(array_keys($values)),
                 ':projection' => $this->createProjection()->formatFieldsWithFieldAlias(),
-                ':values'     => join(',', $this->getParametersList($values))
+                ':values' => join(',', $this->getParametersList($values))
             ]);
 
         $entity = $this
@@ -80,8 +81,12 @@ trait WriteQueries
      * @return WriteQueries                    $this
      * @throws ModelException
      */
-    public function updateOne(FlexibleEntityInterface &$entity, array $fields): static
+    public function updateOne(FlexibleEntityInterface &$entity, array $fields = []): static
     {
+        if (empty($fields)) {
+            $fields = $entity->getModifiedColumns();
+        }
+
         $entity = $this->updateByPk(
             $entity->fields($this->getStructure()->getPrimaryKey()),
             $entity->fields($fields)
@@ -106,8 +111,7 @@ trait WriteQueries
     {
         $where = $this
             ->checkPrimaryKey($primary_key)
-            ->getWhereFrom($primary_key)
-            ;
+            ->getWhereFrom($primary_key);
         $parameters = $this->getParametersList($updates);
         $update_strings = [];
 
@@ -122,9 +126,9 @@ trait WriteQueries
         $sql = strtr(
             "update :relation set :update where :condition returning :projection",
             [
-                ':relation'   => $this->getStructure()->getRelation(),
-                ':update'     => join(', ', $update_strings),
-                ':condition'  => (string) $where,
+                ':relation' => $this->getStructure()->getRelation(),
+                ':update' => join(', ', $update_strings),
+                ':condition' => (string)$where,
                 ':projection' => $this->createProjection()->formatFieldsWithFieldAlias(),
             ]
         );
@@ -163,7 +167,7 @@ trait WriteQueries
      * null if not found.
      *
      * @access public
-     * @param  array          $primary_key
+     * @param array $primary_key
      * @return FlexibleEntityInterface|null
      * @throws ModelException
      */
@@ -171,8 +175,7 @@ trait WriteQueries
     {
         $where = $this
             ->checkPrimaryKey($primary_key)
-            ->getWhereFrom($primary_key)
-        ;
+            ->getWhereFrom($primary_key);
 
         return $this->deleteWhere($where)->current();
     }
@@ -195,8 +198,8 @@ trait WriteQueries
         $sql = strtr(
             "delete from :relation where :condition returning :projection",
             [
-                ':relation'   => $this->getStructure()->getRelation(),
-                ':condition'  => (string) $where,
+                ':relation' => $this->getStructure()->getRelation(),
+                ':condition' => (string)$where,
                 ':projection' => $this->createProjection()->formatFieldsWithFieldAlias(),
             ]
         );
@@ -234,7 +237,7 @@ trait WriteQueries
      * Return a comma separated list with the given escaped field names.
      *
      * @access protected
-     * @param  array  $fields
+     * @param array $fields
      * @return string
      */
     public function getEscapedFieldList(array $fields): string

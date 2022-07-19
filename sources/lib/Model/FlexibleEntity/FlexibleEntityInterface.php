@@ -7,6 +7,7 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
+
 namespace PommProject\ModelManager\Model\FlexibleEntity;
 
 /**
@@ -30,8 +31,8 @@ interface FlexibleEntityInterface
      * When status is MODIFIED, the entity has been modified since creation or
      * last persist operation.
      */
-    public const STATUS_NONE     = 0;
-    public const STATUS_EXIST    = 1;
+    public const STATUS_NONE = 0;
+    public const STATUS_EXIST = 1;
     public const STATUS_MODIFIED = 2;
 
     /**
@@ -41,7 +42,7 @@ interface FlexibleEntityInterface
      * overridden with new values.
      *
      * @access public
-     * @param  array    $fields
+     * @param array $fields
      * @return FlexibleEntityInterface
      */
     public function hydrate(array $fields): FlexibleEntityInterface;
@@ -92,4 +93,9 @@ interface FlexibleEntityInterface
      * @return int|FlexibleEntityInterface
      */
     public function status(int $status = null): int|FlexibleEntityInterface;
+
+    /**
+     * Return columns modified
+     */
+    public function getModifiedColumns(): mixed;
 }
