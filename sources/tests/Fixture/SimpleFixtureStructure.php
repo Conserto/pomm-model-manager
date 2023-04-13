@@ -28,7 +28,7 @@ __WRAP;
             ->addField('id', 'int4')
             ->addField('a_varchar', 'varchar')
             ->addField('a_boolean', 'bool')
-            ->primary_key = ['id']
+            ->primaryKey = ['id']
             ;
     }
 }

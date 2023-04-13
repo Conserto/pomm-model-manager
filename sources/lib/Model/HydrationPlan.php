@@ -17,11 +17,8 @@ use PommProject\ModelManager\Exception\ModelException;
 use PommProject\ModelManager\Model\FlexibleEntity\FlexibleEntityInterface;
 
 /**
- * HydrationPlan
- *
  * Tell the FlexibleEntityConverter how to hydrate fields.
  *
- * @package     ModelManager
  * @copyright   2014 - 2015 Grégoire HUBERT
  * @author      Grégoire HUBERT
  * @license     X11 {@link http://opensource.org/licenses/mit-license.php}
@@ -29,15 +26,10 @@ use PommProject\ModelManager\Model\FlexibleEntity\FlexibleEntityInterface;
 class HydrationPlan
 {
     protected array $converters = [];
-    protected array $field_types = [];
+    protected array $fieldTypes = [];
 
 
     /**
-     * Construct
-     *
-     * @access  public
-     * @param Projection $projection
-     * @param Session $session
      * @throws FoundationException
      * @throws ModelException
      */
@@ -47,12 +39,8 @@ class HydrationPlan
     }
 
     /**
-     * loadConverters
-     *
      * Cache converters needed for this result set.
      *
-     * @access protected
-     * @return HydrationPlan    $this
      * @throws FoundationException|ModelException
      */
     protected function loadConverters(): HydrationPlan
@@ -61,12 +49,11 @@ class HydrationPlan
             $identifier = $this->projection->isArray($name) ? 'array' : $type;
 
             /** @var ConverterClient $converterClient */
-            $converterClient = $this
-                ->session
+            $converterClient = $this->session
                 ->getClientUsingPooler('converter', $identifier);
 
             $this->converters[$name] = $converterClient->getConverter();
-            $this->field_types[$name] = $type;
+            $this->fieldTypes[$name] = $type;
         }
 
         return $this;
@@ -74,13 +61,8 @@ class HydrationPlan
 
 
     /**
-     * getFieldType
-     *
      * Return the type of the given field. Proxy to Projection::getFieldType().
      *
-     * @access public
-     * @param string $name
-     * @return string
      * @throws ModelException
      */
     public function getFieldType(string $name): string
@@ -89,13 +71,8 @@ class HydrationPlan
     }
 
     /**
-     * isArray
-     *
      * Tell if the given field is an array or not.
      *
-     * @access public
-     * @param string $name
-     * @return bool
      * @throws ModelException
      */
     public function isArray(string $name): bool
@@ -105,14 +82,8 @@ class HydrationPlan
 
 
     /**
-     * hydrate
-     *
-     * Take values fetched from the database, launch conversion system and
-     * hydrate the FlexibleEntityInterface through the mapper.
-     *
-     * @access public
-     * @param  array $values
-     * @return FlexibleEntityInterface
+     * Take values fetched from the database, launch conversion system and hydrate the FlexibleEntityInterface through
+     * the mapper.
      */
     public function hydrate(array $values): FlexibleEntityInterface
     {
@@ -121,26 +92,15 @@ class HydrationPlan
         return $this->createEntity($values);
     }
 
-    /**
-     * dry
-     *
-     * Return values converted to Pg.
-     *
-     * @access public
-     * @param  array    $values
-     * @return array
-     */
+    /** Return values converted to Pg. */
     public function dry(array $values): array
     {
         return $this->convert('toPg', $values);
     }
 
     /**
-     * freeze
-     *
      * Return values converted to Pg standard output.
      *
-     * @access public
      * @param  array $values
      * @return array converted values
      */
@@ -149,73 +109,45 @@ class HydrationPlan
         return $this->convert('toPgStandardFormat', $values);
     }
 
-    /**
-     * convert
-     *
-     * Convert values from / to postgres.
-     *
-     * @access protected
-     * @param string $from_to
-     * @param  array    $values
-     * @return array
-     */
-    protected function convert(string $from_to, array $values): array
+    /** Convert values from / to postgres. */
+    protected function convert(string $fromTo, array $values): array
     {
-        $out_values = [];
+        $outValues = [];
 
         foreach ($values as $name => $value) {
             if (isset($this->converters[$name])) {
-                $out_values[$name] = $this
+                $outValues[$name] = $this
                     ->converters[$name]
-                    ->$from_to($value, $this->field_types[$name], $this->session)
-                    ;
+                    ->$fromTo($value, $this->fieldTypes[$name], $this->session);
             } else {
-                $out_values[$name] = $value;
+                $outValues[$name] = $value;
             }
         }
 
-        return $out_values;
+        return $outValues;
     }
 
-    /**
-     * createEntity
-     *
-     * Instantiate FlexibleEntityInterface from converted values.
-     *
-     * @access protected
-     * @param  array $values
-     * @return FlexibleEntityInterface
-     */
+    /** Instantiate FlexibleEntityInterface from converted values. */
     protected function createEntity(array $values): FlexibleEntityInterface
     {
         $class = $this->projection->getFlexibleEntityClass();
 
-        return (new $class())
-            ->hydrate($values)
-            ;
+        return (new $class())->hydrate($values);
     }
 
-    /**
-     * getConverterForField
-     *
-     * Return the converter client associated with a field.
-     *
-     * @access public
-     * @param string $field_name
-     * @return ConverterInterface
-     */
-    public function getConverterForField(string $field_name): ConverterInterface
+    /** Return the converter client associated with a field. */
+    public function getConverterForField(string $fieldName): ConverterInterface
     {
-        if (!isset($this->converters[$field_name])) {
+        if (!isset($this->converters[$fieldName])) {
             throw new \RuntimeException(
                 sprintf(
                     "Error, '%s' field has no converters registered. Fields are {%s}.",
-                    $field_name,
+                    $fieldName,
                     join(', ', array_keys($this->converters))
                 )
             );
         }
 
-        return $this->converters[$field_name];
+        return $this->converters[$fieldName];
     }
 }

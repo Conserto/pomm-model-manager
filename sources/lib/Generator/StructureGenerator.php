@@ -16,11 +16,8 @@ use PommProject\Foundation\ParameterHolder;
 use PommProject\ModelManager\Exception\GeneratorException;
 
 /**
- * StructureGenerator
- *
  * Generate a RowStructure file from relation inspection.
  *
- * @package   ModelManager
  * @copyright 2014 - 2015 Grégoire HUBERT
  * @author    Grégoire HUBERT
  * @license   X11 {@link http://opensource.org/licenses/mit-license.php}
@@ -28,8 +25,6 @@ use PommProject\ModelManager\Exception\GeneratorException;
 class StructureGenerator extends BaseGenerator
 {
     /**
-     * generate
-     *
      * Generate structure file.
      *
      * @throws GeneratorException|FoundationException
@@ -37,15 +32,15 @@ class StructureGenerator extends BaseGenerator
      */
     public function generate(ParameterHolder $input, array $output = []): array
     {
-        $table_oid          = $this->checkRelationInformation();
-        $field_information = $this->getFieldInformation($table_oid);
-        $primary_key        = $this->getPrimaryKey($table_oid);
-        $table_comment      = $this->getTableComment($table_oid);
+        $tableOid          = $this->checkRelationInformation();
+        $fieldInformation = $this->getFieldInformation($tableOid);
+        $primaryKey        = $this->getPrimaryKey($tableOid);
+        $tableComment      = $this->getTableComment($tableOid);
 
-        if ($table_comment === null) {
-            $table_comment = <<<TEXT
+        if (null === $tableComment) {
+            $tableComment = <<<TEXT
 
-Class and fields comments are inspected from table and fields comments. Just add comments in your database and they will appear here.
+Class and fields comments are inspected from table and fields comments.Just add comments in your database and they will appear here.
 @see http://www.postgresql.org/docs/9.0/static/sql-comment.html
 TEXT;
         }
@@ -63,12 +58,12 @@ TEXT;
                             ', ',
                             array_map(
                                 fn($val) => sprintf("'%s'", $val),
-                                $primary_key
+                                $primaryKey
                             )
                         ),
-                        'add_fields'     => $this->formatAddFields($field_information),
-                        'table_comment'  => $this->createPhpDocBlockFromText($table_comment),
-                        'fields_comment' => $this->formatFieldsComment($field_information),
+                        'add_fields'     => $this->formatAddFields($fieldInformation),
+                        'table_comment'  => $this->createPhpDocBlockFromText($tableComment),
+                        'fields_comment' => $this->formatFieldsComment($fieldInformation),
                     ]
                 )
             );
@@ -76,20 +71,12 @@ TEXT;
         return $output;
     }
 
-    /**
-     * formatAddFields
-     *
-     * Format 'addField' method calls.
-     *
-     * @access protected
-     * @param  ConvertedResultIterator $field_information
-     * @return string
-     */
-    protected function formatAddFields(ConvertedResultIterator $field_information): string
+    /** Format 'addField' method calls. */
+    protected function formatAddFields(ConvertedResultIterator $fieldInformation): string
     {
         $strings = [];
 
-        foreach ($field_information as $info) {
+        foreach ($fieldInformation as $info) {
             if (preg_match('/^(?:(.*)\.)?_(.*)$/', (string) $info['type'], $matches)) {
                 if ($matches[1] !== '') {
                     $info['type'] = sprintf("%s.%s[]", $matches[1], $matches[2]);
@@ -98,32 +85,22 @@ TEXT;
                 }
             }
 
-            $strings[] = sprintf(
-                "            ->addField('%s', '%s')",
-                $info['name'],
-                $info['type']
-            );
+            $strings[] = sprintf("            ->addField('%s', '%s')", $info['name'], $info['type']);
         }
 
         return join("\n", $strings);
     }
 
     /**
-     * formatFieldsComment
-     *
      * Format fields comment to be in the class comment. This is because there
      * can be very long comments or comments with carriage returns. It is
      * furthermore more convenient to get all the descriptions in the head of
      * the generated class.
-     *
-     * @access protected
-     * @param  ConvertedResultIterator $field_information
-     * @return string
      */
-    protected function formatFieldsComment(ConvertedResultIterator $field_information): string
+    protected function formatFieldsComment(ConvertedResultIterator $fieldInformation): string
     {
         $comments = [];
-        foreach ($field_information as $info) {
+        foreach ($fieldInformation as $info) {
             if ($info['comment'] === null) {
                 continue;
             }
@@ -132,18 +109,10 @@ TEXT;
             $comments[] = $this->createPhpDocBlockFromText($info['comment']);
         }
 
-        return count($comments) > 0 ? join("\n", $comments) : ' *';
+        return empty($comments) ? ' *' : join("\n", $comments);
     }
 
-    /**
-     * createPhpDocBlockFromText
-     *
-     * Format a text into a PHPDoc comment block.
-     *
-     * @access protected
-     * @param string $text
-     * @return string
-     */
+    /** Format a text into a PHPDoc comment block. */
     protected function createPhpDocBlockFromText(string $text): string
     {
         return join(
@@ -156,13 +125,9 @@ TEXT;
     }
 
     /**
-     * checkRelationInformation
-     *
      * Check if the given schema and relation exist. If so, the table oid is
      * returned, otherwise a GeneratorException is thrown.
      *
-     * @access private
-     * @return int $oid
      * @throws GeneratorException|FoundationException
      */
     private function checkRelationInformation(): int
@@ -171,9 +136,9 @@ TEXT;
             throw new GeneratorException(sprintf("Schema '%s' not found.", $this->schema));
         }
 
-        $table_oid = $this->getInspector()->getTableOid($this->schema, $this->relation);
+        $tableOid = $this->getInspector()->getTableOid($this->schema, $this->relation);
 
-        if ($table_oid === null) {
+        if ($tableOid === null) {
             throw new GeneratorException(
                 sprintf(
                     "Relation '%s' could not be found in schema '%s'.",
@@ -183,72 +148,45 @@ TEXT;
             );
         }
 
-        return $table_oid;
+        return $tableOid;
     }
 
     /**
-     * getFieldInformation
-     *
      * Fetch a table field information.
      *
-     * @access protected
-     * @param int $table_oid
-     * @return ConvertedResultIterator $fields_info
      * @throws GeneratorException|FoundationException
      */
-    protected function getFieldInformation(int $table_oid): ConvertedResultIterator
+    protected function getFieldInformation(int $tableOid): ConvertedResultIterator
     {
-        $fields_info = $this
-            ->getInspector()
-            ->getTableFieldInformation($table_oid)
-            ;
+        $fieldsInfo = $this->getInspector()->getTableFieldInformation($tableOid);
 
-        if ($fields_info === null) {
+        if ($fieldsInfo === null) {
             throw new GeneratorException(
-                sprintf(
-                    "Error while fetching fields information for table oid '%s'.",
-                    $table_oid
-                )
+                sprintf("Error while fetching fields information for table oid '%s'.", $tableOid)
             );
         }
 
-        return $fields_info;
+        return $fieldsInfo;
     }
 
     /**
-     * getPrimaryKey
-     *
      * Return the primary key of a relation if any.
      *
-     * @access protected
-     * @param int $table_oid
-     * @return array  $primary_key
      * @throws FoundationException
      */
-    protected function getPrimaryKey(int $table_oid): array
+    protected function getPrimaryKey(int $tableOid): array
     {
-        return $this
-            ->getInspector()
-            ->getPrimaryKey($table_oid)
-            ;
+        return $this->getInspector()->getPrimaryKey($tableOid);
     }
 
     /**
-     * getTableComment
-     *
      * Grab table comment from database.
      *
-     * @access protected
-     * @param int $table_oid
-     * @return string|null
-     * @throws FoundationException|GeneratorException
+     * @throws FoundationException
      */
-    protected function getTableComment(int $table_oid): ?string
+    protected function getTableComment(int $tableOid): ?string
     {
-        return $this
-            ->getInspector()
-            ->getTableComment($table_oid)
-            ;
+        return $this->getInspector()->getTableComment($tableOid);
     }
 
     /**
@@ -271,8 +209,6 @@ namespace {:namespace:};
 use PommProject\ModelManager\Model\RowStructure;
 
 /**
- * {:class_name:}
- *
  * Structure class for relation {:relation:}.
 {:table_comment:}
  *
@@ -282,13 +218,6 @@ use PommProject\ModelManager\Model\RowStructure;
  */
 class {:class_name:} extends RowStructure
 {
-    /**
-     * __construct
-     *
-     * Structure definition.
-     *
-     * @access public
-     */
     public function __construct()
     {
         $this

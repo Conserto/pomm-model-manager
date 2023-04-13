@@ -15,12 +15,8 @@ use PommProject\ModelManager\Model\Model;
 use PommProject\ModelManager\ModelLayer\ModelLayer;
 
 /**
- * Session
+ * Model manager's session. It adds proxy method to use model manager's poolers.
  *
- * Model manager's session.
- * It adds proxy method to use model manager's poolers.
- *
- * @package   ModelManager
  * @copyright 2015 Grégoire HUBERT
  * @author    Grégoire HUBERT
  * @license   X11 {@link http://opensource.org/licenses/mit-license.php}
@@ -30,13 +26,8 @@ use PommProject\ModelManager\ModelLayer\ModelLayer;
 class Session extends FoundationSession
 {
     /**
-     * getModel
-     *
      * Return a model instance
      *
-     * @access public
-     * @param string $class
-     * @return Model
      * @throws FoundationException
      */
     public function getModel(string $class): Model
@@ -47,13 +38,8 @@ class Session extends FoundationSession
     }
 
     /**
-     * getModelLayer
-     *
      * Return a model layer instance
      *
-     * @access public
-     * @param string $class
-     * @return ModelLayer
      * @throws FoundationException
      */
     public function getModelLayer(string $class): ModelLayer

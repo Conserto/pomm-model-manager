@@ -16,11 +16,8 @@ use PommProject\ModelManager\Exception\GeneratorException;
 use PommProject\ModelManager\Session;
 
 /**
- * BaseGenerator
- *
  * Base class for Generator
  *
- * @package   ModelManager
  * @copyright 2014 - 2015 Grégoire HUBERT
  * @author    Grégoire HUBERT
  * @license   X11 {@link http://opensource.org/licenses/mit-license.php}
@@ -28,57 +25,30 @@ use PommProject\ModelManager\Session;
  */
 abstract class BaseGenerator
 {
-    /**
-     * Constructor
-     *
-     * @access public
-     * @param  Session $session
-     * @param string $schema
-     * @param string $relation
-     * @param string $filename
-     * @param string $namespace
-     * @param ?string $flexible_container
-     */
     public function __construct(
         private Session $session,
         protected string $schema,
         protected string $relation,
         protected string $filename,
         protected string $namespace,
-        protected ?string $flexible_container = null
+        protected ?string $flexibleContainer = null
     )
     {
     }
 
-    /**
-     * outputFileCreation
-     *
-     * Output what the generator will do.
-     *
-     * @access protected
-     * @param  array            $output
-     * @return BaseGenerator    $this
-     */
+    /** Output what the generator will do. */
     protected function outputFileCreation(array &$output): BaseGenerator
     {
-        if (file_exists($this->filename)) {
-            $output[] = ['status' => 'ok', 'operation' => 'overwriting', 'file' => $this->filename];
-        } else {
-            $output[] = ['status' => 'ok', 'operation' => 'creating', 'file' => $this->filename];
-        }
+        $output[] = [
+            'status' => 'ok',
+            'operation' => file_exists($this->filename) ? 'overwriting' : 'creating',
+            'file' => $this->filename
+        ];
 
         return $this;
     }
 
-    /**
-     * setSession
-     *
-     * Set the session.
-     *
-     * @access protected
-     * @param  Session       $session
-     * @return BaseGenerator $this
-     */
+    /** Set the session. */
     protected function setSession(Session $session): BaseGenerator
     {
         $this->session = $session;
@@ -86,26 +56,15 @@ abstract class BaseGenerator
         return $this;
     }
 
-    /**
-     * getSession
-     *
-     * Return the session is set. Throw an exception otherwise.
-     *
-     * @access protected
-     * @return Session
-     */
+    /** Return the session is set. Throw an exception otherwise. */
     protected function getSession(): Session
     {
         return $this->session;
     }
 
     /**
-     * getInspector
-     *
      * Shortcut to session's inspector client.
      *
-     * @access protected
-     * @return Inspector
      * @throws FoundationException
      */
     protected function getInspector(): Inspector
@@ -116,62 +75,33 @@ abstract class BaseGenerator
     }
 
     /**
-     * generate
-     *
      * Called to generate the file.
      * Possible options are:
-     * * force: true if files can be overwritten, false otherwise
-     *
-     * @access public
-     * @param  ParameterHolder    $input
-     * @param  array              $output
-     * @throws GeneratorException
-     * @return array              $output
+     * - force: true if files can be overwritten, false otherwise
      */
     abstract public function generate(ParameterHolder $input, array $output = []): array;
 
-    /**
-     * getCodeTemplate
-     *
-     * Return the code template for files to be generated.
-     *
-     * @access protected
-     * @return string
-     */
+    /** Return the code template for files to be generated. */
     abstract protected function getCodeTemplate(): string;
 
-    /**
-     * mergeTemplate
-     *
-     * Merge templates with given values.
-     *
-     * @access protected
-     * @param  array  $variables
-     * @return string
-     */
+    /** Merge templates with given values. */
     protected function mergeTemplate(array $variables): string
     {
-        $prepared_variables = [];
+        $preparedVariables = [];
         foreach ($variables as $name => $value) {
-            $prepared_variables[sprintf("{:%s:}", $name)] = $value;
+            $preparedVariables[sprintf("{:%s:}", $name)] = $value;
         }
 
         return strtr(
             $this->getCodeTemplate(),
-            $prepared_variables
+            $preparedVariables
         );
     }
 
     /**
-     * saveFile
-     *
      * Write the generated content to a file.
      *
-     * @access protected
-     * @param string $filename
-     * @param string $content
-     * @return BaseGenerator $this
-     *@throws GeneratorException
+     * @throws GeneratorException
      */
     protected function saveFile(string $filename, string $content): BaseGenerator
     {
@@ -179,19 +109,13 @@ abstract class BaseGenerator
             && mkdir(dirname($filename), 0777, true) === false
         ) {
             throw new GeneratorException(
-                sprintf(
-                    "Could not create directory '%s'.",
-                    dirname($filename)
-                )
+                sprintf("Could not create directory '%s'.", dirname($filename))
             );
         }
 
         if (file_put_contents($filename, $content) === false) {
             throw new GeneratorException(
-                sprintf(
-                    "Could not open '%s' for writing.",
-                    $filename
-                )
+                sprintf("Could not open '%s' for writing.", $filename)
             );
         }
 
@@ -199,19 +123,16 @@ abstract class BaseGenerator
     }
 
     /**
-     * checkOverwrite
+     * Check if the file exists and if the write is forced.
      *
-     * Check if the file exists and if it the write is forced.
-     *
-     * @access protected
-     * @param  ParameterHolder    $input
      * @throws GeneratorException
-     * @return BaseGenerator      $this
      */
     protected function checkOverwrite(ParameterHolder $input): BaseGenerator
     {
         if (file_exists($this->filename) && $input->getParameter('force') !== true) {
-            throw new GeneratorException(sprintf("Cannot overwrite file '%s' without --force option.", $this->filename));
+            throw new GeneratorException(
+                sprintf("Cannot overwrite file '%s' without --force option.", $this->filename)
+            );
         }
 
         return $this;

@@ -12,46 +12,27 @@ namespace PommProject\ModelManager\Model;
 use PommProject\ModelManager\Exception\ModelException;
 
 /**
- * RowStructure
- *
  * Represent a composite structure like table or row.
  *
- * @package   ModelManager
  * @copyright 2014 - 2015 Grégoire HUBERT
  * @author    Grégoire HUBERT <hubert.greg@gmail.com>
  * @license   MIT/X11 {@link http://opensource.org/licenses/mit-license.php}
  */
 class RowStructure implements \ArrayAccess
 {
-    protected array $primary_key       = [];
-    protected array $field_definitions = [];
+    protected array $primaryKey       = [];
+    protected array $fieldDefinitions = [];
     protected string $relation;
 
-    /**
-     * setDefinition
-     *
-     * Add a complete definition.
-     *
-     * @access public
-     * @param  array        $definition
-     * @return RowStructure $this
-     */
+    /** Add a complete definition. */
     public function setDefinition(array $definition): RowStructure
     {
-        $this->field_definitions = $definition;
+        $this->fieldDefinitions = $definition;
 
         return $this;
     }
 
-    /**
-     * inherits
-     *
-     * Add inherited structure.
-     *
-     * @access public
-     * @param RowStructure $structure
-     * @return RowStructure $this
-     */
+    /** Add inherited structure. */
     public function inherits(RowStructure $structure): RowStructure
     {
         foreach ($structure->getDefinition() as $field => $type) {
@@ -61,15 +42,7 @@ class RowStructure implements \ArrayAccess
         return $this;
     }
 
-    /**
-     * setRelation
-     *
-     * Set or change the relation.
-     *
-     * @access public
-     * @param string $relation
-     * @return RowStructure $this
-     */
+    /** Set or change the relation.*/
     public function setRelation(string $relation): RowStructure
     {
         $this->relation = $relation;
@@ -77,131 +50,65 @@ class RowStructure implements \ArrayAccess
         return $this;
     }
 
-    /**
-     * setPrimaryKey
-     *
-     * Set or change the primary key definition.
-     *
-     * @access public
-     * @param  array        $primary_key
-     * @return RowStructure $this
-     */
-    public function setPrimaryKey(array $primary_key): RowStructure
+    /** Set or change the primary key definition. */
+    public function setPrimaryKey(array $primaryKey): RowStructure
     {
-        $this->primary_key = $primary_key;
+        $this->primaryKey = $primaryKey;
 
         return $this;
     }
 
-    /**
-     * addField
-     *
-     * Add a new field structure.
-     *
-     * @access public
-     * @param string $name
-     * @param string $type
-     * @return RowStructure $this
-     */
+    /** Add a new field structure. */
     public function addField(string $name, string $type): RowStructure
     {
         $this->checkNotNull($type, 'type')
             ->checkNotNull($name, 'name')
-            ->field_definitions[$name] = $type;
+            ->fieldDefinitions[$name] = $type;
 
         return $this;
     }
 
-    /**
-     * getFieldNames
-     *
-     * Return an array of all field names
-     *
-     * @access public
-     * @return array
-     */
+    /** Return an array of all field names */
     public function getFieldNames(): array
     {
-        return array_keys($this->field_definitions);
+        return array_keys($this->fieldDefinitions);
     }
 
-    /**
-     * hasField
-     *
-     * Check if a field exist in the structure
-     *
-     * @access public
-     * @param string $name
-     * @return bool
-     */
+    /** Check if a field exist in the structure */
     public function hasField(string $name): bool
     {
-        return array_key_exists($name, $this->checkNotNull($name, 'name')->field_definitions);
+        return array_key_exists($name, $this->checkNotNull($name, 'name')->fieldDefinitions);
     }
 
     /**
-     * getTypeFor
-     *
      * Return the type associated with the field
      *
-     * @access public
-     * @param string $name
-     * @return string $type
-     *@throws ModelException if $name is null or name does not exist.
+     * @throws ModelException if $name is null or name does not exist.
      */
     public function getTypeFor(string $name): string
     {
-        return $this->checkExist($name)->field_definitions[$name];
+        return $this->checkExist($name)->fieldDefinitions[$name];
     }
 
-    /**
-     * getDefinition
-     *
-     * Return all fields and types
-     *
-     * @return array
-     */
+    /** Return all fields and types */
     public function getDefinition(): array
     {
-        return $this->field_definitions;
+        return $this->fieldDefinitions;
     }
 
-    /**
-     * getRelation
-     *
-     * Return the relation name.
-     *
-     * @access public
-     * @return string
-     */
+    /** Return the relation name. */
     public function getRelation(): string
     {
         return $this->relation;
     }
 
-    /**
-     * getPrimaryKey
-     *
-     * Return the primary key definition.
-     *
-     * @access public
-     * @return array
-     */
+    /** Return the primary key definition. */
     public function getPrimaryKey(): array
     {
-        return $this->primary_key;
+        return $this->primaryKey;
     }
 
-    /**
-     * checkNotNull
-     *
-     * Test if given value is null.
-     *
-     * @access              private
-     * @param string|null $val
-     * @param string $name
-     * @return RowStructure $this
-     */
+    /** Test if given value is null. */
     private function checkNotNull(?string $val, string $name): RowStructure
     {
         if ($val === null) {
@@ -212,14 +119,9 @@ class RowStructure implements \ArrayAccess
     }
 
     /**
-     * checkExist
-     *
      * Test if a field exist.
      *
-     * @access private
-     * @param string $name
-     * @return RowStructure $this
-     *@throws ModelException if $name does not exist.
+     * @throws ModelException if $name does not exist.
      */
     private function checkExist(string $name): RowStructure
     {
@@ -229,7 +131,7 @@ class RowStructure implements \ArrayAccess
                     "Field '%s' is not defined in structure '%s'. Defined fields are {%s}",
                     $name,
                     $this::class,
-                    join(', ', array_keys($this->field_definitions))
+                    join(', ', array_keys($this->fieldDefinitions))
                 )
             );
         }
@@ -237,9 +139,7 @@ class RowStructure implements \ArrayAccess
         return $this;
     }
 
-    /**
-     * @see \ArrayAccess
-     */
+    /** @see \ArrayAccess */
     public function offsetSet(mixed $offset, mixed $value): void
     {
         $this->addField($offset, $value);
@@ -254,9 +154,7 @@ class RowStructure implements \ArrayAccess
         return $this->getTypeFor($offset);
     }
 
-    /**
-     * @see \ArrayAccess
-     */
+    /** @see \ArrayAccess */
     public function offsetExists(mixed $offset): bool
     {
         return $this->hasField($offset);

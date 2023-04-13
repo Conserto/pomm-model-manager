@@ -17,11 +17,8 @@ use PommProject\ModelManager\Model\FlexibleEntity\FlexibleEntityInterface;
 use PommProject\ModelManager\Model\Model;
 
 /**
- * WriteQueries
- *
  * Basic write queries for model instances.
  *
- * @package   ModelManager
  * @copyright 2014 - 2015 Grégoire HUBERT
  * @author    Grégoire HUBERT
  * @license   X11 {@link http://opensource.org/licenses/mit-license.php}
@@ -31,14 +28,9 @@ trait WriteQueries
     use ReadQueries;
 
     /**
-     * insertOne
-     *
      * Insert a new entity in the database. The entity is passed by reference.
      * It is updated with values returned by the database (ie, default values).
      *
-     * @access public
-     * @param FlexibleEntityInterface $entity
-     * @return Model $this
      * @throws ModelException
      */
     public function insertOne(FlexibleEntityInterface &$entity): Model
@@ -67,18 +59,12 @@ trait WriteQueries
     }
 
     /**
-     * updateOne
-     *
      * Update the entity. ONLY the fields indicated in the $fields array are
      * updated. The entity is passed by reference and its values are updated
      * with the values from the database. This means all changes not updated
      * are lost. The update is made upon a condition on the primary key. If the
      * primary key is not fully set, an exception is thrown.
      *
-     * @access public
-     * @param FlexibleEntityInterface $entity
-     * @param array $fields
-     * @return WriteQueries                    $this
      * @throws ModelException
      */
     public function updateOne(FlexibleEntityInterface &$entity, array $fields = []): static
@@ -96,27 +82,21 @@ trait WriteQueries
     }
 
     /**
-     * updateByPk
-     *
      * Update a record and fetch it with its new values. If no records match
      * the given key, null is returned.
      *
-     * @access public
-     * @param array $primary_key
-     * @param array $updates
-     * @return FlexibleEntityInterface|null
      * @throws ModelException
      */
-    public function updateByPk(array $primary_key, array $updates): ?FlexibleEntityInterface
+    public function updateByPk(array $primaryKey, array $updates): ?FlexibleEntityInterface
     {
         $where = $this
-            ->checkPrimaryKey($primary_key)
-            ->getWhereFrom($primary_key);
+            ->checkPrimaryKey($primaryKey)
+            ->getWhereFrom($primaryKey);
         $parameters = $this->getParametersList($updates);
-        $update_strings = [];
+        $updateStrings = [];
 
         foreach ($updates as $field_name => $new_value) {
-            $update_strings[] = sprintf(
+            $updateStrings[] = sprintf(
                 "%s = %s",
                 $this->escapeIdentifier($field_name),
                 $parameters[$field_name]
@@ -127,7 +107,7 @@ trait WriteQueries
             "update :relation set :update where :condition returning :projection",
             [
                 ':relation' => $this->getStructure()->getRelation(),
-                ':update' => join(', ', $update_strings),
+                ':update' => join(', ', $updateStrings),
                 ':condition' => (string)$where,
                 ':projection' => $this->createProjection()->formatFieldsWithFieldAlias(),
             ]
@@ -143,14 +123,9 @@ trait WriteQueries
     }
 
     /**
-     * deleteOne
-     *
      * Delete an entity from a table. Entity is passed by reference and is
      * updated with the values fetched from the deleted record.
      *
-     * @access public
-     * @param FlexibleEntityInterface $entity
-     * @return Model                    $this
      * @throws ModelException
      */
     public function deleteOne(FlexibleEntityInterface &$entity): Model
@@ -161,34 +136,20 @@ trait WriteQueries
     }
 
     /**
-     * deleteByPK
+     * Delete a record from its primary key. The deleted entity is returned or null if not found.
      *
-     * Delete a record from its primary key. The deleted entity is returned or
-     * null if not found.
-     *
-     * @access public
-     * @param array $primary_key
-     * @return FlexibleEntityInterface|null
      * @throws ModelException
      */
-    public function deleteByPK(array $primary_key): ?FlexibleEntityInterface
+    public function deleteByPK(array $primaryKey): ?FlexibleEntityInterface
     {
         $where = $this
-            ->checkPrimaryKey($primary_key)
-            ->getWhereFrom($primary_key);
+            ->checkPrimaryKey($primaryKey)
+            ->getWhereFrom($primaryKey);
 
         return $this->deleteWhere($where)->current();
     }
 
-    /**
-     * deleteWhere
-     *
-     * Delete records by a given condition. A collection of all deleted entries is returned.
-     *
-     * @param string|Where $where
-     * @param array $values
-     * @return CollectionIterator
-     */
+    /** Delete records by a given condition. A collection of all deleted entries is returned. */
     public function deleteWhere(string|Where $where, array $values = []): CollectionIterator
     {
         if (!$where instanceof Where) {
@@ -214,13 +175,8 @@ trait WriteQueries
     }
 
     /**
-     * createAndSave
-     *
      * Create a new entity from given values and save it in the database.
      *
-     * @access public
-     * @param array $values
-     * @return FlexibleEntityInterface
      * @throws ModelException
      */
     public function createAndSave(array $values): FlexibleEntityInterface
@@ -231,15 +187,7 @@ trait WriteQueries
         return $entity;
     }
 
-    /**
-     * getEscapedFieldList
-     *
-     * Return a comma separated list with the given escaped field names.
-     *
-     * @access protected
-     * @param array $fields
-     * @return string
-     */
+    /** Return a comma separated list with the given escaped field names. */
     public function getEscapedFieldList(array $fields): string
     {
         return join(
@@ -251,13 +199,8 @@ trait WriteQueries
     }
 
     /**
-     * getParametersList
-     *
      * Create a parameters list from values.
      *
-     * @access protected
-     * @param array $values
-     * @return array    $escape codes
      * @throws ModelException
      */
     protected function getParametersList(array $values): array

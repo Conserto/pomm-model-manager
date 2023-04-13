@@ -13,12 +13,8 @@ use PommProject\Foundation\Tester\FoundationSessionAtoum;
 use PommProject\ModelManager\SessionBuilder;
 
 /**
- * ModelSessionAwareAtoum
+ * Session aware Atoum instance. This uses ModelManager's session builder to ensure all poolers are loaded.
  *
- * Session aware Atoum instance. This uses ModelManager's session builder to
- * ensure all poolers are loaded.
- *
- * @package   ModelManager
  * @copyright 2014 - 2015 Grégoire HUBERT
  * @author    Grégoire HUBERT
  * @license   X11 {@link http://opensource.org/licenses/mit-license.php}

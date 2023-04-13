@@ -16,13 +16,10 @@ use PommProject\Foundation\Where;
 use PommProject\ModelManager\Exception\GeneratorException;
 
 /**
- * ModelGenerator
- *
  * Generate a new model file.
  * If the given file already exist, it needs the force option to be set at
  * 'yes'.
  *
- * @package   ModelManager
  * @copyright 2014 - 2015 Grégoire HUBERT
  * @author    Grégoire HUBERT
  * @license   X11 {@link http://opensource.org/licenses/mit-license.php}
@@ -30,8 +27,6 @@ use PommProject\ModelManager\Exception\GeneratorException;
 class ModelGenerator extends BaseGenerator
 {
     /**
-     * generate
-     *
      * Generate structure file.
      *
      * @throws GeneratorException|FoundationException
@@ -39,22 +34,22 @@ class ModelGenerator extends BaseGenerator
      */
     public function generate(ParameterHolder $input, array $output = []): array
     {
-        $schema_oid = $this
+        $schemaOid = $this
             ->getSession()
             ->getInspector()
             ->getSchemaOid($this->schema);
 
-        if ($schema_oid === null) {
+        if ($schemaOid === null) {
             throw new GeneratorException(sprintf("Schema '%s' does not exist.", $this->schema));
         }
 
-        $relations_info = $this
+        $relationsInfo = $this
             ->getSession()
             ->getInspector()
-            ->getSchemaRelations($schema_oid, new Where('cl.relname = $*', [$this->relation]))
+            ->getSchemaRelations($schemaOid, new Where('cl.relname = $*', [$this->relation]))
             ;
 
-        if ($relations_info->isEmpty()) {
+        if ($relationsInfo->isEmpty()) {
             throw new GeneratorException(sprintf("Relation '%s.%s' does not exist.", $this->schema, $this->relation));
         }
 
@@ -67,8 +62,9 @@ class ModelGenerator extends BaseGenerator
                     [
                         'entity'        => Inflector::studlyCaps($this->relation),
                             'namespace'     => trim($this->namespace, '\\'),
-                            'trait'         => $relations_info->current()['type'] === 'table' ? 'WriteQueries' : 'ReadQueries',
-                            'relation_type' => $relations_info->current()['type'],
+                            'trait'         => $relationsInfo->current()['type'] === 'table'
+                                ? 'WriteQueries' : 'ReadQueries',
+                            'relation_type' => $relationsInfo->current()['type'],
                             'relation'      => $this->relation
                         ]
                     )
@@ -77,11 +73,7 @@ class ModelGenerator extends BaseGenerator
         return $output;
     }
 
-    /**
-     * getCodeTemplate
-     *
-     * @see BaseGenerator
-     */
+    /** @see BaseGenerator */
     protected function getCodeTemplate(): string
     {
         return <<<'__WRAP'
@@ -99,8 +91,6 @@ use {:namespace:}\AutoStructure\{:entity:} as {:entity:}Structure;
 use {:namespace:}\{:entity:};
 
 /**
- * {:entity:}Model
- *
  * Model class for {:relation_type:} {:relation:}.
  *
  * @see Model
@@ -109,13 +99,6 @@ class {:entity:}Model extends Model
 {
     use {:trait:};
 
-    /**
-     * __construct()
-     *
-     * Model constructor
-     *
-     * @access public
-     */
     public function __construct()
     {
         $this->structure = new {:entity:}Structure;

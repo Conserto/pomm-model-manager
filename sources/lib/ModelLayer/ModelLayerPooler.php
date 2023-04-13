@@ -14,11 +14,8 @@ use PommProject\Foundation\Client\ClientPoolerInterface;
 use PommProject\ModelManager\Exception\ModelLayerException;
 
 /**
- * ModelLayerPooler
- *
  * Pooler for ModelLayer session client.
  *
- * @package   ModelManager
  * @copyright 2014 - 2015 Grégoire HUBERT
  * @author    Grégoire HUBERT
  * @license   X11 {@link http://opensource.org/licenses/mit-license.php}
@@ -26,21 +23,13 @@ use PommProject\ModelManager\Exception\ModelLayerException;
  */
 class ModelLayerPooler extends ClientPooler
 {
-    /**
-     * getPoolerType
-     *
-     * @see ClientPoolerInterface
-     */
+    /** @see ClientPoolerInterface */
     public function getPoolerType(): string
     {
         return 'model_layer';
     }
 
     /**
-     * createClient
-     *
-     * @param string $identifier
-     * @return ModelLayer
      * @throws ModelLayerException
      * @see    ClientPooler
      */
@@ -52,7 +41,9 @@ class ModelLayerPooler extends ClientPooler
                 throw new ModelLayerException(sprintf("Class '%s' is not a subclass of ModelLayer.", $identifier));
             }
         } catch (\ReflectionException $e) {
-            throw new ModelLayerException(sprintf("Error while loading class '%s' (%s).", $identifier, $e->getMessage()));
+            throw new ModelLayerException(
+                sprintf("Error while loading class '%s' (%s).", $identifier, $e->getMessage())
+            );
         }
 
         return new $identifier();

@@ -14,11 +14,8 @@ use PommProject\Foundation\ParameterHolder;
 use PommProject\ModelManager\Exception\GeneratorException;
 
 /**
- * EntityGenerator
- *
  * Entity generator.
  *
- * @package   ModelManager
  * @copyright 2014 - 2015 Grégoire HUBERT
  * @author    Grégoire HUBERT
  * @license   X11 {@link http://opensource.org/licenses/mit-license.php}
@@ -27,8 +24,6 @@ use PommProject\ModelManager\Exception\GeneratorException;
 class EntityGenerator extends BaseGenerator
 {
     /**
-     * generate
-     *
      * Generate Entity file.
      *
      * @throws GeneratorException
@@ -47,8 +42,8 @@ class EntityGenerator extends BaseGenerator
                         'entity'    => Inflector::studlyCaps($this->relation),
                         'relation'  => $this->relation,
                         'schema'    => $this->schema,
-                        'flexible_container' => $this->flexible_container,
-                        'flexible_container_class' => array_reverse(explode('\\', (string) $this->flexible_container))[0]
+                        'flexible_container' => $this->flexibleContainer,
+                        'flexible_container_class' => array_reverse(explode('\\', (string) $this->flexibleContainer))[0]
                     ]
                 )
             );
@@ -56,11 +51,7 @@ class EntityGenerator extends BaseGenerator
         return $output;
     }
 
-    /**
-     * getCodeTemplate
-     *
-     * @see BaseGenerator
-     */
+    /** @see BaseGenerator */
     protected function getCodeTemplate(): string
     {
         return <<<'__WRAP'
@@ -71,8 +62,6 @@ namespace {:namespace:};
 use {:flexible_container:};
 
 /**
- * {:entity:}
- *
  * Flexible entity for relation
  * {:schema:}.{:relation:}
  *

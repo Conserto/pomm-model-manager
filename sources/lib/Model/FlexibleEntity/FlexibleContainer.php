@@ -13,11 +13,8 @@ use PommProject\Foundation\Inflector;
 use PommProject\ModelManager\Exception\ModelException;
 
 /**
- * FlexibleContainerTrait
- *
  * Trait for being a flexible data container.
  *
- * @package   ModelManager
  * @copyright 2014 - 2015 Grégoire HUBERT
  * @author    Grégoire HUBERT
  * @license   X11 {@link http://opensource.org/licenses/mit-license.php}
@@ -29,11 +26,7 @@ abstract class FlexibleContainer implements FlexibleEntityInterface, \IteratorAg
 
     protected array $container = [];
 
-    /**
-     * hydrate
-     *
-     * @see FlexibleEntityInterface
-     */
+    /** @see FlexibleEntityInterface */
     public function hydrate(array $fields): FlexibleContainer
     {
         $this->container = array_merge($this->container, $fields);
@@ -42,10 +35,7 @@ abstract class FlexibleContainer implements FlexibleEntityInterface, \IteratorAg
     }
 
     /**
-     * fields
-     *
-     * Return the fields array. If a given field does not exist, an exception
-     * is thrown.
+     * Return the fields array. If a given field does not exist, an exception is thrown.
      *
      * @throws  \InvalidArgumentException
      * @see     FlexibleEntityInterface
@@ -76,70 +66,51 @@ abstract class FlexibleContainer implements FlexibleEntityInterface, \IteratorAg
     }
 
 
-    /**
-     * extract
-     *
-     * @see FlexibleEntityInterface
-     */
+    /** @see FlexibleEntityInterface */
     public function extract(): array
     {
         return $this->fields();
     }
 
-    /**
-     * getIterator
-     *
-     * @see FlexibleEntityInterface
-     */
+    /** @see FlexibleEntityInterface */
     public function getIterator(): \Traversable
     {
         return new \ArrayIterator($this->extract());
     }
 
     /**
-     * __call
-     *
      * Allows dynamic methods getXxx, setXxx, hasXxx or clearXxx.
      *
-     * @access public
      * @throws ModelException if method does not exist.
-     * @param  mixed $method
-     * @param  mixed $arguments
-     * @return mixed
      */
     public function __call(mixed $method, mixed $arguments): mixed
     {
         [$operation, $attribute] = $this->extractMethodName($method);
+        $returned = $this;
 
         switch ($operation) {
         case 'set':
             $this->container[$attribute] = $arguments[0];
-
-            return $this;
+            break;
         case 'get':
-            return $this
-                ->checkAttribute($attribute)
-                ->container[$attribute]
-                ;
+            $returned = $this->checkAttribute($attribute)->container[$attribute];
+            break;
         case 'has':
-            return isset($this->container[$attribute]) || array_key_exists($attribute, $this->container);
+            $returned = isset($this->container[$attribute]) || array_key_exists($attribute, $this->container);
+            break;
         case 'clear':
             unset($this->checkAttribute($attribute)->container[$attribute]);
-
-            return $this;
+            break;
         default:
             throw new ModelException(sprintf('No such method "%s:%s()"', $this::class, $method));
         }
+
+        return $returned;
     }
 
     /**
-     * checkAttribute
-     *
      * Check if the attribute exist. Throw an exception if not.
      *
-     * @access protected
-     * @param string $attribute
-     * @return FlexibleContainer    $this
      * @throws ModelException
      */
     protected function checkAttribute(string $attribute): FlexibleContainer
@@ -158,15 +129,10 @@ abstract class FlexibleContainer implements FlexibleEntityInterface, \IteratorAg
     }
 
     /**
-     * extractMethodName
-     *
      * Get container field name from method name.
      * It returns an array with the operation (get, set, etc.) as first member
      * and the name of the attribute as second member.
      *
-     * @access protected
-     * @param string $argument
-     * @return array
      * @throws ModelException
      */
     protected function extractMethodName(string $argument): array

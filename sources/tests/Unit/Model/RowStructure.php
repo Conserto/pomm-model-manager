@@ -120,7 +120,7 @@ class GoodStructure extends PommRowStructure
     public function __construct()
     {
         $this->relation                  = 'pika';
-        $this->field_definitions['pika'] = 'int4';
+        $this->fieldDefinitions['pika'] = 'int4';
     }
 }
 
@@ -129,7 +129,7 @@ class ChuStructure extends PommRowStructure
     public function __construct()
     {
         $this->relation                 = 'chu';
-        $this->field_definitions['chu'] = 'bool';
-        $this->primary_key              = ['chu'];
+        $this->fieldDefinitions['chu'] = 'bool';
+        $this->primaryKey              = ['chu'];
     }
 }

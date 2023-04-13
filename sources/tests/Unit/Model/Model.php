@@ -513,7 +513,7 @@ class NoStructureModel extends PommModel
 {
     public function __construct()
     {
-        $this->flexible_entity_class = 'something';
+        $this->flexibleEntityClass = 'something';
     }
 }
 

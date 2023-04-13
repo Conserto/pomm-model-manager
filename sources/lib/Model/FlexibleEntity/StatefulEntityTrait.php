@@ -10,12 +10,9 @@
 namespace PommProject\ModelManager\Model\FlexibleEntity;
 
 /**
- * StatefulEntityTrait
- *
  * Entities with the ability to keep record of their modification or
  * persistence status.
  *
- * @package     ModelManager
  * @copyright   2014 - 2015 Grégoire HUBERT
  * @author      Grégoire HUBERT
  * @license     X11 {@link http://opensource.org/licenses/mit-license.php}
@@ -39,14 +36,7 @@ trait StatefulEntityTrait
         return $this->status;
     }
 
-    /**
-     * touch
-     *
-     * Set the entity as modified.
-     *
-     * @access public
-     * @return FlexibleEntityInterface
-     */
+    /** Set the entity as modified. */
     public function touch(): FlexibleEntityInterface
     {
         $this->status |= FlexibleEntityInterface::STATUS_MODIFIED;
