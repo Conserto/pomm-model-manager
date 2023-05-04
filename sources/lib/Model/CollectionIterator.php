@@ -24,6 +24,9 @@ use PommProject\ModelManager\Model\FlexibleEntity\FlexibleEntityInterface;
  * @copyright 2014 - 2015 Grégoire HUBERT
  * @author    Grégoire HUBERT <hubert.greg@gmail.com>
  * @license   MIT/X11 {@link http://opensource.org/licenses/mit-license.php}
+ *
+ * @template-covariant T of FlexibleEntityInterface
+ * @extends ResultIterator<T>
  */
 class CollectionIterator extends ResultIterator
 {
@@ -58,6 +61,8 @@ class CollectionIterator extends ResultIterator
     /**
      * @throws ModelException
      * @see     ResultIterator
+     *
+     * @return T
      */
     public function get(int $index): FlexibleEntityInterface
     {
@@ -69,6 +74,8 @@ class CollectionIterator extends ResultIterator
      *
      * @throws ModelException
      * @see     ResultIterator
+     *
+     * @return T
      */
     public function parseRow(array $values): FlexibleEntityInterface
     {
@@ -97,7 +104,7 @@ class CollectionIterator extends ResultIterator
     }
 
     /** Register a new callable filter. All filters MUST return an associative array with field name as key. */
-    public function registerFilter(callable $callable): CollectionIterator
+    public function registerFilter(callable $callable): self
     {
         $this->filters[] = $callable;
 
@@ -105,7 +112,7 @@ class CollectionIterator extends ResultIterator
     }
 
     /** Empty the filter stack. */
-    public function clearFilters(): CollectionIterator
+    public function clearFilters(): self
     {
         $this->filters = [];
 

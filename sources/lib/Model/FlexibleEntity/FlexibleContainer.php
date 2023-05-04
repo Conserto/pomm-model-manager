@@ -24,10 +24,15 @@ abstract class FlexibleContainer implements FlexibleEntityInterface, \IteratorAg
     use StatefulEntityTrait;
     use ModifiedColumnEntityTrait;
 
+    /** @var array<string, mixed> */
     protected array $container = [];
 
-    /** @see FlexibleEntityInterface */
-    public function hydrate(array $fields): FlexibleContainer
+    /**
+     * @see FlexibleEntityInterface
+     *
+     * @param array<string, mixed> $fields
+     */
+    public function hydrate(array $fields): self
     {
         $this->container = array_merge($this->container, $fields);
 
@@ -39,6 +44,9 @@ abstract class FlexibleContainer implements FlexibleEntityInterface, \IteratorAg
      *
      * @throws  \InvalidArgumentException
      * @see     FlexibleEntityInterface
+     *
+     * @param array<string> $fields
+     * @return array<string, mixed>
      */
     public function fields(array $fields = null): array
     {
@@ -66,13 +74,21 @@ abstract class FlexibleContainer implements FlexibleEntityInterface, \IteratorAg
     }
 
 
-    /** @see FlexibleEntityInterface */
+    /**
+     * @see FlexibleEntityInterface
+     *
+     * @return array<string, mixed>
+     */
     public function extract(): array
     {
         return $this->fields();
     }
 
-    /** @see FlexibleEntityInterface */
+    /**
+     * @see FlexibleEntityInterface
+     *
+     * @return \Traversable<string, mixed>
+     */
     public function getIterator(): \Traversable
     {
         return new \ArrayIterator($this->extract());
@@ -113,7 +129,7 @@ abstract class FlexibleContainer implements FlexibleEntityInterface, \IteratorAg
      *
      * @throws ModelException
      */
-    protected function checkAttribute(string $attribute): FlexibleContainer
+    protected function checkAttribute(string $attribute): self
     {
         if (!(isset($this->container[$attribute]) || array_key_exists($attribute, $this->container))) {
             throw new ModelException(
@@ -134,6 +150,8 @@ abstract class FlexibleContainer implements FlexibleEntityInterface, \IteratorAg
      * and the name of the attribute as second member.
      *
      * @throws ModelException
+     *
+     * @return array{0: string, 1: string}
      */
     protected function extractMethodName(string $argument): array
     {

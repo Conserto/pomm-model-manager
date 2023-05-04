@@ -43,7 +43,7 @@ class HydrationPlan
      *
      * @throws FoundationException|ModelException
      */
-    protected function loadConverters(): HydrationPlan
+    protected function loadConverters(): self
     {
         foreach ($this->projection as $name => $type) {
             $identifier = $this->projection->isArray($name) ? 'array' : $type;

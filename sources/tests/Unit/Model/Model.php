@@ -36,7 +36,7 @@ class Model extends BaseTest
     /**
      * @throws FoundationException
      */
-    protected function initializeSession(Session $session)
+    protected function initializeSession(Session $session): void
     {
         $session
             ->getPoolerForType('converter')

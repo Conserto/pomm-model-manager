@@ -28,10 +28,14 @@ use PommProject\ModelManager\Model\FlexibleEntity\FlexibleEntityInterface;
  * @author      Grégoire HUBERT
  * @license     X11 {@link http://opensource.org/licenses/mit-license.php}
  * @see         ClientInterface
+ *
+ * @template T of FlexibleEntityInterface
  */
 abstract class Model implements ClientInterface
 {
     protected ?Session $session = null;
+
+    /** @var class-string<T>|null  */
     protected ?string $flexibleEntityClass = null;
 
     protected ?RowStructure $structure = null;
@@ -116,6 +120,12 @@ abstract class Model implements ClientInterface
      *
      * @throws FoundationException
      * @throws ModelException
+     *
+     * @param Projection|null $projection
+     * @param string $sql
+     * @param array $values
+     *
+     * @return CollectionIterator<T>
      */
     protected function query(string $sql, array $values = [], Projection $projection = null): CollectionIterator
     {
@@ -261,7 +271,7 @@ abstract class Model implements ClientInterface
      *
      * @throws ConnectionException|ModelException|SqlException|FoundationException
      */
-    protected function executeAnonymousQuery(string $sql): Model
+    protected function executeAnonymousQuery(string $sql): static
     {
         $this
             ->getSession()

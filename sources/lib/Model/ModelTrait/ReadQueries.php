@@ -26,9 +26,12 @@ use PommProject\ModelManager\Model\RowStructure;
  * @copyright   2014 - 2015 Grégoire HUBERT
  * @author      Grégoire HUBERT
  * @license     X11 {@link http://opensource.org/licenses/mit-license.php}
+ *
+ * @template T of FlexibleEntityInterface
  */
 trait ReadQueries
 {
+    /** @use BaseTrait<T> */
     use BaseTrait;
 
     /** @see Model */
@@ -42,6 +45,9 @@ trait ReadQueries
      * to the query. This is mainly useful for "order by" statements.
      * NOTE: suffix is inserted as is with NO ESCAPING. DO NOT use it to place
      * "where" condition nor any untrusted params.
+     *
+     * @param string|null $suffix
+     * @return CollectionIterator<T>
      */
     public function findAll(?string $suffix = null): CollectionIterator
     {
@@ -61,6 +67,11 @@ trait ReadQueries
      * Perform a simple select on a given condition
      * NOTE: suffix is inserted as is with NO ESCAPING. DO NOT use it to place
      * "where" condition nor any untrusted params.
+     *
+     * @param string|Where $where
+     * @param array $values
+     * @param string $suffix
+     * @return CollectionIterator<T>
      */
     public function findWhere(string|Where $where, array $values = [], string $suffix = ''): CollectionIterator
     {
@@ -74,6 +85,8 @@ trait ReadQueries
     /**
      * Return an entity upon its primary key. If no entities are found, null is returned.
      *
+     * @param array $primaryKey
+     * @return ?T
      * @throws ModelException
      */
     public function findByPK(array $primaryKey): ?FlexibleEntityInterface
@@ -144,6 +157,11 @@ trait ReadQueries
     /**
      * Paginate a query.
      *
+     * @param Where $where
+     * @param int $itemPerPage
+     * @param int $page
+     * @param string $suffix
+     * @return Pager<T>
      * @throws FoundationException
      */
     public function paginateFindWhere(Where $where, int $itemPerPage, int $page = 1, string $suffix = ''): Pager
@@ -162,8 +180,15 @@ trait ReadQueries
 
     /**
      * Paginate a SQL query.
-     * It is important to note it adds limit and offset at the end of the given
-     * query.
+     * It is important to note it adds limit and offset at the end of the given query.
+     *
+     * @param string $sql
+     * @param array $values
+     * @param int $count
+     * @param int $itemPerPage
+     * @param int $page
+     * @param Projection|null $projection
+     * @return Pager<T>
      */
     protected function paginateQuery(
         string $sql,
@@ -227,7 +252,7 @@ trait ReadQueries
      *
      * @throws ModelException
      */
-    protected function checkPrimaryKey(array $values): Model
+    protected function checkPrimaryKey(array $values): self
     {
         if (!$this->hasPrimaryKey()) {
             throw new ModelException(

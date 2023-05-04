@@ -36,7 +36,7 @@ interface FlexibleEntityInterface
      * Set raw values in an entity. If some values are already set, they are
      * overridden with new values.
      */
-    public function hydrate(array $fields): FlexibleEntityInterface;
+    public function hydrate(array $fields): self;
 
     /**
      * Return an array of entity raw values. An optional array can be passed
@@ -66,7 +66,7 @@ interface FlexibleEntityInterface
      * returns itself. If no status are provided, it returns the current
      * status.
      */
-    public function status(int $status = null): int|FlexibleEntityInterface;
+    public function status(int $status = null): int|self;
 
     /** Return columns modified */
     public function getModifiedColumns(): mixed;

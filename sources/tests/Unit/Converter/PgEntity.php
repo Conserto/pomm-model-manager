@@ -20,7 +20,7 @@ use PommProject\ModelManager\Test\Unit\BaseTest;
 
 class PgEntity extends BaseTest
 {
-    protected function initializeSession(Session $session)
+    protected function initializeSession(Session $session): void
     {
         parent::initializeSession($session);
         $session

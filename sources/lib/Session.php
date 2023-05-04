@@ -29,6 +29,9 @@ class Session extends FoundationSession
      * Return a model instance
      *
      * @throws FoundationException
+     * @template T of Model
+     * @param class-string<T> $class
+     * @return T
      */
     public function getModel(string $class): Model
     {
@@ -41,6 +44,9 @@ class Session extends FoundationSession
      * Return a model layer instance
      *
      * @throws FoundationException
+     * @template T of ModelLayer
+     * @param class-string<T> $class
+     * @return T
      */
     public function getModelLayer(string $class): ModelLayer
     {

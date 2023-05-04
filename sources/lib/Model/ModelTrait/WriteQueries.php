@@ -14,7 +14,6 @@ use PommProject\Foundation\Where;
 use PommProject\ModelManager\Exception\ModelException;
 use PommProject\ModelManager\Model\CollectionIterator;
 use PommProject\ModelManager\Model\FlexibleEntity\FlexibleEntityInterface;
-use PommProject\ModelManager\Model\Model;
 
 /**
  * Basic write queries for model instances.
@@ -22,9 +21,12 @@ use PommProject\ModelManager\Model\Model;
  * @copyright 2014 - 2015 Grégoire HUBERT
  * @author    Grégoire HUBERT
  * @license   X11 {@link http://opensource.org/licenses/mit-license.php}
+ *
+ * @template T of FlexibleEntityInterface
  */
 trait WriteQueries
 {
+    /** @use ReadQueries<T> */
     use ReadQueries;
 
     /**
@@ -33,7 +35,7 @@ trait WriteQueries
      *
      * @throws ModelException
      */
-    public function insertOne(FlexibleEntityInterface &$entity): Model
+    public function insertOne(FlexibleEntityInterface &$entity): self
     {
         $values = $entity->fields(
             array_intersect(
@@ -67,7 +69,7 @@ trait WriteQueries
      *
      * @throws ModelException
      */
-    public function updateOne(FlexibleEntityInterface &$entity, array $fields = []): static
+    public function updateOne(FlexibleEntityInterface &$entity, array $fields = []): self
     {
         if (empty($fields)) {
             $fields = $entity->getModifiedColumns();
@@ -85,6 +87,7 @@ trait WriteQueries
      * Update a record and fetch it with its new values. If no records match
      * the given key, null is returned.
      *
+     * @return ?T
      * @throws ModelException
      */
     public function updateByPk(array $primaryKey, array $updates): ?FlexibleEntityInterface
@@ -128,7 +131,7 @@ trait WriteQueries
      *
      * @throws ModelException
      */
-    public function deleteOne(FlexibleEntityInterface &$entity): Model
+    public function deleteOne(FlexibleEntityInterface &$entity): self
     {
         $entity = $this->deleteByPK($entity->fields($this->getStructure()->getPrimaryKey()));
 
@@ -138,6 +141,7 @@ trait WriteQueries
     /**
      * Delete a record from its primary key. The deleted entity is returned or null if not found.
      *
+     * @return ?T
      * @throws ModelException
      */
     public function deleteByPK(array $primaryKey): ?FlexibleEntityInterface
@@ -149,7 +153,13 @@ trait WriteQueries
         return $this->deleteWhere($where)->current();
     }
 
-    /** Delete records by a given condition. A collection of all deleted entries is returned. */
+    /**
+     * Delete records by a given condition. A collection of all deleted entries is returned.
+     *
+     * @param string|Where $where
+     * @param array $values
+     * @return CollectionIterator<T>
+     */
     public function deleteWhere(string|Where $where, array $values = []): CollectionIterator
     {
         if (!$where instanceof Where) {
@@ -177,6 +187,7 @@ trait WriteQueries
     /**
      * Create a new entity from given values and save it in the database.
      *
+     * @return T
      * @throws ModelException
      */
     public function createAndSave(array $values): FlexibleEntityInterface
@@ -200,7 +211,7 @@ trait WriteQueries
 
     /**
      * Create a parameters list from values.
-     *
+     * @return array<mixed, string>
      * @throws ModelException
      */
     protected function getParametersList(array $values): array

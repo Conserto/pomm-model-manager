@@ -22,18 +22,24 @@ use PommProject\ModelManager\Model\Projection;
 use PommProject\ModelManager\Model\RowStructure;
 
 /**
- * Entity converter.
- * It handles row types and composite types.
+ * Entity converter. It handles row types and composite types.
  *
  * @copyright 2014 - 2015 Grégoire HUBERT
  * @author    Grégoire HUBERT
  * @license   X11 {@link http://opensource.org/licenses/mit-license.php}
  * @see       ConverterInterface
+ *
+ * @template T of FlexibleEntityInterface
  */
 class PgEntity implements ConverterInterface
 {
     protected IdentityMapper $identityMapper;
 
+    /**
+     * @param class-string<T> $flexibleEntityClass
+     * @param RowStructure $rowStructure
+     * @param IdentityMapper|null $identityMapper
+     */
     public function __construct(
         protected string $flexibleEntityClass,
         protected RowStructure $rowStructure,
@@ -48,6 +54,8 @@ class PgEntity implements ConverterInterface
      * @throws FoundationException
      * @throws ModelException
      * @see ConverterInterface
+     *
+     * @return T|null
      */
     public function fromPg(?string $data, string $type, Session $session): ?FlexibleEntityInterface
     {
@@ -68,7 +76,11 @@ class PgEntity implements ConverterInterface
         return $this->cacheEntity($entity);
     }
 
-    /** Split data into an array prefixed with field names. */
+    /**
+     * Split data into an array prefixed with field names.
+     *
+     * @return array<string, mixed>
+     */
     private function transformData(string $data, Projection $projection): array
     {
         $values = str_getcsv($data);
@@ -85,7 +97,10 @@ class PgEntity implements ConverterInterface
         return $outValues;
     }
 
-    /** Check entity against the cache. */
+    /**
+     * Check entity against the cache
+     * @return T
+     */
     public function cacheEntity(FlexibleEntityInterface $entity): FlexibleEntityInterface
     {
         return $this
@@ -98,6 +113,7 @@ class PgEntity implements ConverterInterface
      * @throws FoundationException
      * @throws ModelException
      * @see ConverterInterface
+     * @param T|array|null $data
      */
     public function toPg(mixed $data, string $type, Session $session): string
     {
@@ -133,8 +149,9 @@ class PgEntity implements ConverterInterface
      * Return the fields array.
      *
      * @throws ConverterException
+     * @return array<string, mixed>
      */
-    protected function getFields(mixed $data): array
+    protected function getFields(array|FlexibleEntityInterface $data): array
     {
         if (is_array($data)) {
             $fields = $data;
@@ -149,9 +166,11 @@ class PgEntity implements ConverterInterface
     /**
      * Check if the given data is the right entity.
      *
-     * @throws  ConverterException
+     * @param T $data
+     * @return PgEntity
+     * @throws ConverterException
      */
-    protected function checkData(mixed $data): PgEntity
+    protected function checkData(FlexibleEntityInterface $data): PgEntity
     {
         if (!$data instanceof $this->flexibleEntityClass) {
             throw new ConverterException(
@@ -167,10 +186,16 @@ class PgEntity implements ConverterInterface
     }
 
     /**
+     * @see ConverterInterface
+     *
+     * @param T|array|null $data
+     * @param string $type
+     * @param Session $session
+     * @return string|null
+     *
      * @throws ConverterException
      * @throws FoundationException
      * @throws ModelException
-     * @see ConverterInterface
      */
     public function toPgStandardFormat(mixed $data, string $type, Session $session): ?string
     {

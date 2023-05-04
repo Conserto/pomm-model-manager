@@ -1,4 +1,5 @@
 {
+    "version": "3.2.0",
     "name": "conserto/pomm-model-manager",
     "type": "library",
     "description":  "PHP Object Model Manager for Postgresql",
@@ -13,7 +14,7 @@
     },
     "require-dev": {
         "atoum/atoum": "^4.0",
-        "conserto/pomm-foundation": "^3.1",
+        "conserto/pomm-foundation": "^3.2",
         "phpstan/phpstan": "^1.8"
     },
     "suggest": {

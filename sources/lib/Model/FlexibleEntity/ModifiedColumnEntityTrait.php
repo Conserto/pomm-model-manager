@@ -17,14 +17,16 @@ namespace PommProject\ModelManager\Model\FlexibleEntity;
  */
 trait ModifiedColumnEntityTrait
 {
+    /** @var array<int, string> */
     private array $modifiedColumns = [];
 
+    /** @return array<int, string> */
     public function getModifiedColumns(): array
     {
         return $this->modifiedColumns;
     }
 
-    public function addModifiedColumn(string $column): FlexibleEntityInterface
+    public function addModifiedColumn(string $column): self
     {
         if (!in_array($column, $this->modifiedColumns)) {
             $this->modifiedColumns[] = $column;
@@ -33,7 +35,7 @@ trait ModifiedColumnEntityTrait
         return $this;
     }
 
-    public function removeModifiedColumn(string $column): FlexibleEntityInterface
+    public function removeModifiedColumn(string $column): self
     {
         $key = array_search($column, $this->modifiedColumns, true);
 

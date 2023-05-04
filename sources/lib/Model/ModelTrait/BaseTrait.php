@@ -22,13 +22,22 @@ use PommProject\ModelManager\Model\RowStructure;
  * @copyright 2014 - 2015 Grégoire HUBERT
  * @author    Grégoire HUBERT
  * @license   X11 {@link http://opensource.org/licenses/mit-license.php}
+ *
+ * @template T of FlexibleEntityInterface
  */
 trait BaseTrait
 {
     /** @see Model */
     abstract public function createProjection(): Projection;
 
-    /** @see Model */
+    /**
+     * @see Model
+     *
+     * @param string $sql
+     * @param array $values
+     * @param Projection|null $projection
+     * @return CollectionIterator<T>
+     */
     abstract protected function query(
         string $sql,
         array $values = [],
@@ -51,8 +60,12 @@ trait BaseTrait
     abstract public function escapeIdentifier(string $string): string;
 
     /** @see Model */
-    abstract public function executeAnonymousQuery(string $sql): Model;
+    abstract public function executeAnonymousQuery(string $sql): static;
 
-    /** @see Model */
+    /**
+     * @see Model
+     *
+     * @return T
+     */
     abstract public function createEntity(array $values = []): FlexibleEntityInterface;
 }
