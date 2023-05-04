@@ -15,13 +15,10 @@ use PommProject\Foundation\Session\Session;
 use PommProject\ModelManager\ModelLayer\ModelLayer;
 
 /**
- * SimpleModelLayer
- *
  * This class is NOT the right example of how ModelLayer is to be used. Good
  * practices are to handle complete transaction within a single method.
  * Transactions are split in several methods here to be tested properly.
  *
- * @package Pomm
  * @copyright 2014 Grégoire HUBERT
  * @author Grégoire HUBERT
  * @license X11 {@link http://opensource.org/licenses/mit-license.php}
@@ -88,14 +85,14 @@ class SimpleModelLayer extends ModelLayer
         return parent::setDeferrable($keys, $state);
     }
 
-    public function setTransactionIsolationLevel(string $isolation_level): ModelLayer
+    public function setTransactionIsolationLevel(string $isolationLevel): ModelLayer
     {
-        return parent::setTransactionIsolationLevel($isolation_level);
+        return parent::setTransactionIsolationLevel($isolationLevel);
     }
 
-    public function setTransactionAccessMode($access_mode): ModelLayer
+    public function setTransactionAccessMode($accessMode): ModelLayer
     {
-        return parent::setTransactionAccessMode($access_mode);
+        return parent::setTransactionAccessMode($accessMode);
     }
 
     public function executeAnonymousQuery(string $sql): ResultHandler

@@ -9,10 +9,10 @@
  */
 namespace PommProject\ModelManager\Test\Unit\Model;
 
-use Atoum;
+use atoum\atoum;
 use PommProject\ModelManager\Test\Fixture\ComplexFixture;
 
-class IdentityMapper extends Atoum
+class IdentityMapper extends atoum\test
 {
     public function testFetch()
     {

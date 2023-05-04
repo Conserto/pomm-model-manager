@@ -9,9 +9,9 @@
  */
 namespace PommProject\ModelManager\Test\Unit\Model\FlexibleEntity;
 
-use Atoum;
+use atoum\atoum;
 
-class FlexibleContainer extends Atoum
+class FlexibleContainer extends atoum\test
 {
     public function testHydrate()
     {

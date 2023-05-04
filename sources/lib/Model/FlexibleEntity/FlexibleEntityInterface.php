@@ -11,9 +11,6 @@
 namespace PommProject\ModelManager\Model\FlexibleEntity;
 
 /**
- * FlexibleEntityInterface
- *
- * @package   ModelManager
  * @copyright 2014 - 2015 Grégoire HUBERT
  * @author    Grégoire HUBERT
  * @license   X11 {@link http://opensource.org/licenses/mit-license.php}
@@ -36,45 +33,26 @@ interface FlexibleEntityInterface
     public const STATUS_MODIFIED = 2;
 
     /**
-     * hydrate
-     *
      * Set raw values in an entity. If some values are already set, they are
      * overridden with new values.
-     *
-     * @access public
-     * @param array $fields
-     * @return FlexibleEntityInterface
      */
-    public function hydrate(array $fields): FlexibleEntityInterface;
+    public function hydrate(array $fields): self;
 
     /**
-     * fields
-     *
      * Return an array of entity raw values. An optional array can be passed
      * with the list of fields to retrieve. If the array is null, all fields
      * are returned. The case when a given field does not exist is left as
      * one's choice.
-     *
-     * @access public
-     * @param array|null $fields
-     * @return array
      */
     public function fields(array $fields = null): array;
 
     /**
-     * extract
-     *
      * Return an array with a representation of the object values. It is mostly
      * used prior to a serialization in REST API or other string responses.
-     *
-     * @access public
-     * @return array
      */
     public function extract(): array;
 
     /**
-     * status
-     *
      * Return or set the current status of the instance. The status is a
      * bitmask of the different possible states an entity can have.
      * Status can be
@@ -87,15 +65,9 @@ interface FlexibleEntityInterface
      * If a status is specified, it sets the current entity's status and
      * returns itself. If no status are provided, it returns the current
      * status.
-     *
-     * @access public
-     * @param int|null $status
-     * @return int|FlexibleEntityInterface
      */
-    public function status(int $status = null): int|FlexibleEntityInterface;
+    public function status(int $status = null): int|self;
 
-    /**
-     * Return columns modified
-     */
+    /** Return columns modified */
     public function getModifiedColumns(): mixed;
 }

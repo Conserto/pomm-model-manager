@@ -17,7 +17,7 @@ use PommProject\ModelManager\Tester\ModelSessionAtoum;
 
 abstract class BaseTest extends ModelSessionAtoum
 {
-    protected function initializeSession(Session $session)
+    protected function initializeSession(Session $session): void
     {
     }
 

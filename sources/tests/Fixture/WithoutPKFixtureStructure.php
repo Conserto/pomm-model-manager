@@ -20,7 +20,7 @@ class WithoutPKFixtureStructure extends RowStructure
             ->addField('id', 'int4')
             ->addField('a_varchar', 'varchar')
             ->addField('a_boolean', 'bool')
-            ->primary_key = []
+            ->primaryKey = []
             ;
     }
 }

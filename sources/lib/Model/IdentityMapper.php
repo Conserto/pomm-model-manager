@@ -12,57 +12,35 @@ namespace PommProject\ModelManager\Model;
 use PommProject\ModelManager\Model\FlexibleEntity\FlexibleEntityInterface;
 
 /**
- * IdentityMapper
- *
  * Cache for FlexibleEntityInterface instances to ensure there are no different
  * instances for the same data.
  *
- * @package   ModelManager
  * @copyright 2014 - 2015 Grégoire HUBERT
  * @author    Grégoire HUBERT
  * @license   X11 {@link http://opensource.org/licenses/mit-license.php}
  */
 class IdentityMapper
 {
-    /**
-     * @var FlexibleEntityInterface[]
-     */
+    /** @var FlexibleEntityInterface[] */
     protected array $instances = [];
 
     /**
-     * getSignature
-     *
-     * Compute a unique signature upon entity's values in its primary key. If
-     * an empty primary key is provided, null is returned.
-     *
-     * @static
-     * @access public
-     * @param FlexibleEntityInterface $entity
-     * @param array $primary_key
-     * @return string|null
+     * Compute a unique signature upon entity's values in its primary key. If an empty primary key is provided, null is
+     * returned.
      */
-    public static function getSignature(FlexibleEntityInterface $entity, array $primary_key): ?string
+    public static function getSignature(FlexibleEntityInterface $entity, array $primaryKey): ?string
     {
-        if (count($primary_key) === 0) {
+        if (empty($primaryKey)) {
             return null;
         }
 
-        return sha1(sprintf("%s|%s", serialize($entity->fields($primary_key)), $entity::class));
+        return sha1(sprintf("%s|%s", serialize($entity->fields($primaryKey)), $entity::class));
     }
 
-    /**
-     * fetch
-     *
-     * Pool FlexibleEntityInterface instances and update them if necessary.
-     *
-     * @access public
-     * @param  FlexibleEntityInterface  $entity
-     * @param  array                    $primary_key
-     * @return FlexibleEntityInterface
-     */
-    public function fetch(FlexibleEntityInterface $entity, array $primary_key): FlexibleEntityInterface
+    /** Pool FlexibleEntityInterface instances and update them if necessary. */
+    public function fetch(FlexibleEntityInterface $entity, array $primaryKey): FlexibleEntityInterface
     {
-        $signature = self::getSignature($entity, $primary_key);
+        $signature = self::getSignature($entity, $primaryKey);
 
         if ($signature === null) {
             return $entity;
@@ -78,14 +56,7 @@ class IdentityMapper
         return $this->instances[$signature];
     }
 
-    /**
-     * clear
-     *
-     * Flush instances from the identity mapper.
-     *
-     * @access public
-     * @return IdentityMapper $this
-     */
+    /** Flush instances from the identity mapper.*/
     public function clear(): IdentityMapper
     {
         $this->instances = [];

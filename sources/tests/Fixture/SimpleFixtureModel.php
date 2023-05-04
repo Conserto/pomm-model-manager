@@ -20,7 +20,7 @@ class SimpleFixtureModel extends Model
     public function __construct()
     {
         $this->structure = new SimpleFixtureStructure();
-        $this->flexible_entity_class = SimpleFixture::class;
+        $this->flexibleEntityClass = SimpleFixture::class;
     }
 
     /**

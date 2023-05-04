@@ -9,10 +9,10 @@
  */
 namespace PommProject\ModelManager\Test\Unit\Model;
 
-use Atoum;
+use atoum\atoum;
 use PommProject\ModelManager\Exception\ModelException;
 
-class Projection extends Atoum
+class Projection extends atoum\test
 {
     public function testConstructorEmpty()
     {

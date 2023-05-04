@@ -16,11 +16,8 @@ use PommProject\Foundation\Exception\FoundationException;
 use PommProject\ModelManager\Exception\ModelException;
 
 /**
- * ModelPooler
- *
  * Client pooler for model package.
  *
- * @package   ModelManager
  * @copyright 2014 - 2015 Grégoire HUBERT
  * @author    Grégoire HUBERT
  * @license   X11 {@link http://opensource.org/licenses/mit-license.php}
@@ -28,19 +25,13 @@ use PommProject\ModelManager\Exception\ModelException;
  */
 class ModelPooler extends ClientPooler
 {
-    /**
-     * @see ClientPoolerInterface
-     */
+    /** @see ClientPoolerInterface */
     public function getPoolerType(): string
     {
         return 'model';
     }
 
     /**
-     * getClientFromPool
-     *
-     * @param string $identifier
-     * @return ClientInterface|null
      * @throws FoundationException
      * @see    ClientPooler
      */
@@ -50,10 +41,6 @@ class ModelPooler extends ClientPooler
     }
 
     /**
-     * createModel
-     *
-     * @param string $identifier
-     * @return Model
      * @throws ModelException if incorrect
      * @see    ClientPooler
      */
@@ -70,11 +57,15 @@ class ModelPooler extends ClientPooler
         }
 
         if (!$reflection->implementsInterface(ClientInterface::class)) {
-            throw new ModelException(sprintf("'%s' class does not implement the ClientInterface interface.", $identifier));
+            throw new ModelException(
+                sprintf("'%s' class does not implement the ClientInterface interface.", $identifier)
+            );
         }
 
         if (!$reflection->isSubclassOf(Model::class)) {
-            throw new ModelException(sprintf("'%s' class does not extend \PommProject\ModelManager\Model.", $identifier));
+            throw new ModelException(
+                sprintf("'%s' class does not extend \PommProject\ModelManager\Model.", $identifier)
+            );
         }
 
         return new $identifier();

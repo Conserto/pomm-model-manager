@@ -47,7 +47,7 @@ EOSQL
         $this->getModelLayer()->rollbackTransaction();
     }
 
-    protected function initializeSession(Session $session)
+    protected function initializeSession(Session $session): void
     {
     }
 

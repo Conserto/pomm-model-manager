@@ -9,10 +9,10 @@
  */
 namespace PommProject\ModelManager\Test\Unit\Model;
 
-use Atoum;
+use atoum\atoum;
 use PommProject\ModelManager\Model\RowStructure as PommRowStructure;
 
-class RowStructure extends Atoum
+class RowStructure extends atoum\test
 {
     public function testInherits()
     {
@@ -120,7 +120,7 @@ class GoodStructure extends PommRowStructure
     public function __construct()
     {
         $this->relation                  = 'pika';
-        $this->field_definitions['pika'] = 'int4';
+        $this->fieldDefinitions['pika'] = 'int4';
     }
 }
 
@@ -129,7 +129,7 @@ class ChuStructure extends PommRowStructure
     public function __construct()
     {
         $this->relation                 = 'chu';
-        $this->field_definitions['chu'] = 'bool';
-        $this->primary_key              = ['chu'];
+        $this->fieldDefinitions['chu'] = 'bool';
+        $this->primaryKey              = ['chu'];
     }
 }

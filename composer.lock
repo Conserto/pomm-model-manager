@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "778b63e241792aba7d26197fa070365d",
+    "content-hash": "7cf512835134d59d4a48e44b567795b2",
     "packages": [
         {
             "name": "psr/log",
@@ -60,16 +60,16 @@
     "packages-dev": [
         {
             "name": "atoum/atoum",
-            "version": "4.0.3",
+            "version": "4.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/atoum/atoum.git",
-                "reference": "0fe4495643f6a529f9e304ea6933d29733253489"
+                "reference": "e866f3d4ad683c35757cd73fc6da3e3d5e563667"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/atoum/atoum/zipball/0fe4495643f6a529f9e304ea6933d29733253489",
-                "reference": "0fe4495643f6a529f9e304ea6933d29733253489",
+                "url": "https://api.github.com/repos/atoum/atoum/zipball/e866f3d4ad683c35757cd73fc6da3e3d5e563667",
+                "reference": "e866f3d4ad683c35757cd73fc6da3e3d5e563667",
                 "shasum": ""
             },
             "require": {
@@ -77,7 +77,7 @@
                 "ext-json": "*",
                 "ext-tokenizer": "*",
                 "ext-xml": "*",
-                "php": "^7.2 || ^8.0"
+                "php": "^7.4 || ^8.0"
             },
             "replace": {
                 "mageekguy/atoum": "*"
@@ -141,22 +141,22 @@
             ],
             "support": {
                 "issues": "https://github.com/atoum/atoum/issues",
-                "source": "https://github.com/atoum/atoum/tree/4.0.3"
+                "source": "https://github.com/atoum/atoum/tree/4.1"
             },
-            "time": "2021-10-22T08:10:33+00:00"
+            "time": "2022-11-20T20:18:31+00:00"
         },
         {
             "name": "conserto/pomm-foundation",
-            "version": "3.1.0",
+            "version": "3.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Conserto/pomm-foundation.git",
-                "reference": "98a0c32f4c044d467b410c0863b0115c1cff82eb"
+                "reference": "933ab4f1d7432a555dc9acf2415674ad0f56cd54"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Conserto/pomm-foundation/zipball/98a0c32f4c044d467b410c0863b0115c1cff82eb",
-                "reference": "98a0c32f4c044d467b410c0863b0115c1cff82eb",
+                "url": "https://api.github.com/repos/Conserto/pomm-foundation/zipball/933ab4f1d7432a555dc9acf2415674ad0f56cd54",
+                "reference": "933ab4f1d7432a555dc9acf2415674ad0f56cd54",
                 "shasum": ""
             },
             "require": {
@@ -193,22 +193,22 @@
                 "postgresql"
             ],
             "support": {
-                "source": "https://github.com/Conserto/pomm-foundation/tree/3.1.0"
+                "source": "https://github.com/Conserto/pomm-foundation/tree/3.2.0"
             },
-            "time": "2022-07-19T13:09:57+00:00"
+            "time": "2023-05-04T09:34:02+00:00"
         },
         {
             "name": "phpstan/phpstan",
-            "version": "1.8.1",
+            "version": "1.10.14",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpstan/phpstan.git",
-                "reference": "8dbba631fa32f4b289404469c2afd6122fd61d67"
+                "reference": "d232901b09e67538e5c86a724be841bea5768a7c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/8dbba631fa32f4b289404469c2afd6122fd61d67",
-                "reference": "8dbba631fa32f4b289404469c2afd6122fd61d67",
+                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/d232901b09e67538e5c86a724be841bea5768a7c",
+                "reference": "d232901b09e67538e5c86a724be841bea5768a7c",
                 "shasum": ""
             },
             "require": {
@@ -232,9 +232,16 @@
                 "MIT"
             ],
             "description": "PHPStan - PHP Static Analysis Tool",
+            "keywords": [
+                "dev",
+                "static analysis"
+            ],
             "support": {
+                "docs": "https://phpstan.org/user-guide/getting-started",
+                "forum": "https://github.com/phpstan/phpstan/discussions",
                 "issues": "https://github.com/phpstan/phpstan/issues",
-                "source": "https://github.com/phpstan/phpstan/tree/1.8.1"
+                "security": "https://github.com/phpstan/phpstan/security/policy",
+                "source": "https://github.com/phpstan/phpstan-src"
             },
             "funding": [
                 {
@@ -246,15 +253,11 @@
                     "type": "github"
                 },
                 {
-                    "url": "https://www.patreon.com/phpstan",
-                    "type": "patreon"
-                },
-                {
                     "url": "https://tidelift.com/funding/github/packagist/phpstan/phpstan",
                     "type": "tidelift"
                 }
             ],
-            "time": "2022-07-12T16:08:06+00:00"
+            "time": "2023-04-19T13:47:27+00:00"
         }
     ],
     "aliases": [],
@@ -267,5 +270,5 @@
         "ext-pgsql": "*"
     },
     "platform-dev": [],
-    "plugin-api-version": "2.1.0"
+    "plugin-api-version": "2.3.0"
 }

@@ -17,66 +17,55 @@ use PommProject\ModelManager\Model\Projection;
 use PommProject\ModelManager\Model\RowStructure;
 
 /**
- * BaseModelTrait
- *
  * Abstract methods for Model traits.
  *
- * @package   ModelManager
  * @copyright 2014 - 2015 Grégoire HUBERT
  * @author    Grégoire HUBERT
  * @license   X11 {@link http://opensource.org/licenses/mit-license.php}
+ *
+ * @template T of FlexibleEntityInterface
  */
 trait BaseTrait
 {
-    /**
-     * @see Model
-     * @return Projection
-     */
+    /** @see Model */
     abstract public function createProjection(): Projection;
 
     /**
+     * @see Model
+     *
      * @param string $sql
      * @param array $values
      * @param Projection|null $projection
-     * @return CollectionIterator
-     * @see Model
+     * @return CollectionIterator<T>
      */
-    abstract protected function query(string $sql, array $values = [], Projection $projection = null): CollectionIterator;
+    abstract protected function query(
+        string $sql,
+        array $values = [],
+        Projection $projection = null
+    ): CollectionIterator;
 
-    /**
-     * @see Model
-     * @return Session
-     */
+    /** @see Model */
     abstract protected function getSession(): Session;
 
-    /**
-     * @return RowStructure|null
-     * @see Model
-     */
+    /** @see Model */
     abstract public function getStructure(): ?RowStructure;
 
-    /**
-     * @see Model
-     */
+    /** @see Model */
     abstract public function getFlexibleEntityClass(): string;
 
-    /**
-     * @see Model
-     */
+    /** @see Model */
     abstract public function escapeLiteral(string $string): string;
 
-    /**
-     * @see Model
-     */
+    /** @see Model */
     abstract public function escapeIdentifier(string $string): string;
 
-    /**
-     * @see Model
-     */
-    abstract public function executeAnonymousQuery(string $sql): Model;
+    /** @see Model */
+    abstract public function executeAnonymousQuery(string $sql): static;
 
     /**
      * @see Model
+     *
+     * @return T
      */
     abstract public function createEntity(array $values = []): FlexibleEntityInterface;
 }
