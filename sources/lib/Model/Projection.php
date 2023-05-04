@@ -13,11 +13,8 @@ namespace PommProject\ModelManager\Model;
 use PommProject\ModelManager\Exception\ModelException;
 
 /**
- * Projection
- *
  * Define the content of SELECT or RETURNING (projection) statements.
  *
- * @package     ModelManager
  * @copyright   2014 - 2015 Grégoire HUBERT
  * @author      Grégoire HUBERT
  * @license     X11 {@link http://opensource.org/licenses/mit-license.php}
@@ -27,15 +24,11 @@ class Projection implements \IteratorAggregate, \Stringable
     protected array $fields = [];
     protected array $types = [];
 
-
     /**
-     * __construct
-     *
-     * @access public
-     * @param string $flexible_entity_class
+     * @param string $flexibleEntityClass
      * @param array|null $structure list of field names with types.
      */
-    public function __construct(protected string $flexible_entity_class, array $structure = null)
+    public function __construct(protected string $flexibleEntityClass, array $structure = null)
     {
         if ($structure != null) {
             foreach ($structure as $field_name => $type) {
@@ -45,43 +38,24 @@ class Projection implements \IteratorAggregate, \Stringable
     }
 
     /**
-     * getIterator
-     *
-     * This returns an ArrayIterator using the name => type association of the
-     * projection.
-     * @return \ArrayIterator
+     * This returns an ArrayIterator using the name => type association of the projection.
+
      * @see IteratorAggregate
-     *
-     * @access public
      */
     public function getIterator(): \Traversable
     {
         return new \ArrayIterator($this->types);
     }
 
-    /**
-     * getFlexibleEntityClass
-     *
-     * Get the flexible entity class associated with this projection.
-     *
-     * @access public
-     * @return string
-     */
+    /** Get the flexible entity class associated with this projection. */
     public function getFlexibleEntityClass(): string
     {
-        return $this->flexible_entity_class;
+        return $this->flexibleEntityClass;
     }
 
     /**
-     * setField
-     *
      * Set a field with a content. This override previous definition if exist.
      *
-     * @access public
-     * @param string $name
-     * @param string $content
-     * @param string|null $type (null)
-     * @return Projection $this
      * @throws \InvalidArgumentException if $name or $content is null
      */
     public function setField(string $name, string $content, string $type = null): Projection
@@ -93,14 +67,8 @@ class Projection implements \IteratorAggregate, \Stringable
     }
 
     /**
-     * setFieldType
-     *
      * Set or override a field type definition.
      *
-     * @access public
-     * @param string $name
-     * @param string|null $type
-     * @return Projection $this
      * @throws ModelException if name is null or does not exist.
      */
     public function setFieldType(string $name, ?string $type): Projection
@@ -111,13 +79,8 @@ class Projection implements \IteratorAggregate, \Stringable
     }
 
     /**
-     * unsetField
-     *
      * Unset an existing field
      *
-     * @access public
-     * @param string $name
-     * @return Projection $this
      * @throws ModelException if field $name does not exist.
      */
     public function unsetField(string $name): Projection
@@ -142,26 +105,15 @@ class Projection implements \IteratorAggregate, \Stringable
         return $this;
     }
 
-    /**
-     * hasField
-     *
-     * Return if the given field exist.
-     *
-     * @access public
-     * @param string $name
-     * @return boolean
-     */
+    /** Return if the given field exist. */
     public function hasField(string $name): bool
     {
         return isset($this->checkField($name)->fields[$name]);
     }
 
     /**
-     * getFieldType
-     *
      * Return the type associated with the given field.
      *
-     * @access public
      * @param string $name
      * @return string|null null if type is not set
      * @throws ModelException if $name is null or field does not exist
@@ -174,13 +126,8 @@ class Projection implements \IteratorAggregate, \Stringable
     }
 
     /**
-     * isArray
-     *
      * Tel if a field is an array.
      *
-     * @access public
-     * @param string $name
-     * @return bool
      * @throws \InvalidArgumentException if $name is null
      * @throws ModelException if $name does not exist.
      */
@@ -190,11 +137,8 @@ class Projection implements \IteratorAggregate, \Stringable
     }
 
     /**
-     * getFieldNames
-     *
      * Return fields names list.
      *
-     * @access public
      * @return array fields list
      */
     public function getFieldNames(): array
@@ -202,14 +146,7 @@ class Projection implements \IteratorAggregate, \Stringable
         return array_keys($this->fields);
     }
 
-    /**
-     * getFieldTypes
-     *
-     * Return an array with the known types.
-     *
-     * @access public
-     * @return array
-     */
+    /** Return an array with the known types. */
     public function getFieldTypes(): array
     {
         $fields = [];
@@ -221,37 +158,23 @@ class Projection implements \IteratorAggregate, \Stringable
     }
 
     /**
-     * getFieldWithTableAlias
-     *
      * Prepend the field name with alias if given.
      *
-     * @access public
-     * @param string $name
-     * @param string|null $table_alias
-     * @return string
      * @throws \InvalidArgumentException if $name is null
      * @throws ModelException if $name does not exist.
      */
-    public function getFieldWithTableAlias(string $name, string $table_alias = null): string
+    public function getFieldWithTableAlias(string $name, string $tableAlias = null): string
     {
-        $replace = $table_alias === null ? '' : sprintf("%s.", $table_alias);
+        $replace = $tableAlias === null ? '' : sprintf("%s.", $tableAlias);
 
         return $this->replaceToken($this->checkFieldExist($name)->fields[$name], $replace);
     }
 
-    /**
-     * getFieldsWithTableAlias
-     *
-     * Return the array of fields with table aliases expanded.
-     *
-     * @access public
-     * @param string|null $table_alias (null)
-     * @return array
-     */
-    public function getFieldsWithTableAlias(string $table_alias = null): array
+    /** Return the array of fields with table aliases expanded. */
+    public function getFieldsWithTableAlias(string $tableAlias = null): array
     {
         $vals = [];
-        $replace = $table_alias === null ? '' : sprintf("%s.", $table_alias);
+        $replace = $tableAlias === null ? '' : sprintf("%s.", $tableAlias);
 
         foreach ($this->fields as $name => $definition) {
             $vals[$name] = $this->replaceToken($this->fields[$name], $replace);
@@ -260,42 +183,24 @@ class Projection implements \IteratorAggregate, \Stringable
         return $vals;
     }
 
-    /**
-     * formatFields
-     *
-     * Return a formatted string with fields like
-     * a.field1, a.field2, ..., a.fieldN
-     *
-     * @access public
-     * @param string|null $table_alias
-     * @return string
-     */
-    public function formatFields(string $table_alias = null): string
+    /** Return a formatted string with fields like a.field1, a.field2, ..., a.fieldN */
+    public function formatFields(string $tableAlias = null): string
     {
-        return join(', ', $this->getFieldsWithTableAlias($table_alias));
+        return join(', ', $this->getFieldsWithTableAlias($tableAlias));
     }
 
-    /**
-     * formatFieldsWithFieldAlias
-     *
-     * Return a formatted string with fields like
-     * a.field1 AS field1, a.field2 AS fields2, ...
-     *
-     * @access public
-     * @param string|null $table_alias
-     * @return string
-     */
-    public function formatFieldsWithFieldAlias(string $table_alias = null): string
+    /** Return a formatted string with fields like a.field1 AS field1, a.field2 AS fields2, ... */
+    public function formatFieldsWithFieldAlias(string $tableAlias = null): string
     {
-        $fields = $this->getFieldsWithTableAlias($table_alias);
+        $fields = $this->getFieldsWithTableAlias($tableAlias);
 
         return join(
             ', ',
             array_map(
-                fn($field_alias, $field_definition) => sprintf(
+                fn($fieldAlias, $fieldDefinition) => sprintf(
                     '%s as "%s"',
-                    $field_definition,
-                    addcslashes($field_alias, '"\\')
+                    $fieldDefinition,
+                    addcslashes($fieldAlias, '"\\')
                 ),
                 array_keys($fields),
                 $fields
@@ -303,28 +208,13 @@ class Projection implements \IteratorAggregate, \Stringable
         );
     }
 
-    /**
-     * __toString
-     *
-     * String representation = formatFieldsWithFieldAlias().
-     *
-     * @access public
-     * @return string
-     */
+    /** String representation = formatFieldsWithFieldAlias(). */
     public function __toString(): string
     {
         return $this->formatFieldsWithFieldAlias();
     }
 
-    /**
-     * checkField
-     *
-     * Check if $name is not null
-     *
-     * @access private
-     * @param string|null $name
-     * @return Projection $this
-     */
+    /** Check if $name is not null */
     private function checkField(?string $name): Projection
     {
         if ($name === null) {
@@ -335,30 +225,27 @@ class Projection implements \IteratorAggregate, \Stringable
     }
 
     /**
-     * checkFieldExist
-     *
      * Check if a field exist.
      *
-     * @access private
-     * @param string $name
-     * @return Projection $this
      * @throws ModelException if field does not exist
      */
     private function checkFieldExist(string $name): Projection
     {
         if (!$this->checkField($name)->hasField($name)) {
-            throw new ModelException(sprintf("Field '%s' does not exist. Available fields are {%s}.", $name, join(', ', $this->getFieldNames())));
+            throw new ModelException(sprintf(
+                "Field '%s' does not exist. Available fields are {%s}.",
+                $name,
+                join(', ', $this->getFieldNames()
+                )
+            ));
         }
 
         return $this;
     }
 
     /**
-     * replaceToken
-     *
      * Replace placeholders with their quoted names.
      *
-     * @access protected
      * @param string $string field definition
      * @param string $prefix optional unquoted prefix
      * @return string

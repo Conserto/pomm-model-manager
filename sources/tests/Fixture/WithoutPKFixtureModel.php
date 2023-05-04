@@ -20,7 +20,7 @@ class WithoutPKFixtureModel extends Model
     public function __construct()
     {
         $this->structure = new WithoutPKFixtureStructure();
-        $this->flexible_entity_class = \PommProject\ModelManager\Test\Fixture\WithoutPKFixture::class;
+        $this->flexibleEntityClass = \PommProject\ModelManager\Test\Fixture\WithoutPKFixture::class;
     }
 
     public function initialize(Session $session): void

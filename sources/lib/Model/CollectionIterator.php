@@ -19,44 +19,33 @@ use PommProject\ModelManager\Exception\ModelException;
 use PommProject\ModelManager\Model\FlexibleEntity\FlexibleEntityInterface;
 
 /**
- * CollectionIterator
- *
  * Iterator for query results.
  *
- * @package   ModelManager
  * @copyright 2014 - 2015 Grégoire HUBERT
  * @author    Grégoire HUBERT <hubert.greg@gmail.com>
  * @license   MIT/X11 {@link http://opensource.org/licenses/mit-license.php}
+ *
+ * @template-covariant T of FlexibleEntityInterface
+ * @extends ResultIterator<T>
  */
 class CollectionIterator extends ResultIterator
 {
-    /**
-     * @var array
-     */
     protected array $filters = [];
 
     /**
      * @var HydrationPlan
      */
-    protected HydrationPlan $hydration_plan;
+    protected HydrationPlan $hydrationPlan;
 
-    private readonly PgEntity $entity_converter;
+    private readonly PgEntity $entityConverter;
 
     /**
-     * __construct
-     *
-     * Constructor
-     *
-     * @access  public
-     * @param ResultHandler $result
-     * @param Session $session
-     * @param Projection $projection
      * @throws FoundationException|ModelException
      */
     public function __construct(ResultHandler $result, protected Session $session, protected Projection $projection)
     {
         parent::__construct($result);
-        $this->hydration_plan   = new HydrationPlan($projection, $session);
+        $this->hydrationPlan   = new HydrationPlan($projection, $session);
 
         /** @var ConverterClient $converterClient */
         $converterClient = $this
@@ -66,16 +55,14 @@ class CollectionIterator extends ResultIterator
         /** @var PgEntity $converter */
         $converter = $converterClient->getConverter();
 
-        $this->entity_converter = $converter;
+        $this->entityConverter = $converter;
     }
 
     /**
-     * get
-     *
-     * @param int $index
-     * @return  FlexibleEntityInterface
      * @throws ModelException
      * @see     ResultIterator
+     *
+     * @return T
      */
     public function get(int $index): FlexibleEntityInterface
     {
@@ -83,33 +70,25 @@ class CollectionIterator extends ResultIterator
     }
 
     /**
-     * parseRow
-     *
      * Convert values from Pg.
      *
-     * @access  protected
-     * @param array $values
-     * @return  FlexibleEntityInterface
      * @throws ModelException
      * @see     ResultIterator
+     *
+     * @return T
      */
     public function parseRow(array $values): FlexibleEntityInterface
     {
         $values = $this->launchFilters($values);
-        $entity = $this->hydration_plan->hydrate($values);
+        $entity = $this->hydrationPlan->hydrate($values);
 
-        return $this->entity_converter->cacheEntity($entity);
+        return $this->entityConverter->cacheEntity($entity);
     }
 
     /**
-     * launchFilters
-     *
      * Launch filters on the given values.
      *
-     * @access  protected
-     * @param   array $values
      * @throws  ModelException   if return is not an array.
-     * @return  array
      */
     protected function launchFilters(array $values): array
     {
@@ -124,43 +103,23 @@ class CollectionIterator extends ResultIterator
         return $values;
     }
 
-    /**
-     * registerFilter
-     *
-     * Register a new callable filter. All filters MUST return an associative
-     * array with field name as key.
-     *
-     * @access public
-     * @param callable $callable the filter.
-     * @return CollectionIterator $this
-     */
-    public function registerFilter(callable $callable): CollectionIterator
+    /** Register a new callable filter. All filters MUST return an associative array with field name as key. */
+    public function registerFilter(callable $callable): self
     {
         $this->filters[] = $callable;
 
         return $this;
     }
 
-    /**
-     * clearFilters
-     *
-     * Empty the filter stack.
-     */
-    public function clearFilters(): CollectionIterator
+    /** Empty the filter stack. */
+    public function clearFilters(): self
     {
         $this->filters = [];
 
         return $this;
     }
 
-    /**
-     * extract
-     *
-     * Return an array of entities extracted as arrays.
-     *
-     * @access public
-     * @return array
-     */
+    /** Return an array of entities extracted as arrays. */
     public function extract(): array
     {
         $results = [];
@@ -173,13 +132,8 @@ class CollectionIterator extends ResultIterator
     }
 
     /**
-     * slice
-     *
      * see @ResultIterator
      *
-     * @access public
-     * @param string $field
-     * @return array
      * @throws ModelException
      */
     public function slice(string $field): array
@@ -189,20 +143,14 @@ class CollectionIterator extends ResultIterator
 
 
     /**
-     * convertSlice
-     *
      * Convert a slice.
      *
-     * @access protected
-     * @param array $values
-     * @param string $name
-     * @return array
      * @throws ModelException
      */
     protected function convertSlice(array $values, string $name): array
     {
         $type = $this->projection->getFieldType($name);
-        $converter = $this->hydration_plan->getConverterForField($name);
+        $converter = $this->hydrationPlan->getConverterForField($name);
 
         return array_map(
             fn($val) => $converter->fromPg($val, $type, $this->session),

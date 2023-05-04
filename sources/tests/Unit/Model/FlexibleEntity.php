@@ -9,18 +9,18 @@
  */
 namespace PommProject\ModelManager\Test\Unit\Model;
 
-use Atoum;
+use atoum\atoum;
 use PommProject\ModelManager\Model\FlexibleEntity as PommFlexibleEntity;
 use PommProject\ModelManager\Model\FlexibleEntity\FlexibleEntityInterface;
 
-class FlexibleEntity extends Atoum
+class FlexibleEntity extends atoum\test
 {
     public function testConstructorEmpty()
     {
         $entity = new PikaEntity();
         $this
             ->object($entity)
-            ->isInstanceOf(\PommProject\ModelManager\Model\FlexibleEntity::class)
+            ->isInstanceOf(PommFlexibleEntity::class)
             ->array($entity->fields())
             ->isEmpty()
             ;
@@ -308,7 +308,7 @@ class FlexibleEntity extends Atoum
             ->array($entity->setPika('chu')->getIterator()->getArrayCopy())
             ->isIdenticalTo(['pika' => 'chu', 'pika_hash' => 'cbcefaf71b4677cb8bcc006e0aeaa34a'])
             ->object($entity->set('an_entity', new ChuEntity())->getIterator()->getArrayCopy()['an_entity'])
-            ->isInstanceOf(\PommProject\ModelManager\Model\FlexibleEntity::class)
+            ->isInstanceOf(PommFlexibleEntity::class)
             ->array($entity->set('an_array', [1, 2])->getIterator()->getArrayCopy()['an_array'])
             ->isIdenticalTo([1, 2])
             ;

@@ -10,9 +10,6 @@
 namespace PommProject\ModelManager\Model\FlexibleEntity;
 
 /**
- * ModifiedColumnEntityTrait
- *
- * @package     ModelManager
  * @copyright   2014 - 2015 Grégoire HUBERT
  * @author      Mikael Paris
  * @license     X11 {@link http://opensource.org/licenses/mit-license.php}
@@ -20,28 +17,30 @@ namespace PommProject\ModelManager\Model\FlexibleEntity;
  */
 trait ModifiedColumnEntityTrait
 {
-    private array $modified_columns = [];
+    /** @var array<int, string> */
+    private array $modifiedColumns = [];
 
+    /** @return array<int, string> */
     public function getModifiedColumns(): array
     {
-        return $this->modified_columns;
+        return $this->modifiedColumns;
     }
 
-    public function addModifiedColumn(string $column): FlexibleEntityInterface
+    public function addModifiedColumn(string $column): self
     {
-        if (!in_array($column, $this->modified_columns)) {
-            $this->modified_columns[] = $column;
+        if (!in_array($column, $this->modifiedColumns)) {
+            $this->modifiedColumns[] = $column;
         }
 
         return $this;
     }
 
-    public function removeModifiedColumn(string $column): FlexibleEntityInterface
+    public function removeModifiedColumn(string $column): self
     {
-        $key = array_search($column, $this->modified_columns, true);
+        $key = array_search($column, $this->modifiedColumns, true);
 
         if ($key !== false) {
-            unset($this->modified_columns[$key]);
+            unset($this->modifiedColumns[$key]);
         }
 
         return $this;

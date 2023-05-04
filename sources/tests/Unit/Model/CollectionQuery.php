@@ -14,7 +14,7 @@ use PommProject\ModelManager\Tester\ModelSessionAtoum;
 
 class CollectionQuery extends ModelSessionAtoum
 {
-    protected function initializeSession(Session $session)
+    protected function initializeSession(Session $session): void
     {
     }
 }

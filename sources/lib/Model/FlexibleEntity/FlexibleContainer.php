@@ -13,11 +13,8 @@ use PommProject\Foundation\Inflector;
 use PommProject\ModelManager\Exception\ModelException;
 
 /**
- * FlexibleContainerTrait
- *
  * Trait for being a flexible data container.
  *
- * @package   ModelManager
  * @copyright 2014 - 2015 Grégoire HUBERT
  * @author    Grégoire HUBERT
  * @license   X11 {@link http://opensource.org/licenses/mit-license.php}
@@ -27,14 +24,15 @@ abstract class FlexibleContainer implements FlexibleEntityInterface, \IteratorAg
     use StatefulEntityTrait;
     use ModifiedColumnEntityTrait;
 
+    /** @var array<string, mixed> */
     protected array $container = [];
 
     /**
-     * hydrate
-     *
      * @see FlexibleEntityInterface
+     *
+     * @param array<string, mixed> $fields
      */
-    public function hydrate(array $fields): FlexibleContainer
+    public function hydrate(array $fields): self
     {
         $this->container = array_merge($this->container, $fields);
 
@@ -42,13 +40,13 @@ abstract class FlexibleContainer implements FlexibleEntityInterface, \IteratorAg
     }
 
     /**
-     * fields
-     *
-     * Return the fields array. If a given field does not exist, an exception
-     * is thrown.
+     * Return the fields array. If a given field does not exist, an exception is thrown.
      *
      * @throws  \InvalidArgumentException
      * @see     FlexibleEntityInterface
+     *
+     * @param array<string> $fields
+     * @return array<string, mixed>
      */
     public function fields(array $fields = null): array
     {
@@ -77,9 +75,9 @@ abstract class FlexibleContainer implements FlexibleEntityInterface, \IteratorAg
 
 
     /**
-     * extract
-     *
      * @see FlexibleEntityInterface
+     *
+     * @return array<string, mixed>
      */
     public function extract(): array
     {
@@ -87,9 +85,9 @@ abstract class FlexibleContainer implements FlexibleEntityInterface, \IteratorAg
     }
 
     /**
-     * getIterator
-     *
      * @see FlexibleEntityInterface
+     *
+     * @return \Traversable<string, mixed>
      */
     public function getIterator(): \Traversable
     {
@@ -97,52 +95,41 @@ abstract class FlexibleContainer implements FlexibleEntityInterface, \IteratorAg
     }
 
     /**
-     * __call
-     *
      * Allows dynamic methods getXxx, setXxx, hasXxx or clearXxx.
      *
-     * @access public
      * @throws ModelException if method does not exist.
-     * @param  mixed $method
-     * @param  mixed $arguments
-     * @return mixed
      */
     public function __call(mixed $method, mixed $arguments): mixed
     {
         [$operation, $attribute] = $this->extractMethodName($method);
+        $returned = $this;
 
         switch ($operation) {
         case 'set':
             $this->container[$attribute] = $arguments[0];
-
-            return $this;
+            break;
         case 'get':
-            return $this
-                ->checkAttribute($attribute)
-                ->container[$attribute]
-                ;
+            $returned = $this->checkAttribute($attribute)->container[$attribute];
+            break;
         case 'has':
-            return isset($this->container[$attribute]) || array_key_exists($attribute, $this->container);
+            $returned = isset($this->container[$attribute]) || array_key_exists($attribute, $this->container);
+            break;
         case 'clear':
             unset($this->checkAttribute($attribute)->container[$attribute]);
-
-            return $this;
+            break;
         default:
             throw new ModelException(sprintf('No such method "%s:%s()"', $this::class, $method));
         }
+
+        return $returned;
     }
 
     /**
-     * checkAttribute
-     *
      * Check if the attribute exist. Throw an exception if not.
      *
-     * @access protected
-     * @param string $attribute
-     * @return FlexibleContainer    $this
      * @throws ModelException
      */
-    protected function checkAttribute(string $attribute): FlexibleContainer
+    protected function checkAttribute(string $attribute): self
     {
         if (!(isset($this->container[$attribute]) || array_key_exists($attribute, $this->container))) {
             throw new ModelException(
@@ -158,16 +145,13 @@ abstract class FlexibleContainer implements FlexibleEntityInterface, \IteratorAg
     }
 
     /**
-     * extractMethodName
-     *
      * Get container field name from method name.
      * It returns an array with the operation (get, set, etc.) as first member
      * and the name of the attribute as second member.
      *
-     * @access protected
-     * @param string $argument
-     * @return array
      * @throws ModelException
+     *
+     * @return array{0: string, 1: string}
      */
     protected function extractMethodName(string $argument): array
     {

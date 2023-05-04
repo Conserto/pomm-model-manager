@@ -36,7 +36,7 @@ class Model extends BaseTest
     /**
      * @throws FoundationException
      */
-    protected function initializeSession(Session $session)
+    protected function initializeSession(Session $session): void
     {
         $session
             ->getPoolerForType('converter')
@@ -513,7 +513,7 @@ class NoStructureModel extends PommModel
 {
     public function __construct()
     {
-        $this->flexible_entity_class = 'something';
+        $this->flexibleEntityClass = 'something';
     }
 }
 

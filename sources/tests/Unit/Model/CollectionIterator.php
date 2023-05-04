@@ -28,7 +28,7 @@ class CollectionIterator extends ModelSessionAtoum
         return $this->session;
     }
 
-    protected function initializeSession(Session $session)
+    protected function initializeSession(Session $session): void
     {
         $session
             ->registerClient(new SimpleFixtureModel)

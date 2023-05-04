@@ -18,11 +18,8 @@ use PommProject\ModelManager\ModelLayer\ModelLayerPooler;
 use PommProject\ModelManager\Session as ModelManagerSession;
 
 /**
- * SessionBuilder
- *
  * Session builder for the ModelManager package.
  *
- * @package   ModelManager
  * @copyright 2014 - 2015 Grégoire HUBERT
  * @author    Grégoire HUBERT
  * @license   X11 {@link http://opensource.org/licenses/mit-license.php}
@@ -30,42 +27,25 @@ use PommProject\ModelManager\Session as ModelManagerSession;
  */
 class SessionBuilder extends FoundationSessionBuilder
 {
-    /**
-     * postConfigure
-     *
-     * Register ModelManager's poolers.
-     *
-     * @access protected
-     * @param  Session          $session
-     * @return SessionBuilder
-     */
+    /** Register ModelManager's poolers. */
     protected function postConfigure(Session $session): SessionBuilder
     {
         parent::postConfigure($session);
         $session
             ->registerClientPooler(new ModelPooler)
-            ->registerClientPooler(new ModelLayerPooler)
-            ;
+            ->registerClientPooler(new ModelLayerPooler);
 
         return $this;
     }
 
 
-    /**
-     * createSession
-     *
-     * @param Connection $connection
-     * @param ClientHolder $client_holder
-     * @param string|null $stamp
-     * @return  ModelManagerSession
-     * @see     VanillaSessionBuilder
-     */
-    protected function createSession(Connection $connection, ClientHolder $client_holder, ?string $stamp): Session
+    /** @see VanillaSessionBuilder */
+    protected function createSession(Connection $connection, ClientHolder $clientHolder, ?string $stamp): Session
     {
         $this->configuration->setDefaultValue('class:session', ModelManagerSession::class);
 
         /** @var \PommProject\ModelManager\Session $session */
-        $session = parent::createSession($connection, $client_holder, $stamp);
+        $session = parent::createSession($connection, $clientHolder, $stamp);
         return $session;
     }
 }

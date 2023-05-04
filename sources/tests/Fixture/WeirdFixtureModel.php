@@ -25,6 +25,6 @@ class WeirdFixtureModel extends Model
             ->setRelation("(values (1, 't'::bool, 'one'), (2, 'f'::bool, 'two')) as weird_fixture (field_a, field_b, data_field)")
             ->setPrimaryKey(['field_a', 'field_b'])
             ;
-        $this->flexible_entity_class =  WeirdFixture::class;
+        $this->flexibleEntityClass =  WeirdFixture::class;
     }
 }
