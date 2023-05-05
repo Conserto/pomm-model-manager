@@ -82,18 +82,14 @@ class ModelGenerator extends BaseGenerator
 namespace {:namespace:};
 
 use PommProject\ModelManager\Model\Model;
-use PommProject\ModelManager\Model\Projection;
 use PommProject\ModelManager\Model\ModelTrait\{:trait:};
-
-use PommProject\Foundation\Where;
-
 use {:namespace:}\AutoStructure\{:entity:} as {:entity:}Structure;
-use {:namespace:}\{:entity:};
 
 /**
  * Model class for {:relation_type:} {:relation:}.
  *
  * @see Model
+ * @extends Model<{:entity:}>
  */
 class {:entity:}Model extends Model
 {
@@ -102,7 +98,7 @@ class {:entity:}Model extends Model
     public function __construct()
     {
         $this->structure = new {:entity:}Structure;
-        $this->flexible_entity_class = '\{:namespace:}\{:entity:}';
+        $this->flexibleEntityClass = {:entity:}::class;
     }
 }
 
