@@ -1,3 +1,8 @@
+== VERSION 3.3.0
+
+ * improve PgEntity to detect JSON (e.g. for a json_build_object result)
+ * update ModelGenerator
+
 == VERSION 3.2.0
 
  * types improvements
