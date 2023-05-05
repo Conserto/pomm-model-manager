@@ -11,6 +11,8 @@
 namespace PommProject\ModelManager\Converter;
 
 use PommProject\Foundation\Converter\ConverterInterface;
+use PommProject\Foundation\Converter\PgArray;
+use PommProject\Foundation\Converter\PgBoolean;
 use PommProject\Foundation\Exception\ConverterException;
 use PommProject\Foundation\Exception\FoundationException;
 use PommProject\Foundation\Session\Session;
@@ -70,8 +72,12 @@ class PgEntity implements ConverterInterface
             $this->rowStructure->getDefinition()
         );
 
-        $entity = (new HydrationPlan($projection, $session))
-            ->hydrate($this->transformData($data, $projection));
+        $hydrationPlan = new HydrationPlan(
+            $projection,
+            $session
+        );
+
+        $entity = $hydrationPlan->hydrate($this->transformData($data, $projection, $hydrationPlan));
 
         return $this->cacheEntity($entity);
     }
@@ -81,17 +87,30 @@ class PgEntity implements ConverterInterface
      *
      * @return array<string, mixed>
      */
-    private function transformData(string $data, Projection $projection): array
+    private function transformData(string $data, Projection $projection, HydrationPlan $hydrationPlan): array
     {
-        $values = str_getcsv($data);
-        $definition = $projection->getFieldNames();
-        $outValues = [];
-        $valuesCount = count($values);
+        $outValues = json_decode($data, true);
 
-        for ($index = 0; $index < $valuesCount; $index++) {
-            $outValues[$definition[$index]] = preg_match(':^{.*}$:', $values[$index])
-                ? stripcslashes($values[$index])
-                : $values[$index];
+        // Détecte si on est en JSON, permet de convertir les résultats de json_build_object
+        $isJson = json_last_error() === JSON_ERROR_NONE;
+
+        if ($isJson) {
+            // Si on est en JSON, les booléens et les tableaux sont déjà bien convertis
+            $hydrationPlan->removeConverter(PgBoolean::class);
+            $hydrationPlan->removeConverter(PgArray::class);
+        }  else {
+            $values = str_getcsv($data);
+            $definition = $projection->getFieldNames();
+            $outValues = [];
+            $valuesCount = count($values);
+
+            for ($index = 0; $index < $valuesCount; $index++) {
+                $fieldName = $definition[$index];
+                $outValues[$fieldName] = preg_match(':^{.*}$:', $values[$index])
+                    ? stripcslashes($values[$index])
+                    : $values[$index]
+                ;
+            }
         }
 
         return $outValues;

@@ -150,4 +150,16 @@ class HydrationPlan
 
         return $this->converters[$fieldName];
     }
+
+    /** Permet de supprimer un converter */
+    public function removeConverter(string $converterClass): self
+    {
+        foreach ($this->converters as $field => $converter) {
+            if ($converter instanceof $converterClass) {
+                unset($this->converters[$field]);
+            }
+        }
+
+        return $this;
+    }
 }
