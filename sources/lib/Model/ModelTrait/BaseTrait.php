@@ -9,6 +9,7 @@
  */
 namespace PommProject\ModelManager\Model\ModelTrait;
 
+use PommProject\Foundation\Session\ResultHandler;
 use PommProject\Foundation\Session\Session;
 use PommProject\ModelManager\Model\CollectionIterator;
 use PommProject\ModelManager\Model\FlexibleEntity\FlexibleEntityInterface;
@@ -60,7 +61,7 @@ trait BaseTrait
     abstract public function escapeIdentifier(string $string): string;
 
     /** @see Model */
-    abstract public function executeAnonymousQuery(string $sql): static;
+    abstract public function executeAnonymousQuery(string $sql): ResultHandler|array;
 
     /**
      * @see Model
