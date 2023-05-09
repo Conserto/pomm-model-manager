@@ -1,5 +1,5 @@
 {
-    "version": "3.3.0",
+    "version": "3.3.1",
     "name": "conserto/pomm-model-manager",
     "type": "library",
     "description":  "PHP Object Model Manager for Postgresql",
