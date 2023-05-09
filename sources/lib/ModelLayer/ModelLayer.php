@@ -274,10 +274,9 @@ EOMSG
      *
      * @throws FoundationException
      */
-    protected function executeAnonymousQuery(string $sql): ResultHandler
+    protected function executeAnonymousQuery(string $sql): ResultHandler|array
     {
-        return $this
-            ->getSession()
+        return $this->getSession()
             ->getConnection()
             ->executeAnonymousQuery($sql);
     }

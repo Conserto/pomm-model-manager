@@ -1,3 +1,7 @@
+== VERSION 3.3.1
+
+ * fix executeAnonymousquery return type
+
 == VERSION 3.3.0
 
  * improve PgEntity to detect JSON (e.g. for a json_build_object result)

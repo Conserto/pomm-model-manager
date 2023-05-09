@@ -16,6 +16,7 @@ use PommProject\Foundation\Exception\ConnectionException;
 use PommProject\Foundation\Exception\FoundationException;
 use PommProject\Foundation\Exception\SqlException;
 use PommProject\Foundation\PreparedQuery\PreparedQuery;
+use PommProject\Foundation\Session\ResultHandler;
 use PommProject\Foundation\Session\Session;
 use PommProject\ModelManager\Converter\PgEntity;
 use PommProject\ModelManager\Exception\ModelException;
@@ -271,13 +272,10 @@ abstract class Model implements ClientInterface
      *
      * @throws ConnectionException|ModelException|SqlException|FoundationException
      */
-    protected function executeAnonymousQuery(string $sql): static
+    protected function executeAnonymousQuery(string $sql): ResultHandler|array
     {
-        $this
-            ->getSession()
+        return $this->getSession()
             ->getConnection()
             ->executeAnonymousQuery($sql);
-
-        return $this;
     }
 }
