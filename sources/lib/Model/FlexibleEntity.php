@@ -70,9 +70,8 @@ abstract class FlexibleEntity extends FlexibleContainer implements \ArrayAccess
      *
      * @param string $var Attribute name.
      * @param mixed $value Attribute value.
-     * @return FlexibleEntity $this
      */
-    final public function set(string $var, mixed $value): FlexibleEntity
+    final public function set(string $var, mixed $value): static
     {
         $this->container[$var] = $value;
         $this->touch();
@@ -86,7 +85,7 @@ abstract class FlexibleEntity extends FlexibleContainer implements \ArrayAccess
      *
      * @throws ModelException
      */
-    public function add(string $var, mixed $value): FlexibleEntity
+    public function add(string $var, mixed $value): static
     {
         if ($this->has($var)) {
             if (is_array($this->container[$var])) {
@@ -107,9 +106,8 @@ abstract class FlexibleEntity extends FlexibleContainer implements \ArrayAccess
      * Drop an attribute from the var holder.
      *
      * @param string $offset Attribute name.
-     * @return FlexibleEntity $this
      */
-    final public function clear(string $offset): FlexibleEntity
+    final public function clear(string $offset): static
     {
         if ($this->has($offset)) {
             unset($this->container[$offset]);
