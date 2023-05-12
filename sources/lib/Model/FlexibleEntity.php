@@ -70,7 +70,6 @@ abstract class FlexibleEntity extends FlexibleContainer implements \ArrayAccess
      *
      * @param string $var Attribute name.
      * @param mixed $value Attribute value.
-     * @return FlexibleEntity $this
      */
     final public function set(string $var, mixed $value): static
     {
@@ -107,7 +106,6 @@ abstract class FlexibleEntity extends FlexibleContainer implements \ArrayAccess
      * Drop an attribute from the var holder.
      *
      * @param string $offset Attribute name.
-     * @return FlexibleEntity $this
      */
     final public function clear(string $offset): static
     {
