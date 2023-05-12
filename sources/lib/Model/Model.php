@@ -204,6 +204,9 @@ abstract class Model implements ClientInterface
     /**
      * Proxy to Session::getModel();
      *
+     * @template TModel of Model
+     * @param class-string<TModel> $identifier
+     * @return TModel
      * @throws FoundationException
      * @throws ModelException
      */
