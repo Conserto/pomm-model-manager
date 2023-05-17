@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "b8e3e1c5662683f6f1291df88ee8debf",
+    "content-hash": "1e8d9e45c55864909f529ad24a819f2c",
     "packages": [
         {
             "name": "psr/log",
@@ -147,16 +147,16 @@
         },
         {
             "name": "conserto/pomm-foundation",
-            "version": "3.2.0",
+            "version": "3.2.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Conserto/pomm-foundation.git",
-                "reference": "933ab4f1d7432a555dc9acf2415674ad0f56cd54"
+                "reference": "d04a002d46105a528ea9039f922b7302add3d85e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Conserto/pomm-foundation/zipball/933ab4f1d7432a555dc9acf2415674ad0f56cd54",
-                "reference": "933ab4f1d7432a555dc9acf2415674ad0f56cd54",
+                "url": "https://api.github.com/repos/Conserto/pomm-foundation/zipball/d04a002d46105a528ea9039f922b7302add3d85e",
+                "reference": "d04a002d46105a528ea9039f922b7302add3d85e",
                 "shasum": ""
             },
             "require": {
@@ -193,9 +193,9 @@
                 "postgresql"
             ],
             "support": {
-                "source": "https://github.com/Conserto/pomm-foundation/tree/3.2.0"
+                "source": "https://github.com/Conserto/pomm-foundation/tree/3.2.2"
             },
-            "time": "2023-05-04T09:34:02+00:00"
+            "time": "2023-05-17T14:43:32+00:00"
         },
         {
             "name": "phpstan/phpstan",

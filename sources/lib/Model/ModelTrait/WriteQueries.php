@@ -10,6 +10,7 @@
 
 namespace PommProject\ModelManager\Model\ModelTrait;
 
+use PommProject\Foundation\Exception\SqlException;
 use PommProject\Foundation\Where;
 use PommProject\ModelManager\Exception\ModelException;
 use PommProject\ModelManager\Model\CollectionIterator;
@@ -33,7 +34,7 @@ trait WriteQueries
      * Insert a new entity in the database. The entity is passed by reference.
      * It is updated with values returned by the database (ie, default values).
      *
-     * @throws ModelException
+     * @throws ModelException|SqlException
      */
     public function insertOne(FlexibleEntityInterface &$entity): self
     {
@@ -67,7 +68,7 @@ trait WriteQueries
      * are lost. The update is made upon a condition on the primary key. If the
      * primary key is not fully set, an exception is thrown.
      *
-     * @throws ModelException
+     * @throws ModelException|SqlException
      */
     public function updateOne(FlexibleEntityInterface &$entity, array $fields = []): self
     {
@@ -88,7 +89,7 @@ trait WriteQueries
      * the given key, null is returned.
      *
      * @return ?T
-     * @throws ModelException
+     * @throws ModelException|SqlException
      */
     public function updateByPk(array $primaryKey, array $updates): ?FlexibleEntityInterface
     {
@@ -129,7 +130,7 @@ trait WriteQueries
      * Delete an entity from a table. Entity is passed by reference and is
      * updated with the values fetched from the deleted record.
      *
-     * @throws ModelException
+     * @throws ModelException|SqlException
      */
     public function deleteOne(FlexibleEntityInterface &$entity): self
     {
@@ -142,7 +143,7 @@ trait WriteQueries
      * Delete a record from its primary key. The deleted entity is returned or null if not found.
      *
      * @return ?T
-     * @throws ModelException
+     * @throws ModelException|SqlException
      */
     public function deleteByPK(array $primaryKey): ?FlexibleEntityInterface
     {
@@ -159,6 +160,7 @@ trait WriteQueries
      * @param string|Where $where
      * @param array $values
      * @return CollectionIterator<T>
+     * @throws SqlException
      */
     public function deleteWhere(string|Where $where, array $values = []): CollectionIterator
     {
@@ -188,7 +190,7 @@ trait WriteQueries
      * Create a new entity from given values and save it in the database.
      *
      * @return T
-     * @throws ModelException
+     * @throws ModelException|SqlException
      */
     public function createAndSave(array $values): FlexibleEntityInterface
     {
