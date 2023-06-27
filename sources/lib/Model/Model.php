@@ -119,7 +119,7 @@ abstract class Model implements ClientInterface
      * Execute the given query and return a Collection iterator on results. If no projections are passed, it will use
      * the default projection using createProjection() method.
      *
-     * @throws FoundationException|ModelException[SqlException
+     * @throws FoundationException|ModelException|SqlException
      *
      * @param Projection|null $projection
      * @param string $sql
