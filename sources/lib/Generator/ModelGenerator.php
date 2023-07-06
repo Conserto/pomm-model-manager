@@ -98,7 +98,7 @@ class {:entity:}Model extends Model
 
     public function __construct()
     {
-        $this->structure = new {:entity:}Structure;
+        $this->structure = new {:entity:}Structure();
         $this->flexibleEntityClass = {:entity:}::class;
     }
 }

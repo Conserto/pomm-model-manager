@@ -1,6 +1,7 @@
 == VERSION 3.3.5
 
  * Add missing type annotation for trait in ModelGenerator
+ * Add parentheses on ModelGenerator template
 
 == VERSION 3.3.4
 
