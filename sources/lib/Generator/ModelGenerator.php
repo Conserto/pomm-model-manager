@@ -93,11 +93,12 @@ use {:namespace:}\AutoStructure\{:entity:} as {:entity:}Structure;
  */
 class {:entity:}Model extends Model
 {
+    /** @use {:trait:}<{:entity:}> */
     use {:trait:};
 
     public function __construct()
     {
-        $this->structure = new {:entity:}Structure;
+        $this->structure = new {:entity:}Structure();
         $this->flexibleEntityClass = {:entity:}::class;
     }
 }
