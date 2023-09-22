@@ -1,5 +1,7 @@
 vendor/*
 sources/tests/config.php
 .ctags
+composer.lock
 
+# IDE - PhpStorm
 .idea
