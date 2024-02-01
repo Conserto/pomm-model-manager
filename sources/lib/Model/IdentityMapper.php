@@ -38,22 +38,39 @@ class IdentityMapper
     }
 
     /** Pool FlexibleEntityInterface instances and update them if necessary. */
-    public function fetch(FlexibleEntityInterface $entity, array $primaryKey): FlexibleEntityInterface
-    {
+    public function fetch(
+        FlexibleEntityInterface $entity,
+        array $primaryKey,
+        RowStructure $rowStructure
+    ): FlexibleEntityInterface {
         $signature = self::getSignature($entity, $primaryKey);
 
         if ($signature === null) {
             return $entity;
         }
 
-        if (!array_key_exists($signature, $this->instances)) {
-            $this->instances[$signature] = $entity;
-            $entity->status(FlexibleEntityInterface::STATUS_EXIST);
-        } else {
-            $this->instances[$signature]->hydrate($entity->fields());
+        // "nettoyer" l'entité pour la mise en cache
+        // suppression des données qui ne sont propres à l'entité
+        $entityFields = $entity->fields();
+        $structureFields = $rowStructure->getFieldNames();
+        foreach ($entityFields as $key => $value) {
+            if (!in_array($key, $structureFields)) {
+                $entity->clear($key);
+            }
         }
 
-        return $this->instances[$signature];
+        if (!array_key_exists($signature, $this->instances)) {
+            $this->instances[$signature] = $entity->hydrate(
+                array_intersect_key($entityFields, array_flip($structureFields))
+            );
+            $entity->status(FlexibleEntityInterface::STATUS_EXIST);
+        } else {
+            $this->instances[$signature]->hydrate(array_intersect_key($entityFields, array_flip($structureFields)));
+        }
+
+        // retourner l'entité complète (avec l'ensemble des données "annexes")
+        $ret = clone($this->instances[$signature]);
+        return $ret->hydrate($entityFields);
     }
 
     /** Flush instances from the identity mapper.*/

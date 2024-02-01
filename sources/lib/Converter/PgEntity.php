@@ -124,7 +124,7 @@ class PgEntity implements ConverterInterface
     {
         return $this
             ->identityMapper
-            ->fetch($entity, $this->rowStructure->getPrimaryKey());
+            ->fetch($entity, $this->rowStructure->getPrimaryKey(), $this->rowStructure);
     }
 
     /**
