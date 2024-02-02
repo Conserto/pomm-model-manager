@@ -68,9 +68,12 @@ class IdentityMapper
             $this->instances[$signature]->hydrate(array_intersect_key($entityFields, array_flip($structureFields)));
         }
 
-        // retourner l'entité complète (avec l'ensemble des données "annexes")
-        $ret = clone($this->instances[$signature]);
-        return $ret->hydrate($entityFields);
+        // reconstituer une entité complète avec l'ensemble des données "annexes" et son statut
+        $returnEntity = new (get_class($entity))();
+        $returnEntity->hydrate($this->instances[$signature]->fields());
+        $returnEntity->hydrate(array_diff_key($entityFields, array_flip($structureFields)));
+        $returnEntity->status($this->instances[$signature]->status());
+        return $returnEntity;
     }
 
     /** Flush instances from the identity mapper.*/
