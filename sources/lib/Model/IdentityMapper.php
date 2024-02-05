@@ -66,6 +66,7 @@ class IdentityMapper
             $entity->status(FlexibleEntityInterface::STATUS_EXIST);
         } else {
             $this->instances[$signature]->hydrate(array_intersect_key($entityFields, array_flip($structureFields)));
+            $this->instances[$signature.'_COPY']->hydrate($this->instances[$signature]->fields());
         }
 
         // reconstituer une entité complète avec l'ensemble des données "annexes" et son statut
@@ -73,6 +74,8 @@ class IdentityMapper
         $returnEntity->hydrate($this->instances[$signature]->fields());
         $returnEntity->hydrate(array_diff_key($entityFields, array_flip($structureFields)));
         $returnEntity->status($this->instances[$signature]->status());
+        $this->instances[$signature.'_COPY'] = $returnEntity;
+
         return $returnEntity;
     }
 
