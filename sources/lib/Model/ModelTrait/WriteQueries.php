@@ -76,10 +76,12 @@ trait WriteQueries
             $fields = $entity->getModifiedColumns();
         }
 
-        $entity = $this->updateByPk(
-            $entity->fields($this->getStructure()->getPrimaryKey()),
-            $entity->fields($fields)
-        );
+        if (!empty($fields)) {
+            $entity = $this->updateByPk(
+                $entity->fields($this->getStructure()->getPrimaryKey()),
+                $entity->fields($fields)
+            );
+        }
 
         return $this;
     }
