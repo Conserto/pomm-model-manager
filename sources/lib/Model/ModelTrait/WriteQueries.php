@@ -137,7 +137,7 @@ trait WriteQueries
 
         $iterator = $this->query($sql, array_merge(array_values($updates), $where->getValues()));
 
-        foreach($iterator as $item){
+        foreach ($iterator as $item) {
             $item->status(FlexibleEntityInterface::STATUS_EXIST);
         }
 
