@@ -96,6 +96,24 @@ trait WriteQueries
         $where = $this
             ->checkPrimaryKey($primaryKey)
             ->getWhereFrom($primaryKey);
+
+        $iterator = $this->updateWhere($where, $updates);
+
+        if ($iterator->isEmpty()) {
+            return null;
+        }
+
+        return $iterator->current()->status(FlexibleEntityInterface::STATUS_EXIST);
+    }
+
+    /**
+     * Update records according to where condition and fetch them with their new values.
+     *
+     * @return CollectionIterator<T>
+     * @throws ModelException|SqlException
+     */
+    public function updateWhere(Where $where, array $updates): CollectionIterator
+    {
         $parameters = $this->getParametersList($updates);
         $updateStrings = [];
 
@@ -117,13 +135,7 @@ trait WriteQueries
             ]
         );
 
-        $iterator = $this->query($sql, array_merge(array_values($updates), $where->getValues()));
-
-        if ($iterator->isEmpty()) {
-            return null;
-        }
-
-        return $iterator->current()->status(FlexibleEntityInterface::STATUS_EXIST);
+        return $this->query($sql, array_merge(array_values($updates), $where->getValues()));
     }
 
     /**
