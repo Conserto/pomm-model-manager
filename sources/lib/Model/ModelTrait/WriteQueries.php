@@ -103,7 +103,7 @@ trait WriteQueries
             return null;
         }
 
-        return $iterator->current()->status(FlexibleEntityInterface::STATUS_EXIST);
+        return $iterator->current();
     }
 
     /**
@@ -135,7 +135,15 @@ trait WriteQueries
             ]
         );
 
-        return $this->query($sql, array_merge(array_values($updates), $where->getValues()));
+        $iterator = $this->query($sql, array_merge(array_values($updates), $where->getValues()));
+
+        foreach($iterator as $item){
+            $item->status(FlexibleEntityInterface::STATUS_EXIST);
+        }
+
+        $iterator->rewind();
+
+        return $iterator;
     }
 
     /**

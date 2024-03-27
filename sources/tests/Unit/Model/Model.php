@@ -381,9 +381,11 @@ class Model extends BaseTest
     public function testUpdateWhere(): void
     {
         $model = $this->getWriteFixtureModel($this->buildSession());
-        $entity1 = $model->createAndSave(['a_varchar' => 'one', 'a_boolean' => false]);
-        $entity2 = $model->createAndSave(['a_varchar' => 'two', 'a_boolean' => false]);
-        $entity3 = $model->createAndSave(['a_varchar' => 'three', 'a_boolean' => false]);
+        foreach(['one', 'two', 'three'] as $aValue)
+        {
+            $model->createAndSave(['a_varchar' => $aValue, 'a_boolean' => false])
+                ->status(FlexibleEntityInterface::STATUS_NONE);
+        }
 
         $updateEntities = $model->updateWhere(
             Where::createWhereIn('a_varchar', ['two', 'three']),
