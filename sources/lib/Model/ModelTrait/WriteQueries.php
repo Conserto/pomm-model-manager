@@ -97,13 +97,7 @@ trait WriteQueries
             ->checkPrimaryKey($primaryKey)
             ->getWhereFrom($primaryKey);
 
-        $iterator = $this->updateWhere($where, $updates);
-
-        if ($iterator->isEmpty()) {
-            return null;
-        }
-
-        return $iterator->current();
+        return $this->updateWhere($where, $updates)->current();
     }
 
     /**
