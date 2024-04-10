@@ -70,4 +70,7 @@ interface FlexibleEntityInterface
 
     /** Return columns modified */
     public function getModifiedColumns(): mixed;
+
+    /** Drop an attribute from the var holder */
+    public function clear(string $attribute): self;
 }

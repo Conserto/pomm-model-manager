@@ -73,7 +73,6 @@ abstract class FlexibleContainer implements FlexibleEntityInterface, \IteratorAg
         return $output;
     }
 
-
     /**
      * @see FlexibleEntityInterface
      *
@@ -82,6 +81,17 @@ abstract class FlexibleContainer implements FlexibleEntityInterface, \IteratorAg
     public function extract(): array
     {
         return $this->fields();
+    }
+
+    /**
+     * @see FlexibleEntityInterface
+     *
+     * @throws ModelException
+     */
+    public function clear(string $attribute): self
+    {
+        unset($this->checkAttribute($attribute)->container[$attribute]);
+        return $this;
     }
 
     /**
@@ -115,7 +125,7 @@ abstract class FlexibleContainer implements FlexibleEntityInterface, \IteratorAg
             $returned = isset($this->container[$attribute]) || array_key_exists($attribute, $this->container);
             break;
         case 'clear':
-            unset($this->checkAttribute($attribute)->container[$attribute]);
+            $this->clear($attribute);
             break;
         default:
             throw new ModelException(sprintf('No such method "%s:%s()"', $this::class, $method));
