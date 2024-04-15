@@ -15,6 +15,7 @@ use PommProject\Foundation\Where;
 use PommProject\ModelManager\Exception\ModelException;
 use PommProject\ModelManager\Model\CollectionIterator;
 use PommProject\ModelManager\Model\FlexibleEntity\FlexibleEntityInterface;
+use PommProject\ModelManager\Model\Model;
 
 /**
  * Basic write queries for model instances.
@@ -76,10 +77,12 @@ trait WriteQueries
             $fields = $entity->getModifiedColumns();
         }
 
-        $entity = $this->updateByPk(
-            $entity->fields($this->getStructure()->getPrimaryKey()),
-            $entity->fields($fields)
-        );
+        if (!empty($fields)) {
+            $entity = $this->updateByPk(
+                $entity->fields($this->getStructure()->getPrimaryKey()),
+                $entity->fields($fields)
+            );
+        }
 
         return $this;
     }
@@ -191,13 +194,7 @@ trait WriteQueries
             ]
         );
 
-        $collection = $this->query($sql, $where->getValues());
-        foreach ($collection as $entity) {
-            $entity->status(FlexibleEntityInterface::STATUS_NONE);
-        }
-        $collection->rewind();
-
-        return $collection;
+        return $this->query($sql, $where->getValues(), action: Model::ACTION_DELETE);
     }
 
     /**

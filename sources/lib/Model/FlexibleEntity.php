@@ -103,16 +103,14 @@ abstract class FlexibleEntity extends FlexibleContainer implements \ArrayAccess
     }
 
     /**
-     * Drop an attribute from the var holder.
-     *
-     * @param string $offset Attribute name.
+     * @see FlexibleEntityInterface
      */
-    final public function clear(string $offset): static
+    final public function clear(string $attribute): static
     {
-        if ($this->has($offset)) {
-            unset($this->container[$offset]);
+        if ($this->has($attribute)) {
+            unset($this->container[$attribute]);
             $this->touch();
-            $this->removeModifiedColumn($offset);
+            $this->removeModifiedColumn($attribute);
         }
 
         return $this;

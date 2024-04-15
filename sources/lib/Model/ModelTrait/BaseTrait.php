@@ -42,7 +42,8 @@ trait BaseTrait
     abstract protected function query(
         string $sql,
         array $values = [],
-        Projection $projection = null
+        Projection $projection = null,
+        string $action = null
     ): CollectionIterator;
 
     /** @see Model */

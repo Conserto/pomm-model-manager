@@ -38,22 +38,52 @@ class IdentityMapper
     }
 
     /** Pool FlexibleEntityInterface instances and update them if necessary. */
-    public function fetch(FlexibleEntityInterface $entity, array $primaryKey): FlexibleEntityInterface
-    {
+    public function fetch(
+        FlexibleEntityInterface $entity,
+        array $primaryKey,
+        RowStructure $rowStructure
+    ): FlexibleEntityInterface {
         $signature = self::getSignature($entity, $primaryKey);
 
         if ($signature === null) {
             return $entity;
         }
 
-        if (!array_key_exists($signature, $this->instances)) {
-            $this->instances[$signature] = $entity;
-            $entity->status(FlexibleEntityInterface::STATUS_EXIST);
-        } else {
-            $this->instances[$signature]->hydrate($entity->fields());
+        // "nettoyer" l'entité pour la mise en cache
+        // suppression des données qui ne sont pas propres à l'entité
+        $entityFields = $entity->fields();
+        $structureFields = $rowStructure->getFieldNames();
+        foreach ($entityFields as $key => $value) {
+            if (!in_array($key, $structureFields)) {
+                $entity->clear($key);
+            }
         }
 
-        return $this->instances[$signature];
+        if (!array_key_exists($signature, $this->instances)) {
+            $this->instances[$signature] = $entity->hydrate(
+                array_intersect_key($entityFields, array_flip($structureFields))
+            );
+            $entity->status(
+                $entity->status() === FlexibleEntityInterface::STATUS_DELETED
+                    ? FlexibleEntityInterface::STATUS_NONE : FlexibleEntityInterface::STATUS_EXIST
+            );
+        } else {
+            $this->instances[$signature]->hydrate(array_intersect_key($entityFields, array_flip($structureFields)));
+            $this->instances[$signature.'_COPY']->hydrate($this->instances[$signature]->fields());
+            if ($entity->status() === FlexibleEntityInterface::STATUS_DELETED) {
+                $this->instances[$signature]->status(FlexibleEntityInterface::STATUS_NONE);
+                $this->instances[$signature.'_COPY']->status(FlexibleEntityInterface::STATUS_NONE);
+            }
+        }
+
+        // reconstituer une entité complète avec l'ensemble des données "annexes" et son statut
+        $returnEntity = new (get_class($entity))();
+        $returnEntity->hydrate($this->instances[$signature]->fields());
+        $returnEntity->hydrate(array_diff_key($entityFields, array_flip($structureFields)));
+        $returnEntity->status($this->instances[$signature]->status());
+        $this->instances[$signature.'_COPY'] = $returnEntity;
+
+        return $returnEntity;
     }
 
     /** Flush instances from the identity mapper.*/

@@ -42,10 +42,14 @@ class CollectionIterator extends ResultIterator
     /**
      * @throws FoundationException|ModelException
      */
-    public function __construct(ResultHandler $result, protected Session $session, protected Projection $projection)
-    {
+    public function __construct(
+        ResultHandler $result,
+        protected Session $session,
+        protected Projection $projection,
+        private readonly ?string $action = null
+    ) {
         parent::__construct($result);
-        $this->hydrationPlan   = new HydrationPlan($projection, $session);
+        $this->hydrationPlan  = new HydrationPlan($projection, $session);
 
         /** @var ConverterClient $converterClient */
         $converterClient = $this
@@ -81,7 +85,9 @@ class CollectionIterator extends ResultIterator
     {
         $values = $this->launchFilters($values);
         $entity = $this->hydrationPlan->hydrate($values);
-
+        if (Model::ACTION_DELETE === $this->action) {
+            $entity->status(FlexibleEntityInterface::STATUS_DELETED);
+        }
         return $this->entityConverter->cacheEntity($entity);
     }
 
