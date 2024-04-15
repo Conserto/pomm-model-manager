@@ -50,7 +50,7 @@ class IdentityMapper
         }
 
         // "nettoyer" l'entité pour la mise en cache
-        // suppression des données qui ne sont propres à l'entité
+        // suppression des données qui ne sont pas propres à l'entité
         $entityFields = $entity->fields();
         $structureFields = $rowStructure->getFieldNames();
         foreach ($entityFields as $key => $value) {
@@ -63,10 +63,17 @@ class IdentityMapper
             $this->instances[$signature] = $entity->hydrate(
                 array_intersect_key($entityFields, array_flip($structureFields))
             );
-            $entity->status(FlexibleEntityInterface::STATUS_EXIST);
+            $entity->status(
+                $entity->status() === FlexibleEntityInterface::STATUS_DELETED
+                    ? FlexibleEntityInterface::STATUS_NONE : FlexibleEntityInterface::STATUS_EXIST
+            );;
         } else {
             $this->instances[$signature]->hydrate(array_intersect_key($entityFields, array_flip($structureFields)));
             $this->instances[$signature.'_COPY']->hydrate($this->instances[$signature]->fields());
+            if ($entity->status() === FlexibleEntityInterface::STATUS_DELETED) {
+                $this->instances[$signature]->status(FlexibleEntityInterface::STATUS_NONE);
+                $this->instances[$signature.'_COPY']->status(FlexibleEntityInterface::STATUS_NONE);
+            }
         }
 
         // reconstituer une entité complète avec l'ensemble des données "annexes" et son statut

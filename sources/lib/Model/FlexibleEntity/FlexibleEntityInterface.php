@@ -27,10 +27,14 @@ interface FlexibleEntityInterface
      *
      * When status is MODIFIED, the entity has been modified since creation or
      * last persist operation.
+     *
+     * When status is DELETED, the entity has been deleted from the database.
      */
     public const STATUS_NONE = 0;
     public const STATUS_EXIST = 1;
     public const STATUS_MODIFIED = 2;
+
+    public const STATUS_DELETED = -1;
 
     /**
      * Set raw values in an entity. If some values are already set, they are

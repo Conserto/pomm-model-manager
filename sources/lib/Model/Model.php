@@ -34,6 +34,8 @@ use PommProject\ModelManager\Model\FlexibleEntity\FlexibleEntityInterface;
  */
 abstract class Model implements ClientInterface
 {
+    public const ACTION_DELETE = 'delete';
+
     protected ?Session $session = null;
 
     /** @var class-string<T>|null  */
@@ -127,8 +129,12 @@ abstract class Model implements ClientInterface
      *
      * @return CollectionIterator<T>
      */
-    protected function query(string $sql, array $values = [], Projection $projection = null): CollectionIterator
-    {
+    protected function query(
+        string $sql,
+        array $values = [],
+        Projection $projection = null,
+        string $action = null
+    ): CollectionIterator {
         if ($projection === null) {
             $projection = $this->createProjection();
         }
@@ -143,7 +149,8 @@ abstract class Model implements ClientInterface
         return new CollectionIterator(
             $result,
             $this->getSession(),
-            $projection
+            $projection,
+            $action
         );
     }
 

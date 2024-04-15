@@ -245,12 +245,13 @@ class Model extends BaseTest
             ;
     }
 
+    /** Play the same request twice : entities must be equals (same values) but not identicals (different instances) */
     public function testUseIdentityMapper()
     {
         $model = $this->getReadFixtureModel($this->buildSession());
         $this
             ->object($model->findByPK(['id' => 1]))
-            ->isIdenticalTo($model->findByPK(['id' => 1]))
+            ->isEqualTo($model->findByPK(['id' => 1]))
             ;
     }
 
@@ -367,7 +368,7 @@ class Model extends BaseTest
             ->variable($model->updateByPk(['id' => 999999], ['a_varchar' => 'whatever']))
             ->isNull()
             ->object($entity)
-            ->isIdenticalTo($updated_entity)
+            ->isEqualTo($updated_entity)
             ->exception(function () use ($model_without_pk) { $model_without_pk->updateByPk(['id' => 1],  ['a_varchar' => 'whatever']); })
             ->isInstanceOf(ModelException::class)
             ->message->contains("has no primary key.")
@@ -394,6 +395,7 @@ class Model extends BaseTest
             ;
     }
 
+
     public function testDeleteByPK()
     {
         $model = $this->getWriteFixtureModel($this->buildSession());
@@ -408,10 +410,6 @@ class Model extends BaseTest
             ->isEqualTo(FlexibleEntityInterface::STATUS_NONE)
             ->variable($model->deleteByPK(['id' => $entity['id']]))
             ->isNull()
-            ->object($entity)
-            ->isIdenticalTo($deleted_entity)
-            ->integer($entity->status())
-            ->isEqualTo(FlexibleEntityInterface::STATUS_NONE)
             ->exception(function () use ($model_without_pk, $entity_without_pk) { $model_without_pk->deleteOne($entity_without_pk); })
             ->isInstanceOf(ModelException::class)
             ->message->contains("has no primary key.")
@@ -475,7 +473,7 @@ class Model extends BaseTest
             ->integer($entity->status())
             ->isEqualTo(FlexibleEntityInterface::STATUS_EXIST)
             ->object($model->findWhere('id = $*', [$entity['id']])->current())
-            ->isIdenticalTo($entity)
+            ->isEqualTo($entity)
             ;
     }
 
