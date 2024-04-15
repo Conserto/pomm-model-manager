@@ -66,7 +66,7 @@ class IdentityMapper
             $entity->status(
                 $entity->status() === FlexibleEntityInterface::STATUS_DELETED
                     ? FlexibleEntityInterface::STATUS_NONE : FlexibleEntityInterface::STATUS_EXIST
-            );;
+            );
         } else {
             $this->instances[$signature]->hydrate(array_intersect_key($entityFields, array_flip($structureFields)));
             $this->instances[$signature.'_COPY']->hydrate($this->instances[$signature]->fields());

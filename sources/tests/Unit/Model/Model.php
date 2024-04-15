@@ -375,6 +375,26 @@ class Model extends BaseTest
 
         ;
     }
+    
+    public function testCacheEntity()
+    {
+        $modelWrite = $this->getWriteFixtureModel($this->buildSession());
+        $modelRead = $this->getSimpleFixtureModel($this->buildSession());
+        $modelWrite->createAndSave(['a_varchar' => 'qwerty', 'a_boolean' => true]);
+
+        $projection = $modelRead->createProjection()
+            ->setField('a_test', "'test'", 'varchar');
+        $entity = $modelRead->doSimpleQuery(projection: $projection)->current();
+        $entity2 = $modelRead->doSimpleQuery()->current();
+
+        $this->object($entity)
+            ->isNotEqualTo($entity2)
+            ->string($entity->get('a_test'))
+            ->isEqualTo('test')
+            ->exception(function () use ($entity2) { $entity2->get('a_test'); })
+            ->isInstanceOf(ModelException::class)
+            ->message->contains("No such key");
+    }
 
     public function testDeleteOne()
     {
