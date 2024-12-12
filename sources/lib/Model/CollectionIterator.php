@@ -153,7 +153,7 @@ class CollectionIterator extends ResultIterator
         $converter = $this->hydrationPlan->getConverterForField($name);
 
         return array_map(
-            fn($val) => $converter->fromPg($val, $type, $this->session),
+            fn($val): mixed => $converter->fromPg($val, $type, $this->session),
             $values
         );
     }

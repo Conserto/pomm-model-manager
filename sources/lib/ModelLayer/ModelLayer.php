@@ -37,7 +37,7 @@ abstract class ModelLayer extends Client
     /** @see ClientInterface */
     public function getClientIdentifier(): string
     {
-        return $this::class;
+        return static::class;
     }
 
     /** @see ClientInterface */
@@ -70,10 +70,10 @@ abstract class ModelLayer extends Client
         if (empty($keys)) {
             $string = 'ALL';
         } else {
-            $string = join(
+            $string = implode(
                 ', ',
                 array_map(
-                    function ($key) {
+                    function ($key): string {
                         $parts = explode('.', $key);
                         $escapedParts = [];
 
@@ -81,7 +81,7 @@ abstract class ModelLayer extends Client
                             $escapedParts[] = $this->escapeIdentifier($part);
                         }
 
-                        return join('.', $escapedParts);
+                        return implode('.', $escapedParts);
                     },
                     $keys
                 )
@@ -135,7 +135,7 @@ EOMSG
                 sprintf(
                     "'%s' is not a valid transaction isolation level. Valid isolation levels are {%s} see Connection class constants.",
                     $isolationLevel,
-                    join(', ', $validIsolationLevels)
+                    implode(', ', $validIsolationLevels)
                 )
             );
         }
@@ -161,7 +161,7 @@ EOMSG
                 sprintf(
                     "'%s' is not a valid transaction access mode. Valid access modes are {%s}, see Connection class constants.",
                     $accessMode,
-                    join(', ', $validAccessModes)
+                    implode(', ', $validAccessModes)
                 )
             );
         }
@@ -195,7 +195,7 @@ EOMSG
      *
      * @throws FoundationException
      */
-    protected function rollbackTransaction(string $name = null): ModelLayer
+    protected function rollbackTransaction(?string $name = null): ModelLayer
     {
         $sql = "rollback transaction";
         if ($name !== null) {
@@ -332,7 +332,7 @@ EOMSG
      *
      * @throws FoundationException
      */
-    private function sendParameter(string $sql, string $identifier, string $parameter = null): ModelLayer
+    private function sendParameter(string $sql, string $identifier, ?string $parameter = null): ModelLayer
     {
         $this->executeAnonymousQuery(sprintf($sql, $identifier, $parameter));
 

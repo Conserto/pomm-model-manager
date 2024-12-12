@@ -24,7 +24,7 @@ class ModelPooler extends VanillaSessionAtoum
             ;
     }
 
-    public function testGetPoolerType()
+    public function testGetPoolerType(): void
     {
         $this
             ->string($this->newTestedInstance()->getPoolerType())
@@ -32,7 +32,7 @@ class ModelPooler extends VanillaSessionAtoum
             ;
     }
 
-    public function testGetClient()
+    public function testGetClient(): void
     {
         $session = $this->buildSession();
         $model_class = \PommProject\ModelManager\Test\Fixture\SimpleFixtureModel::class;

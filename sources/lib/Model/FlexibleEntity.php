@@ -32,7 +32,7 @@ abstract class FlexibleEntity extends FlexibleContainer implements \ArrayAccess
      *
      * @param array|null $values Optional starting values.
      */
-    public function __construct(array $values = null)
+    public function __construct(?array $values = null)
     {
         if ($values !== null) {
             $this->hydrate($values);
@@ -133,7 +133,7 @@ abstract class FlexibleEntity extends FlexibleContainer implements \ArrayAccess
             'add' => $this->add($attribute, $arguments[0]),
             'has' => $this->has($attribute),
             'clear' => $this->clear($attribute),
-            default => throw new ModelException(sprintf('No such method "%s:%s()"', $this::class, $method)),
+            default => throw new ModelException(sprintf('No such method "%s:%s()"', static::class, $method)),
         };
     }
 
@@ -202,7 +202,7 @@ abstract class FlexibleEntity extends FlexibleContainer implements \ArrayAccess
 
         foreach (static::$hasMethods as $method) {
             if (call_user_func([$this, sprintf("has%s", $method)]) === true) {
-                $customFields[Inflector::underscore(lcfirst($method))] = call_user_func(
+                $customFields[Inflector::underscore(lcfirst((string) $method))] = call_user_func(
                     [$this, sprintf("get%s", $method)]
                 );
             }

@@ -89,7 +89,7 @@ class Model extends BaseTest
             ->getModel(WeirdFixtureModel::class);
     }
 
-    public function testGetClientType()
+    public function testGetClientType(): void
     {
         $this
             ->string($this->getSimpleFixtureModel($this->buildSession())->getClientType())
@@ -97,7 +97,7 @@ class Model extends BaseTest
             ;
     }
 
-    public function getClientIdentifier()
+    public function getClientIdentifier(): void
     {
         $this
             ->string($this->getSimpleFixtureModel($this->buildSession())->getClientIdentifier())
@@ -108,7 +108,7 @@ class Model extends BaseTest
     /**
      * @throws FoundationException
      */
-    public function testCreateProjection()
+    public function testCreateProjection(): void
     {
         $session = $this->buildSession();
         $model = $this->getSimpleFixtureModel($session);
@@ -124,7 +124,7 @@ class Model extends BaseTest
     /**
      * @throws FoundationException
      */
-    public function testGetStructure()
+    public function testGetStructure(): void
     {
         $session = $this->buildSession();
         $model = $this->getSimpleFixtureModel($session);
@@ -142,21 +142,21 @@ class Model extends BaseTest
      * @throws ModelException
      * @throws \ReflectionException
      */
-    public function testInitialize()
+    public function testInitialize(): void
     {
         $session = $this->buildSession();
         $this
-            ->exception(function () use ($session) {
+            ->exception(function () use ($session): void {
                     $model = new NoStructureNoFlexibleEntityModel();
                     $model->initialize($session);
                 })
             ->isInstanceOf(ModelException::class)
-            ->exception(function () use ($session) {
+            ->exception(function () use ($session): void {
                     $model = new NoFlexibleEntityModel();
                     $model->initialize($session);
                 })
             ->isInstanceOf(ModelException::class)
-            ->exception(function () use ($session) {
+            ->exception(function () use ($session): void {
                     $model = new NoStructureModel();
                     $model->initialize($session);
                 })
@@ -164,7 +164,7 @@ class Model extends BaseTest
             ;
     }
 
-    public function testQuery()
+    public function testQuery(): void
     {
         $session = $this->buildSession();
         $model = $this->getSimpleFixtureModel($session);
@@ -181,7 +181,7 @@ class Model extends BaseTest
             ;
     }
 
-    public function testFindAll()
+    public function testFindAll(): void
     {
         $session = $this->buildSession();
         $model = $this->getReadFixtureModel($session);
@@ -203,7 +203,7 @@ class Model extends BaseTest
             ;
     }
 
-    public function testFindWhere()
+    public function testFindWhere(): void
     {
         $model = $this->getReadFixtureModel($this->buildSession());
         $condition = 'id % $* = 0';
@@ -220,7 +220,7 @@ class Model extends BaseTest
             ;
     }
 
-    public function testFindByPK()
+    public function testFindByPK(): void
     {
         $model = $this->getReadFixtureModel($this->buildSession());
         $model_without_pk = $this->getWithoutPKFixtureModel($this->buildSession());
@@ -234,10 +234,10 @@ class Model extends BaseTest
             ->isNull()
             ->integer($model->findByPK(['id' => 3])->status())
             ->isEqualTo(FlexibleEntityInterface::STATUS_EXIST)
-            ->exception(function () use ($model_without_pk) { $model_without_pk->findByPK(['id' => 1]); })
+            ->exception(function () use ($model_without_pk): void { $model_without_pk->findByPK(['id' => 1]); })
             ->isInstanceOf(ModelException::class)
             ->message->contains("has no primary key.")
-            ->exception(function () use ($model) { $model->findByPK(['a_varchar' => 'one']); })
+            ->exception(function () use ($model): void { $model->findByPK(['a_varchar' => 'one']); })
             ->isInstanceOf(ModelException::class)
             ->message->contains("Key 'id' is missing to fully describes the primary key")
             ->object($model_weird->findByPK(['field_a' => 2, 'field_b' => false]))
@@ -245,7 +245,7 @@ class Model extends BaseTest
             ;
     }
 
-    public function testUseIdentityMapper()
+    public function testUseIdentityMapper(): void
     {
         $model = $this->getReadFixtureModel($this->buildSession());
         $this
@@ -254,7 +254,7 @@ class Model extends BaseTest
             ;
     }
 
-    public function testCountWhere()
+    public function testCountWhere(): void
     {
         $model = $this->getReadFixtureModel($this->buildSession());
         $condition = 'id % $* = 0';
@@ -269,7 +269,7 @@ class Model extends BaseTest
             ;
     }
 
-    public function testExistWhere()
+    public function testExistWhere(): void
     {
         $model = $this->getReadFixtureModel($this->buildSession());
         $condition = 'a_varchar = $*';
@@ -286,7 +286,7 @@ class Model extends BaseTest
     }
 
 
-    public function testPaginateFindWhere()
+    public function testPaginateFindWhere(): void
     {
         $model = $this->getReadFixtureModel($this->buildSession());
         $pager = $model->paginateFindWhere(new Where, 2);
@@ -300,7 +300,7 @@ class Model extends BaseTest
             ;
     }
 
-    public function testInsertOne()
+    public function testInsertOne(): void
     {
         $model = $this->getWriteFixtureModel($this->buildSession());
         $entity = new SimpleFixture(['a_varchar' => 'e', 'undefined_field' => null]);
@@ -314,7 +314,7 @@ class Model extends BaseTest
             ;
     }
 
-    public function testUpdateOne()
+    public function testUpdateOne(): void
     {
         $model = $this->getWriteFixtureModel($this->buildSession());
         $model_without_pk = $this->getWithoutPKFixtureModel($this->buildSession());
@@ -332,7 +332,7 @@ class Model extends BaseTest
             ->isFalse()
             ->boolean($entity->status() === FlexibleEntityInterface::STATUS_EXIST)
             ->isTrue()
-            ->exception(function () use ($model_without_pk, $entity_without_pk) { $model_without_pk->updateOne($entity_without_pk, ['a_varchar']); })
+            ->exception(function () use ($model_without_pk, $entity_without_pk): void { $model_without_pk->updateOne($entity_without_pk, ['a_varchar']); })
             ->isInstanceOf(ModelException::class)
             ->message->contains("has no primary key.")
         ;
@@ -351,7 +351,7 @@ class Model extends BaseTest
         ;
     }
 
-    public function testUpdateByPK()
+    public function testUpdateByPK(): void
     {
         $model = $this->getWriteFixtureModel($this->buildSession());
         $model_without_pk = $this->getWithoutPKFixtureModel($this->buildSession());
@@ -368,7 +368,7 @@ class Model extends BaseTest
             ->isNull()
             ->object($entity)
             ->isIdenticalTo($updated_entity)
-            ->exception(function () use ($model_without_pk) { $model_without_pk->updateByPk(['id' => 1],  ['a_varchar' => 'whatever']); })
+            ->exception(function () use ($model_without_pk): void { $model_without_pk->updateByPk(['id' => 1],  ['a_varchar' => 'whatever']); })
             ->isInstanceOf(ModelException::class)
             ->message->contains("has no primary key.")
 
@@ -408,7 +408,7 @@ class Model extends BaseTest
         }
     }
 
-    public function testDeleteOne()
+    public function testDeleteOne(): void
     {
         $model = $this->getWriteFixtureModel($this->buildSession());
         $model_without_pk = $this->getWithoutPKFixtureModel($this->buildSession());
@@ -421,13 +421,13 @@ class Model extends BaseTest
             ->isNull()
             ->integer($entity->status())
             ->isEqualTo(FlexibleEntityInterface::STATUS_NONE)
-            ->exception(function () use ($model_without_pk, $entity_without_pk) { $model_without_pk->deleteOne($entity_without_pk); })
+            ->exception(function () use ($model_without_pk, $entity_without_pk): void { $model_without_pk->deleteOne($entity_without_pk); })
             ->isInstanceOf(ModelException::class)
             ->message->contains("has no primary key.")
             ;
     }
 
-    public function testDeleteByPK()
+    public function testDeleteByPK(): void
     {
         $model = $this->getWriteFixtureModel($this->buildSession());
         $model_without_pk = $this->getWithoutPKFixtureModel($this->buildSession());
@@ -445,13 +445,13 @@ class Model extends BaseTest
             ->isIdenticalTo($deleted_entity)
             ->integer($entity->status())
             ->isEqualTo(FlexibleEntityInterface::STATUS_NONE)
-            ->exception(function () use ($model_without_pk, $entity_without_pk) { $model_without_pk->deleteOne($entity_without_pk); })
+            ->exception(function () use ($model_without_pk, $entity_without_pk): void { $model_without_pk->deleteOne($entity_without_pk); })
             ->isInstanceOf(ModelException::class)
             ->message->contains("has no primary key.")
             ;
     }
 
-    public function testDeleteWhere()
+    public function testDeleteWhere(): void
     {
         $model = $this->getWriteFixtureModel($this->buildSession());
         $entity1 = $model->createAndSave(['a_varchar' => 'qwerty', 'a_boolean' => false]);
@@ -495,7 +495,7 @@ class Model extends BaseTest
     /**
      * @throws FoundationException
      */
-    public function testCreateAndSave()
+    public function testCreateAndSave(): void
     {
         $session = $this->buildSession();
         $model   = $this->getWriteFixtureModel($session);
@@ -515,7 +515,7 @@ class Model extends BaseTest
     /**
      * @throws FoundationException
      */
-    public function testCreateEntity()
+    public function testCreateEntity(): void
     {
         $session = $this->buildSession();
         $model   = $this->getSimpleFixtureModel($session);
@@ -528,7 +528,7 @@ class Model extends BaseTest
     /**
      * @throws FoundationException
      */
-    public function testGetModel()
+    public function testGetModel(): void
     {
         $this
             ->given($model = $this->getSimpleFixtureModel($this->buildSession()))

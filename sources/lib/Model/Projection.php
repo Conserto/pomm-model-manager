@@ -28,7 +28,7 @@ class Projection implements \IteratorAggregate, \Stringable
      * @param string $flexibleEntityClass
      * @param array|null $structure list of field names with types.
      */
-    public function __construct(protected string $flexibleEntityClass, array $structure = null)
+    public function __construct(protected string $flexibleEntityClass, ?array $structure = null)
     {
         if ($structure != null) {
             foreach ($structure as $field_name => $type) {
@@ -58,7 +58,7 @@ class Projection implements \IteratorAggregate, \Stringable
      *
      * @throws \InvalidArgumentException if $name or $content is null
      */
-    public function setField(string $name, string $content, string $type = null): Projection
+    public function setField(string $name, string $content, ?string $type = null): Projection
     {
         $this->checkField($name)->fields[$name] = $content;
         $this->types[$name] = $type;
@@ -121,7 +121,7 @@ class Projection implements \IteratorAggregate, \Stringable
     public function getFieldType(string $name): ?string
     {
         return $this->checkFieldExist($name)->types[$name] != null
-            ? rtrim($this->types[$name], '[]')
+            ? rtrim((string) $this->types[$name], '[]')
             : null;
     }
 
@@ -163,7 +163,7 @@ class Projection implements \IteratorAggregate, \Stringable
      * @throws \InvalidArgumentException if $name is null
      * @throws ModelException if $name does not exist.
      */
-    public function getFieldWithTableAlias(string $name, string $tableAlias = null): string
+    public function getFieldWithTableAlias(string $name, ?string $tableAlias = null): string
     {
         $replace = $tableAlias === null ? '' : sprintf("%s.", $tableAlias);
 
@@ -171,7 +171,7 @@ class Projection implements \IteratorAggregate, \Stringable
     }
 
     /** Return the array of fields with table aliases expanded. */
-    public function getFieldsWithTableAlias(string $tableAlias = null): array
+    public function getFieldsWithTableAlias(?string $tableAlias = null): array
     {
         $vals = [];
         $replace = $tableAlias === null ? '' : sprintf("%s.", $tableAlias);
@@ -184,23 +184,23 @@ class Projection implements \IteratorAggregate, \Stringable
     }
 
     /** Return a formatted string with fields like a.field1, a.field2, ..., a.fieldN */
-    public function formatFields(string $tableAlias = null): string
+    public function formatFields(?string $tableAlias = null): string
     {
-        return join(', ', $this->getFieldsWithTableAlias($tableAlias));
+        return implode(', ', $this->getFieldsWithTableAlias($tableAlias));
     }
 
     /** Return a formatted string with fields like a.field1 AS field1, a.field2 AS fields2, ... */
-    public function formatFieldsWithFieldAlias(string $tableAlias = null): string
+    public function formatFieldsWithFieldAlias(?string $tableAlias = null): string
     {
         $fields = $this->getFieldsWithTableAlias($tableAlias);
 
-        return join(
+        return implode(
             ', ',
             array_map(
-                fn($fieldAlias, $fieldDefinition) => sprintf(
+                fn($fieldAlias, $fieldDefinition): string => sprintf(
                     '%s as "%s"',
                     $fieldDefinition,
-                    addcslashes($fieldAlias, '"\\')
+                    addcslashes((string) $fieldAlias, '"\\')
                 ),
                 array_keys($fields),
                 $fields
@@ -235,7 +235,7 @@ class Projection implements \IteratorAggregate, \Stringable
             throw new ModelException(sprintf(
                 "Field '%s' does not exist. Available fields are {%s}.",
                 $name,
-                join(', ', $this->getFieldNames()
+                implode(', ', $this->getFieldNames()
                 )
             ));
         }
@@ -254,7 +254,7 @@ class Projection implements \IteratorAggregate, \Stringable
     {
         return preg_replace_callback(
             '/%:(\w.*):%/U',
-            fn(array $matches) => sprintf('%s"%s"', $prefix, addcslashes($matches[1], '"\\')),
+            fn(array $matches): string => sprintf('%s"%s"', $prefix, addcslashes((string) $matches[1], '"\\')),
             $string
         );
     }

@@ -143,7 +143,7 @@ class HydrationPlan
                 sprintf(
                     "Error, '%s' field has no converters registered. Fields are {%s}.",
                     $fieldName,
-                    join(', ', array_keys($this->converters))
+                    implode(', ', array_keys($this->converters))
                 )
             );
         }

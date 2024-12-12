@@ -51,7 +51,7 @@ abstract class BaseTest extends ModelSessionAtoum
         return $session;
     }
 
-    public function setUp()
+    public function setUp(): void
     {
         $session = $this->buildSession();
         $sql =
@@ -64,14 +64,14 @@ abstract class BaseTest extends ModelSessionAtoum
             ];
 
         try {
-            $session->getConnection()->executeAnonymousQuery(join(';', $sql));
+            $session->getConnection()->executeAnonymousQuery(implode(';', $sql));
         } catch (SqlException $e) {
             $session->getConnection()->executeAnonymousQuery('rollback');
             throw $e;
         }
     }
 
-    public function tearDown()
+    public function tearDown(): void
     {
         $this
             ->buildSession()

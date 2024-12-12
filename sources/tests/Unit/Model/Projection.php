@@ -14,7 +14,7 @@ use PommProject\ModelManager\Exception\ModelException;
 
 class Projection extends atoum\test
 {
-    public function testConstructorEmpty()
+    public function testConstructorEmpty(): void
     {
         $projection = $this->newTestedInstance('whatever');
         $this
@@ -25,7 +25,7 @@ class Projection extends atoum\test
             ;
     }
 
-    public function testConstructorWithParameter()
+    public function testConstructorWithParameter(): void
     {
         $projection = $this->newTestedInstance('whatever', ['pika' => 'int4']);
         $this
@@ -38,7 +38,7 @@ class Projection extends atoum\test
             ;
     }
 
-    public function testSetField()
+    public function testSetField(): void
     {
         $projection = $this->newTestedInstance('whatever', ['pika' => 'int4']);
         $this
@@ -57,7 +57,7 @@ class Projection extends atoum\test
             ;
     }
 
-    public function testSetFieldType()
+    public function testSetFieldType(): void
     {
         $projection = $this->newTestedInstance('whatever', ['pika' => 'int4']);
         $this
@@ -65,43 +65,43 @@ class Projection extends atoum\test
             ->isEqualTo('bool')
             ->variable($projection->setFieldType('pika', null)->getFieldType('pika'))
             ->isNull()
-            ->exception(function () use ($projection) { $projection->setFieldType('whatever', 'whatever'); })
+            ->exception(function () use ($projection): void { $projection->setFieldType('whatever', 'whatever'); })
             ->isInstanceOf(\PommProject\ModelManager\Exception\ModelException::class)
             ->message->contains('does not exist')
             ;
     }
 
-    public function testUnsetField()
+    public function testUnsetField(): void
     {
         $projection = $this->newTestedInstance('whatever', ['pika' => 'int4']);
         $this
             ->array($projection->unsetField('pika')->getFieldNames())
             ->isEmpty()
-            ->exception(function () use ($projection) { $projection->getFieldType('pika'); })
+            ->exception(function () use ($projection): void { $projection->getFieldType('pika'); })
             ->isInstanceOf(\PommProject\ModelManager\Exception\ModelException::class)
             ->message->contains('does not exist')
-            ->exception(function () use ($projection) { $projection->unsetField('pika'); })
+            ->exception(function () use ($projection): void { $projection->unsetField('pika'); })
             ->isInstanceOf(\PommProject\ModelManager\Exception\ModelException::class)
             ->message->contains('does not exist')
             ;
     }
 
-    public function testUnsetFields()
+    public function testUnsetFields(): void
     {
         $projection = $this->newTestedInstance('whatever', ['pika' => 'int4', 'pok' => 'int4']);
         $this
             ->array($projection->unsetFields(['pika', 'pok'])->getFieldNames())
             ->isEmpty()
-            ->exception(function () use ($projection) { $projection->getFieldType('pika'); })
+            ->exception(function () use ($projection): void { $projection->getFieldType('pika'); })
             ->isInstanceOf(ModelException::class)
             ->message->contains('does not exist')
-            ->exception(function () use ($projection) { $projection->unsetField('pok'); })
+            ->exception(function () use ($projection): void { $projection->unsetField('pok'); })
             ->isInstanceOf(ModelException::class)
             ->message->contains('does not exist')
         ;
     }
 
-    public function testHasField()
+    public function testHasField(): void
     {
         $projection = $this->newTestedInstance('whatever', ['pika' => 'int4']);
         $this
@@ -112,32 +112,32 @@ class Projection extends atoum\test
             ;
     }
 
-    public function testGetFieldType()
+    public function testGetFieldType(): void
     {
         $projection = $this->newTestedInstance('whatever', ['pika' => 'int4']);
         $this
             ->string($projection->getFieldType('pika'))
             ->isEqualTo('int4')
-            ->exception(function () use ($projection) { $projection->getFieldType('chu'); })
+            ->exception(function () use ($projection): void { $projection->getFieldType('chu'); })
             ->isInstanceOf(\PommProject\ModelManager\Exception\ModelException::class)
             ->message->contains('does not exist')
             ;
     }
 
-    public function testIsArray()
+    public function testIsArray(): void
     {
         $projection = $this->newTestedInstance('whatever', ['pika' => 'int4']);
         $this->boolean($projection->isArray('pika'))
             ->isFalse()
             ->boolean($projection->setField('chu', '%:chu:%', 'int4[]')->isArray('chu'))
             ->isTrue()
-            ->exception(function () use ($projection) { $projection->isArray('whatever'); })
+            ->exception(function () use ($projection): void { $projection->isArray('whatever'); })
             ->isInstanceOf(\PommProject\ModelManager\Exception\ModelException::class)
             ->message->contains('does not exist')
             ;
     }
 
-    public function testGetFieldNames()
+    public function testGetFieldNames(): void
     {
         $projection = $this->newTestedInstance('whatever');
         $this->array($projection->getFieldNames())
@@ -149,7 +149,7 @@ class Projection extends atoum\test
             ;
     }
 
-    public function testGetFieldTypes()
+    public function testGetFieldTypes(): void
     {
         $projection = $this->newTestedInstance('whatever', ['pika' => 'int4'])
             ->setField('chu', 'expression(chu)')
@@ -162,7 +162,7 @@ class Projection extends atoum\test
             ;
     }
 
-    public function testGetFieldWithTableAlias()
+    public function testGetFieldWithTableAlias(): void
     {
         $projection = $this->newTestedInstance('whatever', ['pika' => 'int4']);
         $this->string($projection->getFieldWithTableAlias('pika'))
@@ -171,13 +171,13 @@ class Projection extends atoum\test
             ->isEqualTo('my_table."pika"')
             ->string($projection->setField('chu', '%:pika:% / 2', 'int4')->getFieldWithTableAlias('chu', 'my_table'))
             ->isEqualTo('my_table."pika" / 2')
-            ->exception(function () use ($projection) { $projection->getFieldWithTableAlias('whatever'); })
+            ->exception(function () use ($projection): void { $projection->getFieldWithTableAlias('whatever'); })
             ->isInstanceOf(\PommProject\ModelManager\Exception\ModelException::class)
             ->message->contains('does not exist')
             ;
     }
 
-    public function testGetFieldsWithTableAlias()
+    public function testGetFieldsWithTableAlias(): void
     {
         $projection = $this->newTestedInstance('whatever');
         $this->array($projection->getFieldsWithTableAlias())
@@ -197,7 +197,7 @@ class Projection extends atoum\test
             ;
     }
 
-    public function testFormatFields()
+    public function testFormatFields(): void
     {
         $projection = $this->newTestedInstance('whatever');
         $this->string($projection->formatFields())
@@ -219,7 +219,7 @@ class Projection extends atoum\test
             ;
     }
 
-    public function testFormatFieldsWithTableAlias()
+    public function testFormatFieldsWithTableAlias(): void
     {
         $projection = $this->newTestedInstance('whatever');
         $this->string($projection->formatFieldsWithFieldAlias())

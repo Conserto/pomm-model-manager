@@ -32,17 +32,17 @@ class SimpleModelLayer extends ModelLayer
         return parent::startTransaction();
     }
 
-    public function rollbackTransaction($name = null): ModelLayer
+    public function rollbackTransaction(?string $name = null): ModelLayer
     {
         return parent::rollbackTransaction($name);
     }
 
-    public function setSavepoint($name): ModelLayer
+    public function setSavepoint(string $name): ModelLayer
     {
         return parent::setSavepoint($name);
     }
 
-    public function releaseSavepoint($name): ModelLayer
+    public function releaseSavepoint(string $name): ModelLayer
     {
         return parent::releaseSavepoint($name);
     }
@@ -90,7 +90,7 @@ class SimpleModelLayer extends ModelLayer
         return parent::setTransactionIsolationLevel($isolationLevel);
     }
 
-    public function setTransactionAccessMode($accessMode): ModelLayer
+    public function setTransactionAccessMode(string $accessMode): ModelLayer
     {
         return parent::setTransactionAccessMode($accessMode);
     }

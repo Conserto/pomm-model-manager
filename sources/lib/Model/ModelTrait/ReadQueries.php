@@ -196,7 +196,7 @@ trait ReadQueries
         int $count,
         int $itemPerPage,
         int $page = 1,
-        Projection $projection = null
+        ?Projection $projection = null
     ): Pager {
         if ($page < 1) {
             throw new \InvalidArgumentException(
@@ -269,7 +269,7 @@ trait ReadQueries
                     sprintf(
                         "Key '%s' is missing to fully describes the primary key {%s}.",
                         $key,
-                        join(', ', $this->getStructure()->getPrimaryKey())
+                        implode(', ', $this->getStructure()->getPrimaryKey())
                     )
                 );
             }

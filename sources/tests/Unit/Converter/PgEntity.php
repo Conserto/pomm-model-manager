@@ -46,7 +46,7 @@ class PgEntity extends BaseTest
         );
     }
 
-    public function testFromPg()
+    public function testFromPg(): void
     {
         $this
             ->assert("Row types are converted into entities.")
@@ -76,7 +76,7 @@ class PgEntity extends BaseTest
             ;
     }
 
-    public function testComplexFromPg()
+    public function testComplexFromPg(): void
     {
         $converter = $this->getComplexFixtureConverter();
         $session = $this->setUpSession($this->buildSession());
@@ -127,7 +127,7 @@ ROW;
             ;
     }
 
-    public function testFromPgWithJson()
+    public function testFromPgWithJson(): void
     {
         $session = $this->setUpSession($this->buildSession());
         $converter = $this->newTestedInstance(
@@ -149,7 +149,7 @@ ROW;
             ;
     }
 
-    public function testToPg($complex_fixture)
+    public function testToPg($complex_fixture): void
     {
         $converter = $this->getComplexFixtureConverter();
         $session = $this->setUpSession($this->buildSession());
@@ -182,9 +182,9 @@ ROW;
         ];
     }
 
-    public function testInvalidDataToPg()
+    public function testInvalidDataToPg(): void
     {
-        $this->exception(function () {
+        $this->exception(function (): void {
             $converter = $this->getComplexFixtureConverter();
             $session = $this->setUpSession($this->buildSession());
             $invalidData = new \stdClass();
@@ -195,7 +195,7 @@ ROW;
     /**
      * @dataProvider testToPgDataProvider
      */
-    public function testToPgStandardFormat($complex_fixture)
+    public function testToPgStandardFormat($complex_fixture): void
     {
         $converter          = $this->getComplexFixtureConverter();
         $session            = $this->setUpSession($this->buildSession());
@@ -214,7 +214,7 @@ ROW;
             ;
     }
 
-    private function sendAsPostgresParameter($value, $type, Session $session)
+    private function sendAsPostgresParameter($value, string $type, Session $session)
     {
         $result = $session
             ->getQueryManager()
