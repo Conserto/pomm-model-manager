@@ -3,4 +3,4 @@ parameters:
     paths:
         - sources/lib
     ignoreErrors:
-        - '#Trait .* is used zero times and is not analysed.#'
+        - identifier: trait.unused
