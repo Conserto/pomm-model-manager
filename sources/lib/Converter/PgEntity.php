@@ -99,7 +99,7 @@ class PgEntity implements ConverterInterface
             $hydrationPlan->removeConverter(PgBoolean::class);
             $hydrationPlan->removeConverter(PgArray::class);
         }  else {
-            $values = str_getcsv($data);
+            $values = str_getcsv($data, escape: "\\" );
             $definition = $projection->getFieldNames();
             $outValues = [];
             $valuesCount = count($values);
