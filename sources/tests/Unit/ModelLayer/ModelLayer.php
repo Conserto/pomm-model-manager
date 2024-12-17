@@ -15,7 +15,7 @@ use PommProject\ModelManager\Tester\ModelSessionAtoum;
 
 class ModelLayer extends ModelSessionAtoum
 {
-    public function setUp()
+    public function setUp(): void
     {
         $this
             ->buildSession()
@@ -29,7 +29,7 @@ EOSQL
         ;
     }
 
-    public function tearDown()
+    public function tearDown(): void
     {
         $this
             ->buildSession()
@@ -38,7 +38,7 @@ EOSQL
             ;
     }
 
-    public function afterTestMethod($method)
+    public function afterTestMethod($method): void
     {
         /*
          * This is to ensure the transaction is terminated even if a test fails
@@ -62,7 +62,7 @@ EOSQL
         return $model_layer;
     }
 
-    public function testSetDeferrable()
+    public function testSetDeferrable(): void
     {
         $model_layer = $this->getModelLayer();
         $this
@@ -71,7 +71,7 @@ EOSQL
                     ->setDeferrable(['pomm_test.chu_pika_id_fkey'], Connection::CONSTRAINTS_DEFERRED)
             )
             ->isEqualTo($model_layer)
-            ->exception(function () use ($model_layer) {
+            ->exception(function () use ($model_layer): void {
                 $model_layer->setDeferrable(['pomm_test.chu_pika_id_fkey'], 'chu');
             })
             ->isInstanceOf(\PommProject\ModelManager\Exception\ModelLayerException::class)
@@ -79,7 +79,7 @@ EOSQL
             ;
     }
 
-    public function testTransaction()
+    public function testTransaction(): void
     {
         $model_layer = $this->getModelLayer();
         $this
@@ -102,7 +102,7 @@ EOSQL
             ->isNull()
             ->boolean($model_layer->isTransactionOk())
             ->isTrue()
-            ->exception(function () use ($model_layer) { $model_layer->releaseSavepoint('not exist'); })
+            ->exception(function () use ($model_layer): void { $model_layer->releaseSavepoint('not exist'); })
             ->isInstanceOf(\PommProject\Foundation\Exception\SqlException::class)
             ->boolean($model_layer->isInTransaction())
             ->isTrue()
@@ -124,7 +124,7 @@ EOSQL
         ];
     }
 
-    public function testSetTransactionIsolationLevel($level)
+    public function testSetTransactionIsolationLevel($level): void
     {
         $model_layer = $this->getModelLayer();
         $model_layer->startTransaction();
@@ -145,7 +145,7 @@ EOSQL
             ;
     }
 
-    public function testSetTransactionAccessMode()
+    public function testSetTransactionAccessMode(): void
     {
         $model_layer = $this->getModelLayer();
         $model_layer->startTransaction();

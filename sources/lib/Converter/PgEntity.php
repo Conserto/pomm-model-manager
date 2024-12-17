@@ -45,7 +45,7 @@ class PgEntity implements ConverterInterface
     public function __construct(
         protected string $flexibleEntityClass,
         protected RowStructure $rowStructure,
-        IdentityMapper $identityMapper = null
+        ?IdentityMapper $identityMapper = null
     ) {
         $this->identityMapper = $identityMapper ?? new IdentityMapper();
     }
@@ -99,15 +99,15 @@ class PgEntity implements ConverterInterface
             $hydrationPlan->removeConverter(PgBoolean::class);
             $hydrationPlan->removeConverter(PgArray::class);
         }  else {
-            $values = str_getcsv($data);
+            $values = str_getcsv($data, escape: "\\" );
             $definition = $projection->getFieldNames();
             $outValues = [];
             $valuesCount = count($values);
 
             for ($index = 0; $index < $valuesCount; $index++) {
                 $fieldName = $definition[$index];
-                $outValues[$fieldName] = preg_match(':^{.*}$:', $values[$index])
-                    ? stripcslashes($values[$index])
+                $outValues[$fieldName] = preg_match(':^{.*}$:', (string) $values[$index])
+                    ? stripcslashes((string) $values[$index])
                     : $values[$index]
                 ;
             }
@@ -145,7 +145,7 @@ class PgEntity implements ConverterInterface
 
         return sprintf(
             "row(%s)::%s",
-            join(',', $hydrationPlan->dry($fields)),
+            implode(',', $hydrationPlan->dry($fields)),
             $type
         );
     }
@@ -226,7 +226,7 @@ class PgEntity implements ConverterInterface
 
         return
             sprintf("(%s)",
-                join(',', array_map(function ($val) {
+                implode(',', array_map(function ($val) {
                     $returned = $val;
 
                     if ($val === null) {

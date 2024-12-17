@@ -112,7 +112,7 @@ class RowStructure implements \ArrayAccess
     private function checkNotNull(?string $val, string $name): RowStructure
     {
         if ($val === null) {
-            throw new \InvalidArgumentException(sprintf("'%s' cannot be null in '%s'.", $name, $this::class));
+            throw new \InvalidArgumentException(sprintf("'%s' cannot be null in '%s'.", $name, static::class));
         }
 
         return $this;
@@ -130,8 +130,8 @@ class RowStructure implements \ArrayAccess
                 sprintf(
                     "Field '%s' is not defined in structure '%s'. Defined fields are {%s}",
                     $name,
-                    $this::class,
-                    join(', ', array_keys($this->fieldDefinitions))
+                    static::class,
+                    implode(', ', array_keys($this->fieldDefinitions))
                 )
             );
         }

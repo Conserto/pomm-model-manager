@@ -14,7 +14,7 @@ use PommProject\ModelManager\Model\RowStructure as PommRowStructure;
 
 class RowStructure extends atoum\test
 {
-    public function testInherits()
+    public function testInherits(): void
     {
         $structure = new GoodStructure();
         $this->object($structure->inherits(new ChuStructure()))
@@ -24,7 +24,7 @@ class RowStructure extends atoum\test
             ;
     }
 
-    public function testAddField()
+    public function testAddField(): void
     {
         $structure = new GoodStructure();
         $this->array($structure->getDefinition())
@@ -34,7 +34,7 @@ class RowStructure extends atoum\test
             ;
     }
 
-    public function testGetFieldNames()
+    public function testGetFieldNames(): void
     {
         $structure = new GoodStructure();
         $this->array($structure->getFieldNames())
@@ -44,7 +44,7 @@ class RowStructure extends atoum\test
             ;
     }
 
-    public function testHasField()
+    public function testHasField(): void
     {
         $structure = new GoodStructure();
         $this->boolean($structure->hasField('pika'))
@@ -56,12 +56,12 @@ class RowStructure extends atoum\test
             ;
     }
 
-    public function testGetTypeFor()
+    public function testGetTypeFor(): void
     {
         $structure = new GoodStructure();
         $this->string($structure->getTypeFor('pika'))
             ->isEqualTo('int4')
-            ->exception(function () use ($structure) { $structure->getTypeFor('chu'); })
+            ->exception(function () use ($structure): void { $structure->getTypeFor('chu'); })
             ->isinstanceof(\PommProject\ModelManager\Exception\ModelException::class)
             ->message->contains("Field 'chu' is not defined")
             ->string($structure->addField('chu', 'bool')->getTypeFor('chu'))
@@ -69,7 +69,7 @@ class RowStructure extends atoum\test
             ;
     }
 
-    public function testGetDefinition()
+    public function testGetDefinition(): void
     {
         $structure = new GoodStructure();
         $this->array($structure->getDefinition())
@@ -79,7 +79,7 @@ class RowStructure extends atoum\test
             ;
     }
 
-    public function testGetRelation()
+    public function testGetRelation(): void
     {
         $structure = new GoodStructure();
         $this->string($structure->getRelation())
@@ -87,7 +87,7 @@ class RowStructure extends atoum\test
             ;
     }
 
-    public function testGetPrimaryKey()
+    public function testGetPrimaryKey(): void
     {
         $structure = new GoodStructure();
         $this->array($structure->getPrimaryKey())
@@ -99,7 +99,7 @@ class RowStructure extends atoum\test
             ;
     }
 
-    public function testArrayAccess()
+    public function testArrayAccess(): void
     {
         $structure = new GoodStructure();
         $this->string($structure['pika'])
@@ -108,7 +108,7 @@ class RowStructure extends atoum\test
         $structure['chu'] = 'bool';
         $this->boolean(isset($structure['chu']))
             ->isTrue()
-            ->exception(function () use ($structure) { unset($structure['chu']); })
+            ->exception(function () use ($structure): void { unset($structure['chu']); })
             ->isInstanceOf(\PommProject\ModelManager\Exception\ModelException::class)
             ->message->contains('Cannot unset a structure field')
             ;

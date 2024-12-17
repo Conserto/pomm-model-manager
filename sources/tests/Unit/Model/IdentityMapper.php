@@ -14,7 +14,7 @@ use PommProject\ModelManager\Test\Fixture\ComplexFixture;
 
 class IdentityMapper extends atoum\test
 {
-    public function testFetch()
+    public function testFetch(): void
     {
         $fixture = new ComplexFixture(['created_at' => new \DateTime("2014-10-30 10:13:56.420342+00"), 'some_id' => 1, 'yes' => true ]);
         $mapper = $this->newTestedInstance();

@@ -49,7 +49,7 @@ abstract class Model implements ClientInterface
     public function getSession(): Session
     {
         if ($this->session === null) {
-            throw new ModelException(sprintf("Model class '%s' is not registered against the session.", $this::class));
+            throw new ModelException(sprintf("Model class '%s' is not registered against the session.", static::class));
         }
 
         return $this->session;
@@ -64,7 +64,7 @@ abstract class Model implements ClientInterface
     /** @see ClientInterface */
     public function getClientIdentifier(): string
     {
-        return trim($this::class, "\\");
+        return trim(static::class, "\\");
     }
 
     /**
@@ -127,7 +127,7 @@ abstract class Model implements ClientInterface
      *
      * @return CollectionIterator<T>
      */
-    protected function query(string $sql, array $values = [], Projection $projection = null): CollectionIterator
+    protected function query(string $sql, array $values = [], ?Projection $projection = null): CollectionIterator
     {
         if ($projection === null) {
             $projection = $this->createProjection();
@@ -194,7 +194,7 @@ abstract class Model implements ClientInterface
     public function getStructure(): RowStructure
     {
         if ($this->structure === null) {
-            throw new ModelException(sprintf("Structure not set while initializing Model class '%s'.", $this::class));
+            throw new ModelException(sprintf("Structure not set while initializing Model class '%s'.", static::class));
         }
 
         return $this->structure;
@@ -228,7 +228,7 @@ abstract class Model implements ClientInterface
     {
         if ($this->flexibleEntityClass == null) {
             throw new ModelException(
-                sprintf("Flexible entity not set while initializing Model class '%s'.", $this::class)
+                sprintf("Flexible entity not set while initializing Model class '%s'.", static::class)
             );
         } elseif (!(new \ReflectionClass($this->flexibleEntityClass))
             ->implementsInterface(FlexibleEntityInterface::class)

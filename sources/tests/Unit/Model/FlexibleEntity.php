@@ -15,7 +15,7 @@ use PommProject\ModelManager\Model\FlexibleEntity\FlexibleEntityInterface;
 
 class FlexibleEntity extends atoum\test
 {
-    public function testConstructorEmpty()
+    public function testConstructorEmpty(): void
     {
         $entity = new PikaEntity();
         $this
@@ -26,7 +26,7 @@ class FlexibleEntity extends atoum\test
             ;
     }
 
-    public function testConstructorWithParameters()
+    public function testConstructorWithParameters(): void
     {
         $entity = new ChuEntity(['pika' => 'whatever']);
         $this
@@ -40,7 +40,7 @@ class FlexibleEntity extends atoum\test
             ;
     }
 
-    public function testGet()
+    public function testGet(): void
     {
         $entity = new PikaEntity(['pika' => 'whatever', 'an_array' => [1, 2]]);
         $this
@@ -48,7 +48,7 @@ class FlexibleEntity extends atoum\test
             ->isEqualTo('whatever')
             ->array($entity->get('an_array'))
             ->isIdenticalTo([1, 2])
-            ->exception(function () use ($entity) { $entity->get('no_such_key'); })
+            ->exception(function () use ($entity): void { $entity->get('no_such_key'); })
             ->isInstanceOf(\PommProject\ModelManager\Exception\ModelException::class)
             ->message->contains('No such key')
             ;
@@ -60,7 +60,7 @@ class FlexibleEntity extends atoum\test
         PommFlexibleEntity::$strict = true;
     }
 
-    public function testHas()
+    public function testHas(): void
     {
         $entity = new ChuEntity(['pika' => 'whatever']);
         $this
@@ -73,7 +73,7 @@ class FlexibleEntity extends atoum\test
             ;
     }
 
-    public function testSet()
+    public function testSet(): void
     {
         $entity = new PikaEntity([]);
         $this
@@ -88,7 +88,7 @@ class FlexibleEntity extends atoum\test
             ;
     }
 
-    public function testAdd()
+    public function testAdd(): void
     {
         $entity = new PikaEntity(['pika' => 'whatever', 'an_array' => []]);
         $this
@@ -98,7 +98,7 @@ class FlexibleEntity extends atoum\test
             ->isEqualTo(FlexibleEntityInterface::STATUS_MODIFIED)
             ->array($entity->add('an_array', 2)->get('an_array'))
             ->isIdenticalTo([1, 2])
-            ->Exception(function () use ($entity) { $entity->add('pika', 3); })
+            ->Exception(function () use ($entity): void { $entity->add('pika', 3); })
             ->isInstanceOf(\PommProject\ModelManager\Exception\ModelException::class)
             ->message->contains('is not an array')
             ->array($entity->add('whatever', 1)->get('whatever'))
@@ -106,7 +106,7 @@ class FlexibleEntity extends atoum\test
             ;
     }
 
-    public function testClear()
+    public function testClear(): void
     {
         $entity = new ChuEntity(['pika' => 'whatever']);
         $this
@@ -119,20 +119,20 @@ class FlexibleEntity extends atoum\test
             ;
     }
 
-    public function testUnderscoreCall()
+    public function testUnderscoreCall(): void
     {
         $entity = new PikaEntity();
         $this
-            ->exception(function () use ($entity) { $entity->eDqSdgeDsTfd(); })
+            ->exception(function () use ($entity): void { $entity->eDqSdgeDsTfd(); })
             ->isInstanceOf(\PommProject\ModelManager\Exception\ModelException::class)
             ->message->contains('No such method')
-            ->exception(function () use ($entity) { $entity->sefPika(); })
+            ->exception(function () use ($entity): void { $entity->sefPika(); })
             ->isInstanceOf(\PommProject\ModelManager\Exception\ModelException::class)
             ->message->contains('No such method')
             ;
     }
 
-    public function testUnderscoreCallGet()
+    public function testUnderscoreCallGet(): void
     {
         $entity = new PikaEntity(['pika' => 'whatever', 'chu' => [1, 2]]);
         $this
@@ -140,13 +140,13 @@ class FlexibleEntity extends atoum\test
             ->isEqualTo('WHATEVER')
             ->array($entity->getChu())
             ->isIdenticalTo([1, 2])
-            ->exception(function () use ($entity) { $entity->getNoSuchKey(); })
+            ->exception(function () use ($entity): void { $entity->getNoSuchKey(); })
             ->isInstanceOf(\PommProject\ModelManager\Exception\ModelException::class)
             ->message->contains('No such key')
             ;
     }
 
-    public function testUnderscoreCallSet()
+    public function testUnderscoreCallSet(): void
     {
         $entity = new PikaEntity();
         $this
@@ -155,7 +155,7 @@ class FlexibleEntity extends atoum\test
             ;
     }
 
-    public function testUnderscoreCallAdd()
+    public function testUnderscoreCallAdd(): void
     {
         $entity = new PikaEntity(['pika' => 'whatever', 'chu' => [1, 2]]);
         $this
@@ -164,7 +164,7 @@ class FlexibleEntity extends atoum\test
             ;
     }
 
-    public function testUnderscoreCallHas()
+    public function testUnderscoreCallHas(): void
     {
         $entity = new PikaEntity(['chu' => [1, 2]]);
         $this
@@ -175,7 +175,7 @@ class FlexibleEntity extends atoum\test
             ;
     }
 
-    public function testUnderscoreCallClear()
+    public function testUnderscoreCallClear(): void
     {
         $entity = new PikaEntity(['pika' => 'whatever']);
         $this
@@ -184,7 +184,7 @@ class FlexibleEntity extends atoum\test
             ;
     }
 
-    public function testHydrate()
+    public function testHydrate(): void
     {
         $entity = new ChuEntity(['pika' => 'whatever']);
         $this
@@ -195,7 +195,7 @@ class FlexibleEntity extends atoum\test
             ;
     }
 
-    public function testConvert()
+    public function testConvert(): void
     {
         $entity = new PikaEntity();
         $this
@@ -204,7 +204,7 @@ class FlexibleEntity extends atoum\test
             ;
     }
 
-    public function testExtract()
+    public function testExtract(): void
     {
         $entity = new PikaEntity();
         $this
@@ -232,7 +232,7 @@ class FlexibleEntity extends atoum\test
             ;
     }
 
-    public function testUnderscoreSet()
+    public function testUnderscoreSet(): void
     {
         $entity = new PikaEntity();
         $entity->chu = 'WoW';
@@ -243,7 +243,7 @@ class FlexibleEntity extends atoum\test
             ;
     }
 
-    public function testUnderscoreGet()
+    public function testUnderscoreGet(): void
     {
         $entity = new PikaEntity(['pika' => 'WoW', 'chu' => 'WoW']);
         $this
@@ -251,13 +251,13 @@ class FlexibleEntity extends atoum\test
             ->isEqualTo('WOW')
             ->string($entity->chu)
             ->isEqualTo('WoW')
-            ->exception(function () use ($entity) { $entity->whatever; })
+            ->exception(function () use ($entity): void { $entity->whatever; })
             ->isInstanceOf(\PommProject\ModelManager\Exception\ModelException::class)
             ->message->contains('No such key')
             ;
     }
 
-    public function testStatus()
+    public function testStatus(): void
     {
         $entity = new PikaEntity();
         $this
@@ -268,7 +268,7 @@ class FlexibleEntity extends atoum\test
             ;
     }
 
-    public function testArrayAccess()
+    public function testArrayAccess(): void
     {
         $entity = new PikaEntity();
         $entity['pika'] = 'wow';
@@ -280,7 +280,7 @@ class FlexibleEntity extends atoum\test
             ->isEqualTo('WOW')
             ->string($entity['chu'])
             ->isEqualTo('wow')
-            ->exception(function () use ($entity) { $entity['no_such_key']; })
+            ->exception(function () use ($entity): void { $entity['no_such_key']; })
             ->isInstanceOf(\PommProject\ModelManager\Exception\ModelException::class)
             ->message->contains('No such key')
             ->boolean(isset($entity['chu']))
@@ -297,7 +297,7 @@ class FlexibleEntity extends atoum\test
             ;
     }
 
-    public function testGetIterator()
+    public function testGetIterator(): void
     {
         $entity = new PikaEntity();
         $this
@@ -314,7 +314,7 @@ class FlexibleEntity extends atoum\test
             ;
     }
 
-    public function testIsset()
+    public function testIsset(): void
     {
         $entity = new ChuEntity(['pika' => 'whatever']);
         $this
@@ -325,7 +325,7 @@ class FlexibleEntity extends atoum\test
         ;
     }
 
-    public function testUnset()
+    public function testUnset(): void
     {
         $entity = new ChuEntity(['pika' => 'whatever']);
         $this
@@ -339,7 +339,7 @@ class FlexibleEntity extends atoum\test
         ;
     }
 
-    public function testModifiedColumn()
+    public function testModifiedColumn(): void
     {
         $entity = new PikaEntity();
         $this
@@ -355,24 +355,24 @@ class FlexibleEntity extends atoum\test
 
 class PikaEntity extends PommFlexibleEntity
 {
-    public function getPika()
+    public function getPika(): string
     {
         return strtoupper((string) $this->get('pika'));
     }
 
-    public function setChu($val)
+    public function setChu($val): static
     {
         $this->set('chu', strtolower((string) $val));
 
         return $this;
     }
 
-    public function getPikaHash()
+    public function getPikaHash(): string
     {
-        return md5($this->get('pika'));
+        return md5((string) $this->get('pika'));
     }
 
-    public function hasPikaHash()
+    public function hasPikaHash(): bool
     {
         return $this->has('pika');
     }

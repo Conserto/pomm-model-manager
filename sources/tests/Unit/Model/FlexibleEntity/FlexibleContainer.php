@@ -13,7 +13,7 @@ use atoum\atoum;
 
 class FlexibleContainer extends atoum\test
 {
-    public function testHydrate()
+    public function testHydrate(): void
     {
         $container = $this->newTestedInstance();
         $this
@@ -30,7 +30,7 @@ class FlexibleContainer extends atoum\test
             ;
     }
 
-    public function testFields()
+    public function testFields(): void
     {
         $container = $this->newTestedInstance()
             ->hydrate(["a" => "one", "b" => "two", "c" => null])
@@ -50,7 +50,7 @@ class FlexibleContainer extends atoum\test
             ;
     }
 
-    public function testExtract()
+    public function testExtract(): void
     {
         $container = $this->newTestedInstance()
             ->hydrate(["a" => "one", "b" => "two", "c" => "three"])
@@ -61,7 +61,7 @@ class FlexibleContainer extends atoum\test
             ;
     }
 
-    public function testGetIterator()
+    public function testGetIterator(): void
     {
         $container = $this->newTestedInstance()
             ->hydrate(["a" => "one", "b" => "two", "c" => "three"])
@@ -74,7 +74,7 @@ class FlexibleContainer extends atoum\test
             ;
     }
 
-    public function testGenericGet()
+    public function testGenericGet(): void
     {
         $container = $this->newTestedInstance()
             ->hydrate(["a" => "one", "b" => "two", "c" => "three"])
@@ -84,13 +84,13 @@ class FlexibleContainer extends atoum\test
             ->isEqualTo("one")
             ->string($container->getC())
             ->isEqualTo("three")
-            ->exception(function () use ($container) { $container->getPika(); })
+            ->exception(function () use ($container): void { $container->getPika(); })
             ->isInstanceOf(\PommProject\ModelManager\Exception\ModelException::class)
             ->message->contains("{a, b, c")
             ;
     }
 
-    public function testGenericSet()
+    public function testGenericSet(): void
     {
         $container = $this->newTestedInstance()
             ->hydrate(["a" => "one", "b" => "two", "c" => "three"])
@@ -109,7 +109,7 @@ class FlexibleContainer extends atoum\test
             ;
     }
 
-    public function testGenericHas()
+    public function testGenericHas(): void
     {
         $container = $this->newTestedInstance()
             ->hydrate(["a" => "one", "b" => "two", "c" => null])
@@ -124,7 +124,7 @@ class FlexibleContainer extends atoum\test
             ;
     }
 
-    public function testGenericClear()
+    public function testGenericClear(): void
     {
         $container = $this->newTestedInstance()
             ->hydrate(["a" => "one", "b" => "two", "c" => "three"])
@@ -134,22 +134,22 @@ class FlexibleContainer extends atoum\test
             ->isInstanceOf(\PommProject\ModelManager\Model\FlexibleEntity\FlexibleContainer::class)
             ->array($container->fields())
             ->isIdenticalTo(["b" => "two", "c" => "three"])
-            ->exception(function () use ($container) { $container->clearA(); })
+            ->exception(function () use ($container): void { $container->clearA(); })
             ->isInstanceOf(\PommProject\ModelManager\Exception\ModelException::class)
             ->message->contains("{b, c")
             ;
     }
 
-    public function testCall()
+    public function testCall(): void
     {
         $container = $this->newTestedInstance()
             ->hydrate(["a" => "one", "b" => "two", "c" => "three"])
             ;
         $this
-            ->exception(function () use ($container) { $container->pika(); })
+            ->exception(function () use ($container): void { $container->pika(); })
             ->isInstanceOf(\PommProject\ModelManager\Exception\ModelException::class)
             ->message->contains("No such argument")
-            ->exception(function () use ($container) { $container->cliPika(); })
+            ->exception(function () use ($container): void { $container->cliPika(); })
             ->isInstanceOf(\PommProject\ModelManager\Exception\ModelException::class)
             ->message->contains("No such method")
             ;

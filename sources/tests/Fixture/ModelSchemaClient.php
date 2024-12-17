@@ -79,7 +79,7 @@ class ModelSchemaClient extends Client
      * @throws FoundationException
      * @throws ConnectionException
      */
-    protected function executeSql($sql): ResultHandler|array
+    protected function executeSql(string $sql): ResultHandler|array
     {
         return $this
             ->getSession()

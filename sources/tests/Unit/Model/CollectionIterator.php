@@ -62,7 +62,7 @@ SQL;
         );
     }
 
-    public function testGetWithoutFilters()
+    public function testGetWithoutFilters(): void
     {
         $collection = $this->getCollectionMock();
         $this
@@ -78,14 +78,14 @@ SQL;
             ;
     }
 
-    public function testGetWithFilters()
+    public function testGetWithFilters(): void
     {
         $collection = $this->getCollectionMock();
         $collection->registerFilter(
-            function ($values) { $values['id'] *= 2; return $values; }
+            function (array $values) { $values['id'] *= 2; return $values; }
         )
             ->registerFilter(
-                function ($values) {
+                function (array $values) {
                     $values['some_data'] =
                         strlen((string) $values['some_data']) > 3
                         ? null
@@ -104,18 +104,18 @@ SQL;
             ;
     }
 
-    public function testGetWithWrongFilter()
+    public function testGetWithWrongFilter(): void
     {
         $collection = $this->getCollectionMock();
         $collection->registerFilter(fn($values) => $values['id']);
         $this
-            ->exception(function () use ($collection) { $collection->get(2); })
+            ->exception(function () use ($collection): void { $collection->get(2); })
             ->isInstanceOf(\PommProject\ModelManager\Exception\ModelException::class)
             ->message->contains('Filters MUST return an array')
             ;
     }
 
-    public function testExtract()
+    public function testExtract(): void
     {
         $collection = $this->getCollectionMock();
 
@@ -131,7 +131,7 @@ SQL;
             );
     }
 
-    public function testSlice()
+    public function testSlice(): void
     {
         $collection = $this->getCollectionMock();
 

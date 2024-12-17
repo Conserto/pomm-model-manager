@@ -1,3 +1,10 @@
+== VERSION 4.0.0
+
+ * Minimal PHP version : 8.4
+ * Add rector
+ * Rector fixes
+ * Dependencies update
+
 == VERSION 3.4.0
 
  * Add updateWhere method

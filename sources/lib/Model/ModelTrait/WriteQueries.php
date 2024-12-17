@@ -50,7 +50,7 @@ trait WriteQueries
                 ':relation' => $this->getStructure()->getRelation(),
                 ':fields' => $this->getEscapedFieldList(array_keys($values)),
                 ':projection' => $this->createProjection()->formatFieldsWithFieldAlias(),
-                ':values' => join(',', $this->getParametersList($values))
+                ':values' => implode(',', $this->getParametersList($values))
             ]);
 
         $entity = $this
@@ -123,7 +123,7 @@ trait WriteQueries
             "update :relation set :update where :condition returning :projection",
             [
                 ':relation' => $this->getStructure()->getRelation(),
-                ':update' => join(', ', $updateStrings),
+                ':update' => implode(', ', $updateStrings),
                 ':condition' => (string)$where,
                 ':projection' => $this->createProjection()->formatFieldsWithFieldAlias(),
             ]
@@ -217,7 +217,7 @@ trait WriteQueries
     /** Return a comma separated list with the given escaped field names. */
     public function getEscapedFieldList(array $fields): string
     {
-        return join(
+        return implode(
             ', ',
             array_map(
                 fn($field) => $this->escapeIdentifier($field),

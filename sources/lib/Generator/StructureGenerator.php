@@ -54,10 +54,10 @@ TEXT;
                         'namespace'      => $this->namespace,
                         'class_name'     => $input->getParameter('class_name', Inflector::studlyCaps($this->relation)),
                         'relation'       => sprintf("%s.%s", $this->schema, $this->relation),
-                        'primary_key'    => join(
+                        'primary_key'    => implode(
                             ', ',
                             array_map(
-                                fn($val) => sprintf("'%s'", $val),
+                                fn($val): string => sprintf("'%s'", $val),
                                 $primaryKey
                             )
                         ),
@@ -88,7 +88,7 @@ TEXT;
             $strings[] = sprintf("            ->addField('%s', '%s')", $info['name'], $info['type']);
         }
 
-        return join("\n", $strings);
+        return implode("\n", $strings);
     }
 
     /**
@@ -109,16 +109,16 @@ TEXT;
             $comments[] = $this->createPhpDocBlockFromText($info['comment']);
         }
 
-        return empty($comments) ? ' *' : join("\n", $comments);
+        return empty($comments) ? ' *' : implode("\n", $comments);
     }
 
     /** Format a text into a PHPDoc comment block. */
     protected function createPhpDocBlockFromText(string $text): string
     {
-        return join(
+        return implode(
             "\n",
             array_map(
-                fn($line) => ' * '.$line,
+                fn($line): string => ' * '.$line,
                 explode("\n", wordwrap($text))
             )
         );

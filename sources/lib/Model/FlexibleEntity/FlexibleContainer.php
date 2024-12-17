@@ -48,7 +48,7 @@ abstract class FlexibleContainer implements FlexibleEntityInterface, \IteratorAg
      * @param array<string> $fields
      * @return array<string, mixed>
      */
-    public function fields(array $fields = null): array
+    public function fields(?array $fields = null): array
     {
         if ($fields === null) {
             return $this->container;
@@ -64,7 +64,7 @@ abstract class FlexibleContainer implements FlexibleEntityInterface, \IteratorAg
                     sprintf(
                         "No such field '%s'. Existing fields are {%s}",
                         $name,
-                        join(', ', array_keys($this->container))
+                        implode(', ', array_keys($this->container))
                     )
                 );
             }
@@ -118,7 +118,7 @@ abstract class FlexibleContainer implements FlexibleEntityInterface, \IteratorAg
             unset($this->checkAttribute($attribute)->container[$attribute]);
             break;
         default:
-            throw new ModelException(sprintf('No such method "%s:%s()"', $this::class, $method));
+            throw new ModelException(sprintf('No such method "%s:%s()"', static::class, $method));
         }
 
         return $returned;
@@ -136,7 +136,7 @@ abstract class FlexibleContainer implements FlexibleEntityInterface, \IteratorAg
                 sprintf(
                     "No such attribute '%s'. Available attributes are {%s}",
                     $attribute,
-                    join(", ", array_keys($this->fields()))
+                    implode(", ", array_keys($this->fields()))
                 )
             );
         }
@@ -158,7 +158,7 @@ abstract class FlexibleContainer implements FlexibleEntityInterface, \IteratorAg
         $split = preg_split('/(?=[A-Z])/', $argument, 2);
 
         if ((is_countable($split) ? count($split) : 0) !== 2) {
-            throw new ModelException(sprintf('No such argument "%s:%s()"', $this::class, $argument));
+            throw new ModelException(sprintf('No such argument "%s:%s()"', static::class, $argument));
         }
 
         return [$split[0], Inflector::underscore($split[1])];

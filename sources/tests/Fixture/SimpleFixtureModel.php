@@ -27,7 +27,7 @@ class SimpleFixtureModel extends Model
      * @throws FoundationException
      * @throws ModelException
      */
-    public function doSimpleQuery(Where $where = null): CollectionIterator
+    public function doSimpleQuery(?Where $where = null): CollectionIterator
     {
         if ($where === null) {
             $where = new Where();

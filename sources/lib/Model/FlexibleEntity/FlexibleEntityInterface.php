@@ -44,7 +44,7 @@ interface FlexibleEntityInterface
      * are returned. The case when a given field does not exist is left as
      * one's choice.
      */
-    public function fields(array $fields = null): array;
+    public function fields(?array $fields = null): array;
 
     /**
      * Return an array with a representation of the object values. It is mostly
@@ -66,7 +66,7 @@ interface FlexibleEntityInterface
      * returns itself. If no status are provided, it returns the current
      * status.
      */
-    public function status(int $status = null): int|self;
+    public function status(?int $status = null): int|self;
 
     /** Return columns modified */
     public function getModifiedColumns(): mixed;
