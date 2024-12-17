@@ -13,6 +13,7 @@ use PommProject\Foundation\Session\Session;
 use PommProject\Foundation\Converter\PgHstore;
 use PommProject\ModelManager\Model\RowStructure;
 use PommProject\ModelManager\Test\Fixture\ComplexFixture;
+use PommProject\ModelManager\Test\Fixture\ComplexFixtureModel;
 use PommProject\ModelManager\Test\Fixture\ComplexFixtureStructure;
 use PommProject\ModelManager\Test\Fixture\ComplexNumber;
 use PommProject\ModelManager\Test\Fixture\ComplexNumberStructure;
@@ -41,7 +42,7 @@ class PgEntity extends BaseTest
     protected function getComplexFixtureConverter()
     {
         return $this->newTestedInstance(
-            \PommProject\ModelManager\Test\Fixture\ComplexFixture::class,
+            ComplexFixture::class,
             new ComplexFixtureStructure()
         );
     }
@@ -88,7 +89,7 @@ class PgEntity extends BaseTest
 
         $this
             ->object($entity)
-            ->isInstanceOf(\PommProject\ModelManager\Test\Fixture\ComplexFixture::class)
+            ->isInstanceOf(ComplexFixture::class)
             ->integer($entity['id'])
             ->isEqualTo(1)
             ->object($entity['complex_number'])
@@ -101,7 +102,7 @@ class PgEntity extends BaseTest
             ->isNull()
             ;
         $converter = $this->newTestedInstance(
-            \PommProject\ModelManager\Test\Fixture\ComplexFixture::class,
+            ComplexFixture::class,
             (new RowStructure())
             ->setRelation('some_type')
             ->addField('a_field', 'int4')
@@ -115,7 +116,7 @@ ROW;
         $entity = $converter->fromPg($line, 'some_type', $session);
         $this
             ->object($entity)
-            ->isInstanceOf(\PommProject\ModelManager\Test\Fixture\ComplexFixture::class)
+            ->isInstanceOf(ComplexFixture::class)
             ->integer($entity['a_field'])
             ->isEqualTo(34)
             ->variable($entity['a_null_field'])
@@ -131,7 +132,7 @@ ROW;
     {
         $session = $this->setUpSession($this->buildSession());
         $converter = $this->newTestedInstance(
-            \PommProject\ModelManager\Test\Fixture\ComplexFixture::class,
+            ComplexFixture::class,
             (new RowStructure())
             ->setRelation('some_type')
             ->addField('a_field', 'int4')
@@ -200,9 +201,7 @@ ROW;
         $converter          = $this->getComplexFixtureConverter();
         $session            = $this->setUpSession($this->buildSession());
         $row                = '(1,,"(1.233,2.344)","{""(3.455,4.566)"",""(5.677,6.788)"",NULL}","2014-10-24 12:44:40.021324+00:00","{""1982-04-21 23:12:43.000000+00:00""}")';
-        $model              = $session
-            ->getModel(\PommProject\ModelManager\Test\Fixture\ComplexFixtureModel::class)
-            ;
+        $session->getModel(ComplexFixtureModel::class);
 
         $this
             ->variable($converter->toPgStandardFormat(null, 'complex_fixture', $session))
@@ -210,11 +209,11 @@ ROW;
             ->string($converter->toPgStandardFormat($complex_fixture, 'complex_fixture', $session))
             ->isEqualTo($row)
             ->object($this->sendAsPostgresParameter($complex_fixture, 'complex_fixture', $session))
-            ->isInstanceOf(\PommProject\ModelManager\Test\Fixture\ComplexFixture::class)
+            ->isInstanceOf(ComplexFixture::class)
             ;
     }
 
-    private function sendAsPostgresParameter($value, string $type, Session $session)
+    private function sendAsPostgresParameter($value, string $type, Session $session): mixed
     {
         $result = $session
             ->getQueryManager()
