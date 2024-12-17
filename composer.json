@@ -14,7 +14,7 @@
     },
     "require-dev": {
         "atoum/atoum": "^4.0",
-        "conserto/pomm-foundation": "4.0.x-dev as 4.0",
+        "conserto/pomm-foundation": "^4.0",
         "phpstan/phpstan": "^2.0",
         "rector/rector": "^2.0"
     },
