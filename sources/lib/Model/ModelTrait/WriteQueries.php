@@ -34,7 +34,8 @@ trait WriteQueries
      * Insert a new entity in the database. The entity is passed by reference.
      * It is updated with values returned by the database (ie, default values).
      *
-     * @throws ModelException|SqlException
+     * @param-out T $entity
+     * @throws ModelException
      */
     public function insertOne(FlexibleEntityInterface &$entity): self
     {
@@ -68,6 +69,7 @@ trait WriteQueries
      * are lost. The update is made upon a condition on the primary key. If the
      * primary key is not fully set, an exception is thrown.
      *
+     * @param-out T $entity
      * @throws ModelException|SqlException
      */
     public function updateOne(FlexibleEntityInterface &$entity, array $fields = []): self
@@ -144,6 +146,7 @@ trait WriteQueries
      * Delete an entity from a table. Entity is passed by reference and is
      * updated with the values fetched from the deleted record.
      *
+     * @param-out ?T $entity
      * @throws ModelException|SqlException
      */
     public function deleteOne(FlexibleEntityInterface &$entity): self
