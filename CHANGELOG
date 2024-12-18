@@ -1,3 +1,7 @@
+== VERSION 4.0.1
+
+ * Add phpstan annotations
+
 == VERSION 4.0.0
 
  * Minimal PHP version : 8.4
