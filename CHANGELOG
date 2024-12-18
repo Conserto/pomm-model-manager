@@ -1,6 +1,10 @@
+== VERSION 4.0.2
+
+ * Revert @throws deletion
+
 == VERSION 4.0.1
 
- * Add phpstan annotations
+* Add phpstan annotations
 
 == VERSION 4.0.0
 
