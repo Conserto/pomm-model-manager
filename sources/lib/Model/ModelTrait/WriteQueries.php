@@ -35,7 +35,7 @@ trait WriteQueries
      * It is updated with values returned by the database (ie, default values).
      *
      * @param-out T $entity
-     * @throws ModelException
+     * @throws ModelException|SqlException
      */
     public function insertOne(FlexibleEntityInterface &$entity): self
     {
