@@ -69,7 +69,7 @@ trait WriteQueries
      * are lost. The update is made upon a condition on the primary key. If the
      * primary key is not fully set, an exception is thrown.
      *
-     * @param-out T $entity
+     * @param-out ?T $entity
      * @throws ModelException|SqlException
      */
     public function updateOne(FlexibleEntityInterface &$entity, array $fields = []): self
