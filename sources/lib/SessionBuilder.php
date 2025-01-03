@@ -13,6 +13,7 @@ use PommProject\Foundation\Client\ClientHolder;
 use PommProject\Foundation\Session\Connection;
 use PommProject\Foundation\Session\Session;
 use PommProject\Foundation\SessionBuilder as FoundationSessionBuilder;
+use PommProject\ModelManager\Converter\ConverterPooler;
 use PommProject\ModelManager\Model\ModelPooler;
 use PommProject\ModelManager\ModelLayer\ModelLayerPooler;
 use PommProject\ModelManager\Session as ModelManagerSession;
@@ -31,9 +32,18 @@ class SessionBuilder extends FoundationSessionBuilder
     protected function postConfigure(Session $session): SessionBuilder
     {
         parent::postConfigure($session);
+        $modelPooler = new ModelPooler();
         $session
-            ->registerClientPooler(new ModelPooler)
+            ->registerClientPooler($modelPooler)
             ->registerClientPooler(new ModelLayerPooler);
+
+        // replace converter pooler to activate the dynamic model converter
+        $registeredConverterPooler =  $session->getPoolerForType('converter');
+        $converterPooler = new ConverterPooler(
+            $registeredConverterPooler->getConverterHolder(),
+            $modelPooler
+        );
+        $session->registerClientPooler($converterPooler);
 
         return $this;
     }
