@@ -38,6 +38,7 @@ class SessionBuilder extends FoundationSessionBuilder
             ->registerClientPooler(new ModelLayerPooler);
 
         // replace converter pooler to activate the dynamic model converter
+        /** @var \PommProject\Foundation\Converter\ConverterPooler $registeredConverterPooler */
         $registeredConverterPooler =  $session->getPoolerForType('converter');
         $converterPooler = new ConverterPooler(
             $registeredConverterPooler->getConverterHolder(),
