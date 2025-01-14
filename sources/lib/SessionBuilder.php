@@ -32,18 +32,14 @@ class SessionBuilder extends FoundationSessionBuilder
     protected function postConfigure(Session $session): SessionBuilder
     {
         parent::postConfigure($session);
-        $modelPooler = new ModelPooler();
         $session
-            ->registerClientPooler($modelPooler)
+            ->registerClientPooler(new ModelPooler)
             ->registerClientPooler(new ModelLayerPooler);
 
         // replace converter pooler to activate the dynamic model converter
         /** @var \PommProject\Foundation\Converter\ConverterPooler $registeredConverterPooler */
         $registeredConverterPooler =  $session->getPoolerForType('converter');
-        $converterPooler = new ConverterPooler(
-            $registeredConverterPooler->getConverterHolder(),
-            $modelPooler
-        );
+        $converterPooler = new ConverterPooler($registeredConverterPooler->getConverterHolder());
         $session->registerClientPooler($converterPooler);
 
         return $this;

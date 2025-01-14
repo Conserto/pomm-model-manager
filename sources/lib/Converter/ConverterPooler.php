@@ -6,11 +6,10 @@ use PommProject\Foundation\Converter\ConverterClient;
 use PommProject\Foundation\Converter\ConverterHolder;
 use PommProject\Foundation\Converter\ConverterPooler as BaseConverterPooler;
 use PommProject\Foundation\Exception\ConverterException;
-use PommProject\ModelManager\Model\ModelPooler;
 
 class ConverterPooler extends BaseConverterPooler
 {
-    public function __construct(ConverterHolder $converterHolder, private ModelPooler $modelPooler)
+    public function __construct(ConverterHolder $converterHolder)
     {
         parent::__construct($converterHolder);
     }
@@ -21,7 +20,7 @@ class ConverterPooler extends BaseConverterPooler
         if (!$this->converterHolder->hasType($identifier)) {
             // try to intialize it with the matching model
             try {
-                $this->modelPooler->getClient($identifier . 'Model');
+                $this->getSession()->getModel($identifier . 'Model');
             } catch (\Exception) {
                 throw new ConverterException(sprintf("No converter registered for type '%s'.", $identifier));
             }
