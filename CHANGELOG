@@ -1,3 +1,8 @@
+== VERSION 4.0.4
+
+ * Fix PgEntity converter, remove PgJson converter if already JSON
+ * Allow not calling getStructure()->getRelation()
+
 == VERSION 4.0.3
 
 * Add phpstan annotations
