@@ -13,6 +13,7 @@ namespace PommProject\ModelManager\Converter;
 use PommProject\Foundation\Converter\ConverterInterface;
 use PommProject\Foundation\Converter\PgArray;
 use PommProject\Foundation\Converter\PgBoolean;
+use PommProject\Foundation\Converter\PgJson;
 use PommProject\Foundation\Exception\ConverterException;
 use PommProject\Foundation\Exception\FoundationException;
 use PommProject\Foundation\Session\Session;
@@ -95,9 +96,10 @@ class PgEntity implements ConverterInterface
         $isJson = json_last_error() === JSON_ERROR_NONE;
 
         if ($isJson) {
-            // Si on est en JSON, les booléens et les tableaux sont déjà bien convertis
+            // Si on est en JSON, les booléens, les tableaux et le json sont déjà bien convertis
             $hydrationPlan->removeConverter(PgBoolean::class);
             $hydrationPlan->removeConverter(PgArray::class);
+            $hydrationPlan->removeConverter(PgJson::class);
         }  else {
             $values = str_getcsv($data, escape: "\\" );
             $definition = $projection->getFieldNames();
