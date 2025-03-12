@@ -12,7 +12,8 @@ namespace PommProject\ModelManager\Test\Unit\Model;
 use PommProject\Foundation\Converter\ConverterHolder;
 use PommProject\Foundation\Converter\ConverterPooler;
 use PommProject\Foundation\Session\Session;
-use PommProject\Foundation\Tester\VanillaSessionAtoum;
+use PommProject\ModelManager\Test\Fixture\SimpleFixtureModel;
+use PommProject\ModelManager\Tester\VanillaSessionAtoum;
 
 class ModelPooler extends VanillaSessionAtoum
 {
@@ -35,7 +36,7 @@ class ModelPooler extends VanillaSessionAtoum
     public function testGetClient(): void
     {
         $session = $this->buildSession();
-        $model_class = \PommProject\ModelManager\Test\Fixture\SimpleFixtureModel::class;
+        $model_class = SimpleFixtureModel::class;
         $model_instance = $session->getClientUsingPooler('model', $model_class);
 
         $this

@@ -31,7 +31,8 @@ class Session extends FoundationSession
      * @throws FoundationException
      * @template T of Model
      * @param class-string<T> $class
-     * @return T
+     * @return Model
+     * @phsptan-return T
      */
     public function getModel(string $class): Model
     {
@@ -46,7 +47,8 @@ class Session extends FoundationSession
      * @throws FoundationException
      * @template T of ModelLayer
      * @param class-string<T> $class
-     * @return T
+     * @return ModelLayer
+     * @phpstan-return T
      */
     public function getModelLayer(string $class): ModelLayer
     {
