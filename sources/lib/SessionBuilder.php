@@ -10,8 +10,9 @@
 namespace PommProject\ModelManager;
 
 use PommProject\Foundation\Client\ClientHolder;
+use PommProject\Foundation\Exception\FoundationException;
 use PommProject\Foundation\Session\Connection;
-use PommProject\Foundation\Session\Session;
+use PommProject\Foundation\Session\Session as FoundationSession;
 use PommProject\Foundation\SessionBuilder as FoundationSessionBuilder;
 use PommProject\ModelManager\Converter\ConverterPooler;
 use PommProject\ModelManager\Model\ModelPooler;
@@ -28,8 +29,12 @@ use PommProject\ModelManager\Session as ModelManagerSession;
  */
 class SessionBuilder extends FoundationSessionBuilder
 {
-    /** Register ModelManager's poolers. */
-    protected function postConfigure(Session $session): SessionBuilder
+    /**
+     * Register ModelManager's poolers.
+     * @param Session $session
+     * @throws FoundationException
+     */
+    protected function postConfigure(FoundationSession $session): SessionBuilder
     {
         parent::postConfigure($session);
         $session
@@ -45,13 +50,14 @@ class SessionBuilder extends FoundationSessionBuilder
         return $this;
     }
 
-
-    /** @see VanillaSessionBuilder */
+    /**
+     * @see VanillaSessionBuilder
+     */
     protected function createSession(Connection $connection, ClientHolder $clientHolder, ?string $stamp): Session
     {
         $this->configuration->setDefaultValue('class:session', ModelManagerSession::class);
 
-        /** @var \PommProject\ModelManager\Session $session */
+        /** @var Session $session */
         $session = parent::createSession($connection, $clientHolder, $stamp);
         return $session;
     }

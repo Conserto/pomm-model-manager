@@ -17,10 +17,11 @@ use PommProject\Foundation\Exception\FoundationException;
 use PommProject\Foundation\Exception\SqlException;
 use PommProject\Foundation\PreparedQuery\PreparedQuery;
 use PommProject\Foundation\Session\ResultHandler;
-use PommProject\Foundation\Session\Session;
 use PommProject\ModelManager\Converter\PgEntity;
 use PommProject\ModelManager\Exception\ModelException;
 use PommProject\ModelManager\Model\FlexibleEntity\FlexibleEntityInterface;
+use PommProject\ModelManager\Session;
+use PommProject\Foundation\Session\Session as FoundationSession;
 
 /**
  * Base class for custom Model classes.
@@ -68,11 +69,12 @@ abstract class Model implements ClientInterface
     }
 
     /**
+     * @param Session $session
      * @throws ModelException
      * @throws FoundationException|\ReflectionException
      * @see ClientInterface
      */
-    public function initialize(Session $session): void
+    public function initialize(FoundationSession $session): void
     {
         $this->session = $session;
 
