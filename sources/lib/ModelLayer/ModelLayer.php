@@ -16,6 +16,7 @@ use PommProject\Foundation\Session\Connection;
 use PommProject\Foundation\Session\ResultHandler;
 use PommProject\ModelManager\Exception\ModelLayerException;
 use PommProject\ModelManager\Model\Model;
+use PommProject\ModelManager\Session;
 
 /**
  * ModelLayer handles mechanisms around model method calls (transactions,
@@ -337,5 +338,18 @@ EOMSG
         $this->executeAnonymousQuery(sprintf($sql, $identifier, $parameter));
 
         return $this;
+    }
+
+    /**
+     * All subclasses of Client have to use this method to access the session.
+     *
+     * @throws FoundationException if Session is not set.
+     */
+    protected function getSession(): Session
+    {
+        /** @var Session $session */
+        $session = parent::getSession();
+
+        return $session;
     }
 }
