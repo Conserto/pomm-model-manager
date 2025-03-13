@@ -11,8 +11,8 @@ namespace PommProject\ModelManager\Test\Fixture;
 
 use PommProject\Foundation\Exception\FoundationException;
 use PommProject\Foundation\Session\ResultHandler;
-use PommProject\Foundation\Session\Session;
 use PommProject\ModelManager\ModelLayer\ModelLayer;
+use PommProject\ModelManager\Session;
 
 /**
  * This class is NOT the right example of how ModelLayer is to be used. Good

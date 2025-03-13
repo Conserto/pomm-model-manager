@@ -32,11 +32,11 @@ class Session extends FoundationSession
      * @template T of Model
      * @param class-string<T> $class
      * @return Model
-     * @phsptan-return T
+     * @phpstan-return T
      */
     public function getModel(string $class): Model
     {
-        /** @var Model $modelManager */
+        /** @var T $modelManager */
         $modelManager = $this->getClientUsingPooler('model', $class);
         return $modelManager;
     }
@@ -52,7 +52,7 @@ class Session extends FoundationSession
      */
     public function getModelLayer(string $class): ModelLayer
     {
-        /** @var ModelLayer $modelLayerManager */
+        /** @var T $modelLayerManager */
         $modelLayerManager = $this->getClientUsingPooler('model_layer', $class);
         return $modelLayerManager;
     }

@@ -107,6 +107,9 @@ abstract class Model implements ClientInterface
     /**
      * Create a new entity.
      *
+     * @param array $values
+     * @return FlexibleEntityInterface
+     * @phpstan-return T
      * @throws ModelException
      * @throws \ReflectionException
      */

@@ -10,12 +10,12 @@
 namespace PommProject\ModelManager\Model\ModelTrait;
 
 use PommProject\Foundation\Session\ResultHandler;
-use PommProject\Foundation\Session\Session;
 use PommProject\ModelManager\Model\CollectionIterator;
 use PommProject\ModelManager\Model\FlexibleEntity\FlexibleEntityInterface;
 use PommProject\ModelManager\Model\Model;
 use PommProject\ModelManager\Model\Projection;
 use PommProject\ModelManager\Model\RowStructure;
+use PommProject\ModelManager\Session;
 
 /**
  * Abstract methods for Model traits.
