@@ -408,6 +408,43 @@ class Model extends BaseTest
         }
     }
 
+    /**
+     * @throws FoundationException
+     */
+    public function testUpdateWhereWithSubSelect(): void
+    {
+        /** @var WriteFixtureModel $model */
+        $model = $this->getWriteFixtureModel($this->buildSession());
+        foreach(['one', 'two', 'three'] as $aValue) {
+            $model->createAndSave(['a_varchar' => $aValue, 'a_boolean' => false])
+                ->status(FlexibleEntityInterface::STATUS_NONE);
+        }
+
+        $updateEntities = $model->updateWhere(
+            Where::create("
+                wf.a_varchar =
+                (SELECT sub.a_varchar FROM {$model->getStructure()->getRelation()} AS sub WHERE sub.a_varchar = 'one')
+            "),
+            ['a_boolean' => true],
+            'wf'
+        );
+
+        $this
+            ->object($updateEntities)
+            ->isInstanceOf(\PommProject\ModelManager\Model\CollectionIterator::class)
+            ->integer($updateEntities->count())
+            ->isEqualTo(1);
+
+        $updatedEntity = $updateEntities->current();
+
+        $this->object($updatedEntity)
+            ->isInstanceOf(SimpleFixture::class)
+            ->integer($updatedEntity->status())
+            ->isEqualTo(FlexibleEntityInterface::STATUS_EXIST)
+            ->boolean($updatedEntity->get('a_boolean'))
+            ->isTrue();
+    }
+
     public function testDeleteOne(): void
     {
         $model = $this->getWriteFixtureModel($this->buildSession());

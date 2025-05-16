@@ -108,7 +108,7 @@ trait WriteQueries
      * @return CollectionIterator<T>
      * @throws ModelException|SqlException
      */
-    public function updateWhere(Where $where, array $updates): CollectionIterator
+    public function updateWhere(Where $where, array $updates, ?string $alias = null): CollectionIterator
     {
         $parameters = $this->getParametersList($updates);
         $updateStrings = [];
@@ -124,10 +124,10 @@ trait WriteQueries
         $sql = strtr(
             "update :relation set :update where :condition returning :projection",
             [
-                ':relation' => $this->getStructure()->getRelation(),
+                ':relation' => $this->getStructure()->getRelation() . ($alias ? ' AS ' . $alias : ''),
                 ':update' => implode(', ', $updateStrings),
                 ':condition' => (string)$where,
-                ':projection' => $this->createProjection()->formatFieldsWithFieldAlias(),
+                ':projection' => $this->createProjection()->formatFieldsWithFieldAlias($alias),
             ]
         );
 
