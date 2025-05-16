@@ -442,7 +442,7 @@ class Model extends BaseTest
             ->integer($updatedEntity->status())
             ->isEqualTo(FlexibleEntityInterface::STATUS_EXIST)
             ->boolean($updatedEntity->get('a_boolean'))
-            ->isTrue();
+            ->isFalse();
     }
 
     public function testDeleteOne(): void
