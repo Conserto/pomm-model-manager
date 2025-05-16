@@ -425,7 +425,7 @@ class Model extends BaseTest
                 wf.a_varchar =
                 (SELECT sub.a_varchar FROM {$model->getStructure()->getRelation()} AS sub WHERE sub.a_varchar = 'one')
             "),
-            ['a_boolean' => false],
+            ['a_boolean' => true],
             'wf'
         );
 
@@ -442,7 +442,7 @@ class Model extends BaseTest
             ->integer($updatedEntity->status())
             ->isEqualTo(FlexibleEntityInterface::STATUS_EXIST)
             ->boolean($updatedEntity->get('a_boolean'))
-            ->isFalse();
+            ->isTrue();
     }
 
     public function testDeleteOne(): void
