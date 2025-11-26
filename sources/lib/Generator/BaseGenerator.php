@@ -22,6 +22,7 @@ use PommProject\ModelManager\Session;
  * @author    Grégoire HUBERT
  * @license   X11 {@link http://opensource.org/licenses/mit-license.php}
  * @abstract
+ * @phpstan-type Output = array<int, array{status: string, operation: string, file: string}>
  */
 abstract class BaseGenerator
 {
@@ -36,7 +37,11 @@ abstract class BaseGenerator
     {
     }
 
-    /** Output what the generator will do. */
+    /**
+     * Output what the generator will do.
+     * @param Output $output
+     * @return $this
+     */
     protected function outputFileCreation(array &$output): BaseGenerator
     {
         $output[] = [
@@ -78,13 +83,20 @@ abstract class BaseGenerator
      * Called to generate the file.
      * Possible options are:
      * - force: true if files can be overwritten, false otherwise
+     * @param ParameterHolder $input
+     * @param Output $output
+     * @return Output
      */
     abstract public function generate(ParameterHolder $input, array $output = []): array;
 
     /** Return the code template for files to be generated. */
     abstract protected function getCodeTemplate(): string;
 
-    /** Merge templates with given values. */
+    /**
+     * Merge templates with given values.
+     * @param array<string, ?string> $variables
+     * @return string
+     */
     protected function mergeTemplate(array $variables): string
     {
         $preparedVariables = [];

@@ -1,6 +1,7 @@
 parameters:
-    level : 5
+    level : 10
     paths:
         - sources/lib
     ignoreErrors:
         - identifier: trait.unused
+    treatPhpDocTypesAsCertain: false

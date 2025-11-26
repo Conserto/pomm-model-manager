@@ -45,7 +45,9 @@ abstract class VanillaSessionAtoum extends FoundationVanillaSessionAtoum
     private function getSessionBuilder(): SessionBuilder
     {
         if ($this->sessionBuilder === null) {
-            $this->sessionBuilder = $this->createSessionBuilder($GLOBALS['pomm_db1']);
+            /** @var array<string, mixed> $config */
+            $config = $GLOBALS['pomm_db1'];
+            $this->sessionBuilder = $this->createSessionBuilder($config);
         }
 
         return $this->sessionBuilder;

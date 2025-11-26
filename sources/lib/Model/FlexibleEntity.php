@@ -21,16 +21,18 @@ use PommProject\ModelManager\Model\FlexibleEntity\FlexibleEntityInterface;
  * @copyright 2014 - 2015 Grégoire HUBERT
  * @author    Grégoire HUBERT <hubert.greg@gmail.com>
  * @license   MIT/X11 {@link http://opensource.org/licenses/mit-license.php}
+ * @implements \ArrayAccess<string, mixed>
  */
 abstract class FlexibleEntity extends FlexibleContainer implements \ArrayAccess
 {
     public static bool $strict = true;
+    /** @var array<int,non-empty-string>|null */
     protected static ?array $hasMethods = null;
 
     /**
      * Instantiate the entity and hydrate it with the given values.
      *
-     * @param array|null $values Optional starting values.
+     * @param array<string, mixed>|null $values Optional starting values.
      */
     public function __construct(?array $values = null)
     {
@@ -42,7 +44,7 @@ abstract class FlexibleEntity extends FlexibleContainer implements \ArrayAccess
     /**
      * Returns the $var value
      *
-     * @param string|array $var Key(s) you want to retrieve value from.
+     * @param string|string[] $var Key(s) you want to retrieve value from.
      * @return mixed
      * @throws  ModelException if strict and the attribute does not exist.
      */
@@ -137,7 +139,11 @@ abstract class FlexibleEntity extends FlexibleContainer implements \ArrayAccess
         };
     }
 
-    /** Make all keys lowercase and hydrate the object. */
+    /**
+     * Make all keys lowercase and hydrate the object.
+     * @param array<array-key, mixed> $values
+     * @return FlexibleEntityInterface
+     */
     public function convert(array $values): FlexibleEntityInterface
     {
         $tmp = [];
@@ -160,7 +166,7 @@ abstract class FlexibleEntity extends FlexibleContainer implements \ArrayAccess
      */
     public function extract(): array
     {
-        $arrayRecurse = function ($val) use (&$arrayRecurse) {
+        $arrayRecurse = function (mixed $val) use (&$arrayRecurse) {
             if (is_scalar($val)) {
                 return $val;
             }
@@ -190,7 +196,7 @@ abstract class FlexibleEntity extends FlexibleContainer implements \ArrayAccess
      * Return a list of custom methods with has() accessor.
      *
      * @access  private
-     * @return  array
+     * @return  array<string, mixed>
      */
     private function getCustomFields(): array
     {
@@ -199,12 +205,14 @@ abstract class FlexibleEntity extends FlexibleContainer implements \ArrayAccess
         }
 
         $customFields = [];
+        // Guard against static::$hasMethods being null for static analysers
+        $hasMethods = static::$hasMethods ?? [];
 
-        foreach (static::$hasMethods as $method) {
-            if (call_user_func([$this, sprintf("has%s", $method)]) === true) {
-                $customFields[Inflector::underscore(lcfirst((string) $method))] = call_user_func(
-                    [$this, sprintf("get%s", $method)]
-                );
+        foreach ($hasMethods as $method) {
+            $hasMethod = sprintf('has%s', $method);
+            if ($this->{$hasMethod}() === true) {
+                $getMethod = sprintf('get%s', $method);
+                $customFields[Inflector::underscore(lcfirst((string) $method))] = $this->{$getMethod}();
             }
         }
 
@@ -253,7 +261,7 @@ abstract class FlexibleEntity extends FlexibleContainer implements \ArrayAccess
     {
         $methodName = "has" . Inflector::studlyCaps($var);
 
-        return $this->$methodName();
+        return (bool) $this->$methodName();
     }
 
     /**
@@ -273,9 +281,13 @@ abstract class FlexibleEntity extends FlexibleContainer implements \ArrayAccess
      */
     public function offsetExists(mixed $offset): bool
     {
+        if (!is_string($offset)) {
+            return false;
+        }
+
         $methodName = "has" . Inflector::studlyCaps($offset);
 
-        return $this->$methodName();
+        return (bool) $this->$methodName();
     }
 
     /**
@@ -283,6 +295,10 @@ abstract class FlexibleEntity extends FlexibleContainer implements \ArrayAccess
      */
     public function offsetSet(mixed $offset, mixed $value): void
     {
+        if (!is_string($offset)) {
+            throw new \InvalidArgumentException('Offset must be a string.');
+        }
+
         $this->__set($offset, $value);
     }
 
@@ -291,6 +307,10 @@ abstract class FlexibleEntity extends FlexibleContainer implements \ArrayAccess
      */
     public function offsetGet(mixed $offset): mixed
     {
+        if (!is_string($offset)) {
+            throw new \InvalidArgumentException('Offset must be a string.');
+        }
+
         return $this->__get($offset);
     }
 
@@ -299,6 +319,10 @@ abstract class FlexibleEntity extends FlexibleContainer implements \ArrayAccess
      */
     public function offsetUnset(mixed $offset): void
     {
+        if (!is_string($offset)) {
+            throw new \InvalidArgumentException('Offset must be a string.');
+        }
+
         $this->clear($offset);
     }
 

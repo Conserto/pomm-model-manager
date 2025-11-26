@@ -27,6 +27,9 @@ class IdentityMapper
     /**
      * Compute a unique signature upon entity's values in its primary key. If an empty primary key is provided, null is
      * returned.
+     * @param FlexibleEntityInterface $entity
+     * @param string[] $primaryKey
+     * @return string|null
      */
     public static function getSignature(FlexibleEntityInterface $entity, array $primaryKey): ?string
     {
@@ -37,7 +40,13 @@ class IdentityMapper
         return sha1(sprintf("%s|%s", serialize($entity->fields($primaryKey)), $entity::class));
     }
 
-    /** Pool FlexibleEntityInterface instances and update them if necessary. */
+    /**
+     * Pool FlexibleEntityInterface instances and update them if necessary.
+     * @template T of FlexibleEntityInterface
+     * @param T $entity
+     * @param string[] $primaryKey
+     * @return T
+     */
     public function fetch(FlexibleEntityInterface $entity, array $primaryKey): FlexibleEntityInterface
     {
         $signature = self::getSignature($entity, $primaryKey);
@@ -53,11 +62,14 @@ class IdentityMapper
             $this->instances[$signature]->hydrate($entity->fields());
         }
 
-        return $this->instances[$signature];
+        /** @var T $result */
+        $result = $this->instances[$signature];
+
+        return $result;
     }
 
     /** Flush instances from the identity mapper.*/
-    public function clear(): IdentityMapper
+    public function clear(): static
     {
         $this->instances = [];
 

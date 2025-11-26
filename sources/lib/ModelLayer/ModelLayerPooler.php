@@ -30,12 +30,15 @@ class ModelLayerPooler extends ClientPooler
     }
 
     /**
-     * @throws ModelLayerException
      * @see    ClientPooler
+     * @param class-string<ModelLayer> $identifier
+     * @return ModelLayer
+     * @throws ModelLayerException
      */
     protected function createClient(string $identifier): ModelLayer
     {
         try {
+            /** @var \ReflectionClass<ModelLayer> $reflection */
             $reflection = new \ReflectionClass($identifier);
             if (!$reflection->isSubclassOf(ModelLayer::class)) {
                 throw new ModelLayerException(sprintf("Class '%s' is not a subclass of ModelLayer.", $identifier));

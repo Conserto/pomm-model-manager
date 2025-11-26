@@ -252,7 +252,7 @@ trait ReadQueries
      *
      * @throws ModelException
      */
-    protected function checkPrimaryKey(array $values): self
+    protected function checkPrimaryKey(array $values): static
     {
         if (!$this->hasPrimaryKey()) {
             throw new ModelException(

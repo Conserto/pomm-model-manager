@@ -37,10 +37,10 @@ abstract class Model implements ClientInterface
 {
     protected ?Session $session = null;
 
-    /** @var class-string<T>|null  */
-    protected ?string $flexibleEntityClass = null;
+    /** @var class-string<T>  */
+    protected string $flexibleEntityClass;
 
-    protected ?RowStructure $structure = null;
+    protected RowStructure $structure;
 
     /**
      * Return the current session. If session is not set, a ModelException is thrown.
@@ -107,7 +107,7 @@ abstract class Model implements ClientInterface
     /**
      * Create a new entity.
      *
-     * @param array $values
+     * @param array<string, mixed> $values
      * @return FlexibleEntityInterface
      * @phpstan-return T
      * @throws ModelException
@@ -117,7 +117,10 @@ abstract class Model implements ClientInterface
     {
         $className = $this->getFlexibleEntityClass();
 
-        return (new $className)->hydrate($values);
+        /** @var T $entity */
+        $entity = new $className();
+
+        return $entity->hydrate($values);
     }
 
     /**
@@ -126,9 +129,9 @@ abstract class Model implements ClientInterface
      *
      * @throws FoundationException|ModelException|SqlException
      *
-     * @param Projection|null $projection
+     * @param Projection<T>|null $projection
      * @param string $sql
-     * @param array $values
+     * @param array<int, mixed> $values
      *
      * @return CollectionIterator<T>
      */
@@ -139,17 +142,14 @@ abstract class Model implements ClientInterface
         }
 
         /** @var PreparedQuery $prepareQuery */
-        $prepareQuery = $this
-            ->getSession()
-            ->getClientUsingPooler('prepared_query', $sql);
+        $prepareQuery = $this->getSession()->getClientUsingPooler('prepared_query', $sql);
 
         $result = $prepareQuery->execute($values);
 
-        return new CollectionIterator(
-            $result,
-            $this->getSession(),
-            $projection
-        );
+        /** @var CollectionIterator<T> $iterator */
+        $iterator = new CollectionIterator($result, $this->getSession(), $projection);
+
+        return $iterator;
     }
 
     /**
@@ -157,6 +157,7 @@ abstract class Model implements ClientInterface
      * shunt parent createProjection call in inherited classes.
      * This method can be used where a projection that sticks to table definition is needed like recursive CTEs.
      * For normal projections, use createProjection instead.
+     * @return Projection<T>
      */
     final public function createDefaultProjection(): Projection
     {
@@ -166,6 +167,7 @@ abstract class Model implements ClientInterface
     /**
      * This is a helper to create a new projection according to the current structure.Overriding this method will change
      * projection for all models.
+     * @return Projection<T>
      */
     public function createProjection(): Projection
     {
@@ -174,11 +176,12 @@ abstract class Model implements ClientInterface
 
     /**
      * Check if the given entity is an instance of this model's flexible class. If not an exception is thrown.
-     *
+     * @param FlexibleEntityInterface $entity
+     * @return $this
      * @throws ModelException
      * @throws \ReflectionException
      */
-    protected function checkFlexibleEntity(FlexibleEntityInterface $entity): Model
+    protected function checkFlexibleEntity(FlexibleEntityInterface $entity): static
     {
         $flexibleEntityClass = $this->getFlexibleEntityClass();
 
@@ -195,10 +198,11 @@ abstract class Model implements ClientInterface
      * Return the structure.
      *
      * @throws ModelException
+     * @throws \ReflectionException
      */
     public function getStructure(): RowStructure
     {
-        if ($this->structure === null) {
+        if (!new \ReflectionProperty($this, 'structure')->isInitialized()) {
             throw new ModelException(sprintf("Structure not set while initializing Model class '%s'.", static::class));
         }
 
@@ -216,7 +220,7 @@ abstract class Model implements ClientInterface
      */
     protected function getModel(string $identifier): Model
     {
-        /** @var Model $modelManager */
+        /** @var TModel $modelManager */
         $modelManager = $this
             ->getSession()
             ->getClientUsingPooler('model', $identifier);
@@ -226,16 +230,17 @@ abstract class Model implements ClientInterface
 
     /**
      * Return the according flexible entity class associate with this Model instance.
-     *
+     * @return class-string<T>
      * @throws \ReflectionException|ModelException
+     *
      */
     public function getFlexibleEntityClass(): string
     {
-        if ($this->flexibleEntityClass == null) {
+        if (!new \ReflectionProperty($this, 'flexibleEntityClass')->isInitialized()) {
             throw new ModelException(
                 sprintf("Flexible entity not set while initializing Model class '%s'.", static::class)
             );
-        } elseif (!(new \ReflectionClass($this->flexibleEntityClass))
+        } elseif (!new \ReflectionClass($this->flexibleEntityClass)
             ->implementsInterface(FlexibleEntityInterface::class)
         ) {
             throw new ModelException("Flexible entity must implement FlexibleEntityInterface.");
@@ -253,10 +258,7 @@ abstract class Model implements ClientInterface
      */
     protected function escapeLiteral(string $string): string
     {
-        return $this
-            ->getSession()
-            ->getConnection()
-            ->escapeLiteral($string);
+        return $this->getSession()->getConnection()->escapeLiteral($string);
     }
 
     /**
@@ -276,8 +278,12 @@ abstract class Model implements ClientInterface
 
     /**
      * Handy method for DDL statements.
-     *
-     * @throws ConnectionException|ModelException|SqlException|FoundationException
+     * @param string $sql
+     * @return ResultHandler|array<int, ResultHandler>
+     * @throws ConnectionException
+     * @throws FoundationException
+     * @throws ModelException
+     * @throws SqlException
      */
     protected function executeAnonymousQuery(string $sql): ResultHandler|array
     {

@@ -73,10 +73,8 @@ class PgEntity implements ConverterInterface
             $this->rowStructure->getDefinition()
         );
 
-        $hydrationPlan = new HydrationPlan(
-            $projection,
-            $session
-        );
+        /** @var HydrationPlan<T> $hydrationPlan */
+        $hydrationPlan = new HydrationPlan($projection, $session);
 
         $entity = $hydrationPlan->hydrate($this->transformData($data, $projection, $hydrationPlan));
 
@@ -85,7 +83,9 @@ class PgEntity implements ConverterInterface
 
     /**
      * Split data into an array prefixed with field names.
-     *
+     * @param string $data
+     * @param Projection<T> $projection
+     * @param HydrationPlan<T> $hydrationPlan
      * @return array<string, mixed>
      */
     private function transformData(string $data, Projection $projection, HydrationPlan $hydrationPlan): array
@@ -100,9 +100,15 @@ class PgEntity implements ConverterInterface
             $hydrationPlan->removeConverter(PgBoolean::class);
             $hydrationPlan->removeConverter(PgArray::class);
             $hydrationPlan->removeConverter(PgJson::class);
+            // Garantit un tableau associatif en sortie
+            if (!is_array($outValues)) {
+                $outValues = [];
+            }
+            /** @var array<string, mixed> $outValues --> On force pour phpstan */
         }  else {
-            $values = str_getcsv($data, escape: "\\" );
+            $values = str_getcsv($data);
             $definition = $projection->getFieldNames();
+            /** @var array<string, mixed> $outValues */
             $outValues = [];
             $valuesCount = count($values);
 
@@ -120,6 +126,7 @@ class PgEntity implements ConverterInterface
 
     /**
      * Check entity against the cache
+     * @param T $entity
      * @return T
      */
     public function cacheEntity(FlexibleEntityInterface $entity): FlexibleEntityInterface
@@ -134,7 +141,7 @@ class PgEntity implements ConverterInterface
      * @throws FoundationException
      * @throws ModelException
      * @see ConverterInterface
-     * @param T|array|null $data
+     * @param T|array<string, mixed>|null $data
      */
     public function toPg(mixed $data, string $type, Session $session): string
     {
@@ -154,23 +161,26 @@ class PgEntity implements ConverterInterface
 
     /**
      * Create a new hydration plan.
-     *
+     * @param Session $session
+     * @return HydrationPlan<T>
      * @throws FoundationException
      * @throws ModelException
      */
     protected function createHydrationPlan(Session $session): HydrationPlan
     {
-        return new HydrationPlan(
+        /** @var HydrationPlan<T> $hydrationPlan */
+        $hydrationPlan = new HydrationPlan(
             new Projection($this->flexibleEntityClass, $this->rowStructure->getDefinition()),
             $session
         );
+        return $hydrationPlan;
     }
 
     /**
      * Return the fields array.
-     *
-     * @throws ConverterException
+     * @param array<string, mixed>|T $data
      * @return array<string, mixed>
+     * @throws ConverterException
      */
     protected function getFields(array|FlexibleEntityInterface $data): array
     {
@@ -188,10 +198,10 @@ class PgEntity implements ConverterInterface
      * Check if the given data is the right entity.
      *
      * @param T $data
-     * @return PgEntity
+     * @return $this
      * @throws ConverterException
      */
-    protected function checkData(FlexibleEntityInterface $data): PgEntity
+    protected function checkData(FlexibleEntityInterface $data): static
     {
         if (!$data instanceof $this->flexibleEntityClass) {
             throw new ConverterException(
@@ -209,7 +219,7 @@ class PgEntity implements ConverterInterface
     /**
      * @see ConverterInterface
      *
-     * @param T|array|null $data
+     * @param T|array<string, mixed>|null $data
      * @param string $type
      * @param Session $session
      * @return string|null
@@ -233,10 +243,12 @@ class PgEntity implements ConverterInterface
 
                     if ($val === null) {
                         $returned = '';
-                    } elseif ($val === '') {
-                        $returned = '""';
-                    } elseif (preg_match('/[,\s]/', $val)) {
-                        $returned = sprintf('"%s"', str_replace('"', '""', $val));
+                    } elseif (is_string($val)) {
+                        if ($val === '') {
+                            $returned = '""';
+                        } elseif (preg_match('/[,\s]/', $val)) {
+                            $returned = sprintf('"%s"', str_replace('"', '""', $val));
+                        }
                     }
 
                     return $returned;

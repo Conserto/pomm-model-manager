@@ -6,6 +6,8 @@ use PommProject\Foundation\Converter\ConverterClient;
 use PommProject\Foundation\Converter\ConverterHolder;
 use PommProject\Foundation\Converter\ConverterPooler as BaseConverterPooler;
 use PommProject\Foundation\Exception\ConverterException;
+use PommProject\ModelManager\Model\FlexibleEntity\FlexibleEntityInterface;
+use PommProject\ModelManager\Model\Model;
 use PommProject\ModelManager\Session;
 
 class ConverterPooler extends BaseConverterPooler
@@ -23,7 +25,9 @@ class ConverterPooler extends BaseConverterPooler
             try {
                 /** @var Session $session */
                 $session = $this->getSession();
-                $session->getModel($identifier . 'Model');
+                /** @var class-string<Model<FlexibleEntityInterface>> $model */
+                $model = $identifier . 'Model';
+                $session->getModel($model);
             } catch (\Exception) {
                 throw new ConverterException(sprintf("No converter registered for type '%s'.", $identifier));
             }

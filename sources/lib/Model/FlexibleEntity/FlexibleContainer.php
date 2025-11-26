@@ -18,6 +18,7 @@ use PommProject\ModelManager\Exception\ModelException;
  * @copyright 2014 - 2015 Grégoire HUBERT
  * @author    Grégoire HUBERT
  * @license   X11 {@link http://opensource.org/licenses/mit-license.php}
+ * @implements \IteratorAggregate<string, mixed>
  */
 abstract class FlexibleContainer implements FlexibleEntityInterface, \IteratorAggregate
 {
@@ -29,10 +30,8 @@ abstract class FlexibleContainer implements FlexibleEntityInterface, \IteratorAg
 
     /**
      * @see FlexibleEntityInterface
-     *
-     * @param array<string, mixed> $fields
      */
-    public function hydrate(array $fields): self
+    public function hydrate(array $fields): static
     {
         $this->container = array_merge($this->container, $fields);
 
@@ -44,9 +43,6 @@ abstract class FlexibleContainer implements FlexibleEntityInterface, \IteratorAg
      *
      * @throws  \InvalidArgumentException
      * @see     FlexibleEntityInterface
-     *
-     * @param array<string> $fields
-     * @return array<string, mixed>
      */
     public function fields(?array $fields = null): array
     {
@@ -76,8 +72,6 @@ abstract class FlexibleContainer implements FlexibleEntityInterface, \IteratorAg
 
     /**
      * @see FlexibleEntityInterface
-     *
-     * @return array<string, mixed>
      */
     public function extract(): array
     {
@@ -96,16 +90,21 @@ abstract class FlexibleContainer implements FlexibleEntityInterface, \IteratorAg
 
     /**
      * Allows dynamic methods getXxx, setXxx, hasXxx or clearXxx.
-     *
+     * @param string $method
+     * @param array<int, mixed> $arguments
+     * @return mixed
      * @throws ModelException if method does not exist.
      */
-    public function __call(mixed $method, mixed $arguments): mixed
+    public function __call(string $method, array $arguments): mixed
     {
         [$operation, $attribute] = $this->extractMethodName($method);
         $returned = $this;
 
         switch ($operation) {
         case 'set':
+            if (!array_key_exists(0, $arguments)) {
+                throw new ModelException(sprintf('Missing value for method "%s:%s()"', static::class, $method));
+            }
             $this->container[$attribute] = $arguments[0];
             break;
         case 'get':
@@ -129,7 +128,7 @@ abstract class FlexibleContainer implements FlexibleEntityInterface, \IteratorAg
      *
      * @throws ModelException
      */
-    protected function checkAttribute(string $attribute): self
+    protected function checkAttribute(string $attribute): static
     {
         if (!(isset($this->container[$attribute]) || array_key_exists($attribute, $this->container))) {
             throw new ModelException(
@@ -157,10 +156,16 @@ abstract class FlexibleContainer implements FlexibleEntityInterface, \IteratorAg
     {
         $split = preg_split('/(?=[A-Z])/', $argument, 2);
 
-        if ((is_countable($split) ? count($split) : 0) !== 2) {
+        if ($split === false || count($split) !== 2) {
             throw new ModelException(sprintf('No such argument "%s:%s()"', static::class, $argument));
         }
 
-        return [$split[0], Inflector::underscore($split[1])];
+        $attribute = Inflector::underscore($split[1]);
+        if ($attribute === null) {
+            // Ensure strict return type array{string, string}
+            throw new ModelException(sprintf('Invalid attribute for method "%s:%s()"', static::class, $argument));
+        }
+
+        return [$split[0], $attribute];
     }
 }

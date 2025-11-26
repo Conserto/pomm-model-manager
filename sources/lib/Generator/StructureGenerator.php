@@ -12,6 +12,7 @@ namespace PommProject\ModelManager\Generator;
 use PommProject\Foundation\ConvertedResultIterator;
 use PommProject\Foundation\Exception\FoundationException;
 use PommProject\Foundation\Inflector;
+use PommProject\Foundation\Inspector\Inspector;
 use PommProject\Foundation\ParameterHolder;
 use PommProject\ModelManager\Exception\GeneratorException;
 
@@ -21,6 +22,7 @@ use PommProject\ModelManager\Exception\GeneratorException;
  * @copyright 2014 - 2015 Grégoire HUBERT
  * @author    Grégoire HUBERT
  * @license   X11 {@link http://opensource.org/licenses/mit-license.php}
+ * @phpstan-import-type FieldInfo from Inspector
  */
 class StructureGenerator extends BaseGenerator
 {
@@ -45,6 +47,9 @@ Class and fields comments are inspected from table and fields comments.Just add 
 TEXT;
         }
 
+        /** @var string $className */
+        $className = $input->getParameter('class_name', Inflector::studlyCaps($this->relation));
+
         $this
             ->outputFileCreation($output)
             ->saveFile(
@@ -52,12 +57,12 @@ TEXT;
                 $this->mergeTemplate(
                     [
                         'namespace'      => $this->namespace,
-                        'class_name'     => $input->getParameter('class_name', Inflector::studlyCaps($this->relation)),
+                        'class_name'     => $className,
                         'relation'       => sprintf("%s.%s", $this->schema, $this->relation),
                         'primary_key'    => implode(
                             ', ',
                             array_map(
-                                fn($val): string => sprintf("'%s'", $val),
+                                fn(string $val): string => sprintf("'%s'", $val),
                                 $primaryKey
                             )
                         ),
@@ -71,7 +76,10 @@ TEXT;
         return $output;
     }
 
-    /** Format 'addField' method calls. */
+    /**
+     * Format 'addField' method calls.
+     * @param ConvertedResultIterator<FieldInfo> $fieldInformation
+     */
     protected function formatAddFields(ConvertedResultIterator $fieldInformation): string
     {
         $strings = [];
@@ -96,6 +104,8 @@ TEXT;
      * can be very long comments or comments with carriage returns. It is
      * furthermore more convenient to get all the descriptions in the head of
      * the generated class.
+     * @param ConvertedResultIterator<FieldInfo> $fieldInformation
+     * @return string
      */
     protected function formatFieldsComment(ConvertedResultIterator $fieldInformation): string
     {
@@ -118,7 +128,7 @@ TEXT;
         return implode(
             "\n",
             array_map(
-                fn($line): string => ' * '.$line,
+                fn(string $line): string => ' * '.$line,
                 explode("\n", wordwrap($text))
             )
         );
@@ -155,12 +165,13 @@ TEXT;
      * Fetch a table field information.
      *
      * @throws GeneratorException|FoundationException
+     * @return ConvertedResultIterator<FieldInfo>
      */
     protected function getFieldInformation(int $tableOid): ConvertedResultIterator
     {
         $fieldsInfo = $this->getInspector()->getTableFieldInformation($tableOid);
 
-        if ($fieldsInfo === null) {
+        if ($fieldsInfo->isEmpty()) {
             throw new GeneratorException(
                 sprintf("Error while fetching fields information for table oid '%s'.", $tableOid)
             );
@@ -171,7 +182,8 @@ TEXT;
 
     /**
      * Return the primary key of a relation if any.
-     *
+     * @param int $tableOid
+     * @return array<int, string>
      * @throws FoundationException
      */
     protected function getPrimaryKey(int $tableOid): array
