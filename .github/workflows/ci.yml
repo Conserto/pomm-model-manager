@@ -20,6 +20,10 @@ jobs:
     # The type of runner that the job will run on
     runs-on: ubuntu-24.04
 
+    strategy:
+      matrix:
+        php-version: ['8.4', '8.5']
+
     services:
       # Label used to access the service container
       postgres:
@@ -46,7 +50,7 @@ jobs:
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.4'
+          php-version: '${{ matrix.php-version }}'
 
       # Runs a single command using the runners shell
       - name: Build
@@ -63,7 +67,7 @@ jobs:
           configuration: phpstan.neon
           memory_limit: 256M
           path: ''
-          php_version: 8.4
+          php_version: ${{ matrix.php-version }}
 
       # Runs a set of commands using the runners shell
       - name: Run tests
