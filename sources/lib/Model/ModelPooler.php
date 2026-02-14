@@ -14,6 +14,7 @@ use PommProject\Foundation\Client\ClientPooler;
 use PommProject\Foundation\Client\ClientPoolerInterface;
 use PommProject\Foundation\Exception\FoundationException;
 use PommProject\ModelManager\Exception\ModelException;
+use PommProject\ModelManager\Model\FlexibleEntity\FlexibleEntityInterface;
 
 /**
  * Client pooler for model package.
@@ -41,20 +42,22 @@ class ModelPooler extends ClientPooler
     }
 
     /**
-     * @throws ModelException if incorrect
      * @see    ClientPooler
+     * @param class-string<Model<FlexibleEntityInterface>> $identifier
+     * @return Model<FlexibleEntityInterface>
+     * @throws ModelException if incorrect
      */
     protected function createClient(string $identifier): Model
     {
-        try {
-            $reflection = new \ReflectionClass($identifier);
-        } catch (\ReflectionException $e) {
+        if (!class_exists($identifier)) {
             throw new ModelException(sprintf(
-                "Could not instantiate Model class '%s'. (Reason: '%s').",
-                $identifier,
-                $e->getMessage()
+                "Could not instantiate Model class '%s'. (Reason: class does not exist).",
+                $identifier
             ));
         }
+
+        /** @var \ReflectionClass<Model<FlexibleEntityInterface>> $reflection */
+        $reflection = new \ReflectionClass($identifier);
 
         if (!$reflection->implementsInterface(ClientInterface::class)) {
             throw new ModelException(

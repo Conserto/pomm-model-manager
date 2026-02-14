@@ -53,6 +53,8 @@ class ModelGenerator extends BaseGenerator
             throw new GeneratorException(sprintf("Relation '%s.%s' does not exist.", $this->schema, $this->relation));
         }
 
+        $relationType = $relationsInfo->current()['type'] ?? null;
+
         $this
             ->checkOverwrite($input)
             ->outputFileCreation($output)
@@ -61,14 +63,13 @@ class ModelGenerator extends BaseGenerator
                 $this->mergeTemplate(
                     [
                         'entity'        => Inflector::studlyCaps($this->relation),
-                            'namespace'     => trim($this->namespace, '\\'),
-                            'trait'         => $relationsInfo->current()['type'] === 'table'
-                                ? 'WriteQueries' : 'ReadQueries',
-                            'relation_type' => $relationsInfo->current()['type'],
-                            'relation'      => $this->relation
-                        ]
-                    )
-                );
+                        'namespace'     => trim($this->namespace, '\\'),
+                        'trait'         => $relationType === 'table' ? 'WriteQueries' : 'ReadQueries',
+                        'relation_type' => $relationType,
+                        'relation'      => $this->relation
+                    ]
+                )
+            );
 
         return $output;
     }

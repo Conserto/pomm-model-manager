@@ -11,7 +11,9 @@ namespace PommProject\ModelManager\ModelLayer;
 
 use PommProject\Foundation\Client\Client;
 use PommProject\Foundation\Client\ClientInterface;
+use PommProject\Foundation\Exception\ConnectionException;
 use PommProject\Foundation\Exception\FoundationException;
+use PommProject\Foundation\Exception\SqlException;
 use PommProject\Foundation\Session\Connection;
 use PommProject\Foundation\Session\ResultHandler;
 use PommProject\ModelManager\Exception\ModelLayerException;
@@ -19,8 +21,7 @@ use PommProject\ModelManager\Model\Model;
 use PommProject\ModelManager\Session;
 
 /**
- * ModelLayer handles mechanisms around model method calls (transactions,
- * events etc.).
+ * ModelLayer handles mechanisms around model method calls (transactions, events etc.).
  *
  * @copyright   2014 - 2015 Grégoire HUBERT
  * @author      Grégoire HUBERT
@@ -63,7 +64,9 @@ abstract class ModelLayer extends Client
      * This applies to constraints being deferrable or deferred by default.
      * If the keys is an empty arrays, ALL keys will be set at the given state.
      * @see http://www.postgresql.org/docs/9.0/static/sql-set-constraints.html
-     *
+     * @param string[] $keys
+     * @param string $state
+     * @return $this
      * @throws  ModelLayerException|FoundationException if not valid state
      */
     protected function setDeferrable(array $keys, string $state): ModelLayer
@@ -74,7 +77,7 @@ abstract class ModelLayer extends Client
             $string = implode(
                 ', ',
                 array_map(
-                    function ($key): string {
+                    function (string $key): string {
                         $parts = explode('.', $key);
                         $escapedParts = [];
 
@@ -272,8 +275,11 @@ EOMSG
 
     /**
      * Proxy to Connection::executeAnonymousQuery()
-     *
+     * @param string $sql
+     * @return ResultHandler|ResultHandler[]
      * @throws FoundationException
+     * @throws ConnectionException
+     * @throws SqlException
      */
     protected function executeAnonymousQuery(string $sql): ResultHandler|array
     {
@@ -318,7 +324,7 @@ EOMSG
      */
     protected function getModel(string $identifier): Model
     {
-        /** @var Model $modelManager */
+        /** @var TModel $modelManager */
         $modelManager = $this
             ->getSession()
             ->getClientUsingPooler('model', $identifier);

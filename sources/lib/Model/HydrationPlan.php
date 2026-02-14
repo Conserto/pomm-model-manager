@@ -22,14 +22,19 @@ use PommProject\ModelManager\Model\FlexibleEntity\FlexibleEntityInterface;
  * @copyright   2014 - 2015 Grégoire HUBERT
  * @author      Grégoire HUBERT
  * @license     X11 {@link http://opensource.org/licenses/mit-license.php}
+ *
+ * @template T of FlexibleEntityInterface
  */
 class HydrationPlan
 {
+    /** @var array<string, ConverterInterface> */
     protected array $converters = [];
+    /** @var array<string, ?string> */
     protected array $fieldTypes = [];
 
 
     /**
+     * @param Projection<T> $projection
      * @throws FoundationException
      * @throws ModelException
      */
@@ -43,7 +48,7 @@ class HydrationPlan
      *
      * @throws FoundationException|ModelException
      */
-    protected function loadConverters(): self
+    protected function loadConverters(): static
     {
         foreach ($this->projection as $name => $type) {
             $identifier = $this->projection->isArray($name) ? 'array' : $type;
@@ -65,7 +70,7 @@ class HydrationPlan
      *
      * @throws ModelException
      */
-    public function getFieldType(string $name): string
+    public function getFieldType(string $name): ?string
     {
         return $this->projection->getFieldType($name);
     }
@@ -84,6 +89,8 @@ class HydrationPlan
     /**
      * Take values fetched from the database, launch conversion system and hydrate the FlexibleEntityInterface through
      * the mapper.
+     * @param array<string, mixed> $values
+     * @return T
      */
     public function hydrate(array $values): FlexibleEntityInterface
     {
@@ -92,7 +99,11 @@ class HydrationPlan
         return $this->createEntity($values);
     }
 
-    /** Return values converted to Pg. */
+    /**
+     * Return values converted to Pg.
+     * @param array<string, mixed> $values
+     * @return array<string, mixed>
+     */
     public function dry(array $values): array
     {
         return $this->convert('toPg', $values);
@@ -100,16 +111,19 @@ class HydrationPlan
 
     /**
      * Return values converted to Pg standard output.
-     *
-     * @param  array $values
-     * @return array converted values
+     * @param array<string, mixed> $values
+     * @return array<string, mixed> converted values
      */
     public function freeze(array $values): array
     {
         return $this->convert('toPgStandardFormat', $values);
     }
 
-    /** Convert values from / to postgres. */
+    /**
+     * Convert values from / to postgres.
+     * @param array<string, mixed> $values
+     * @return array<string, mixed>
+     */
     protected function convert(string $fromTo, array $values): array
     {
         $outValues = [];
@@ -127,12 +141,16 @@ class HydrationPlan
         return $outValues;
     }
 
-    /** Instantiate FlexibleEntityInterface from converted values. */
+    /**
+     * Instantiate FlexibleEntityInterface from converted values.
+     * @param array<string, mixed> $values
+     * @return T
+     */
     protected function createEntity(array $values): FlexibleEntityInterface
     {
         $class = $this->projection->getFlexibleEntityClass();
 
-        return (new $class())->hydrate($values);
+        return new $class()->hydrate($values);
     }
 
     /** Return the converter client associated with a field. */
@@ -152,7 +170,7 @@ class HydrationPlan
     }
 
     /** Permet de supprimer un converter */
-    public function removeConverter(string $converterClass): self
+    public function removeConverter(string $converterClass): static
     {
         foreach ($this->converters as $field => $converter) {
             if ($converter instanceof $converterClass) {

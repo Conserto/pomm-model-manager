@@ -25,7 +25,7 @@ trait StatefulEntityTrait
     /**
      * @see FlexibleEntityInterface
      */
-    public function status(?int $status = null): int|FlexibleEntityInterface
+    public function status(?int $status = null): int|static
     {
         if ($status !== null) {
             $this->status = $status;

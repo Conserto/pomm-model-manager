@@ -37,7 +37,7 @@ trait WriteQueries
      * @param-out T $entity
      * @throws ModelException|SqlException
      */
-    public function insertOne(FlexibleEntityInterface &$entity): self
+    public function insertOne(FlexibleEntityInterface &$entity): static
     {
         $values = $entity->fields(
             array_intersect(
@@ -72,7 +72,7 @@ trait WriteQueries
      * @param-out ?T $entity
      * @throws ModelException|SqlException
      */
-    public function updateOne(FlexibleEntityInterface &$entity, array $fields = []): self
+    public function updateOne(FlexibleEntityInterface &$entity, array $fields = []): static
     {
         if (empty($fields)) {
             $fields = $entity->getModifiedColumns();
@@ -149,7 +149,7 @@ trait WriteQueries
      * @param-out ?T $entity
      * @throws ModelException|SqlException
      */
-    public function deleteOne(FlexibleEntityInterface &$entity): self
+    public function deleteOne(FlexibleEntityInterface &$entity): static
     {
         $entity = $this->deleteByPK($entity->fields($this->getStructure()->getPrimaryKey()));
 

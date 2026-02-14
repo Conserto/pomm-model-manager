@@ -25,21 +25,23 @@ use PommProject\ModelManager\Model\FlexibleEntity\FlexibleEntityInterface;
  * @author    Grégoire HUBERT <hubert.greg@gmail.com>
  * @license   MIT/X11 {@link http://opensource.org/licenses/mit-license.php}
  *
- * @template-covariant T of FlexibleEntityInterface
+ * @template T of FlexibleEntityInterface
  * @extends ResultIterator<T>
+ * @phpstan-type Filter = callable(array<string, mixed>): array<string, mixed>
  */
 class CollectionIterator extends ResultIterator
 {
+    /** @var array<int, Filter> */
     protected array $filters = [];
 
-    /**
-     * @var HydrationPlan
-     */
+    /** @var HydrationPlan<T> $hydrationPlan */
     protected HydrationPlan $hydrationPlan;
 
+    /** @var PgEntity<T> */
     private readonly PgEntity $entityConverter;
 
     /**
+     * @param Projection<T> $projection
      * @throws FoundationException|ModelException
      */
     public function __construct(ResultHandler $result, protected Session $session, protected Projection $projection)
@@ -52,7 +54,7 @@ class CollectionIterator extends ResultIterator
             ->session
             ->getClientUsingPooler('converter', $this->projection->getFlexibleEntityClass());
 
-        /** @var PgEntity $converter */
+        /** @var PgEntity<T> $converter */
         $converter = $converterClient->getConverter();
 
         $this->entityConverter = $converter;
@@ -66,16 +68,16 @@ class CollectionIterator extends ResultIterator
      */
     public function get(int $index): FlexibleEntityInterface
     {
-        return $this->parseRow(parent::get($index));
+        /** @var array<string, mixed> $row */
+        $row = parent::get($index);
+        return $this->parseRow($row);
     }
 
     /**
      * Convert values from Pg.
-     *
-     * @throws ModelException
-     * @see     ResultIterator
-     *
+     * @param  array<string, mixed> $values
      * @return T
+     * @throws ModelException
      */
     public function parseRow(array $values): FlexibleEntityInterface
     {
@@ -90,21 +92,26 @@ class CollectionIterator extends ResultIterator
      *
      * @throws  ModelException   if return is not an array.
      */
+    /**
+     * @param array<string, mixed> $values
+     * @return array<string, mixed>
+     * @throws ModelException
+     */
     protected function launchFilters(array $values): array
     {
         foreach ($this->filters as $filter) {
             $values = call_user_func($filter, $values);
-
-            if (!is_array($values)) {
-                throw new ModelException("Filter error. Filters MUST return an array of values.");
-            }
         }
 
         return $values;
     }
 
-    /** Register a new callable filter. All filters MUST return an associative array with field name as key. */
-    public function registerFilter(callable $callable): self
+    /**
+     * Register a new callable filter. All filters MUST return an associative array with field name as key.
+     * @param Filter $callable
+     * @return $this
+     */
+    public function registerFilter(callable $callable): static
     {
         $this->filters[] = $callable;
 
@@ -112,14 +119,17 @@ class CollectionIterator extends ResultIterator
     }
 
     /** Empty the filter stack. */
-    public function clearFilters(): self
+    public function clearFilters(): static
     {
         $this->filters = [];
 
         return $this;
     }
 
-    /** Return an array of entities extracted as arrays. */
+    /**
+     * Return an array of entities extracted as arrays.
+     * @return array<int, array<string, mixed>>
+     */
     public function extract(): array
     {
         $results = [];
@@ -133,7 +143,8 @@ class CollectionIterator extends ResultIterator
 
     /**
      * see @ResultIterator
-     *
+     * @param string $field
+     * @return array<int, mixed>
      * @throws ModelException
      */
     public function slice(string $field): array
@@ -144,16 +155,31 @@ class CollectionIterator extends ResultIterator
 
     /**
      * Convert a slice.
-     *
+     * @param array<int, mixed> $values Values coming from ResultIterator::slice()
+     * @param string $name
+     * @return array<int, mixed>
      * @throws ModelException
      */
     protected function convertSlice(array $values, string $name): array
     {
         $type = $this->projection->getFieldType($name);
+        if ($type === null) {
+            throw new ModelException(sprintf("No type defined for field '%s'.", $name));
+        }
+
         $converter = $this->hydrationPlan->getConverterForField($name);
 
         return array_map(
-            fn($val): mixed => $converter->fromPg($val, $type, $this->session),
+            function (mixed $val) use ($converter, $type): mixed {
+                if (!is_string($val) && $val !== null) {
+                    throw new ModelException(sprintf(
+                        "Unexpected slice value type '%s', expected string|null.",
+                        gettype($val)
+                    ));
+                }
+
+                return $converter->fromPg($val, $type, $this->session);
+            },
             $values
         );
     }

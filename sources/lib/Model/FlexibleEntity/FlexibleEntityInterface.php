@@ -28,27 +28,32 @@ interface FlexibleEntityInterface
      * When status is MODIFIED, the entity has been modified since creation or
      * last persist operation.
      */
-    public const STATUS_NONE = 0;
-    public const STATUS_EXIST = 1;
-    public const STATUS_MODIFIED = 2;
+    public const int STATUS_NONE = 0;
+    public const int STATUS_EXIST = 1;
+    public const int STATUS_MODIFIED = 2;
 
     /**
      * Set raw values in an entity. If some values are already set, they are
      * overridden with new values.
+     * @param array<string, mixed> $fields Optional starting values.
+     * @return static
      */
-    public function hydrate(array $fields): self;
+    public function hydrate(array $fields): static;
 
     /**
      * Return an array of entity raw values. An optional array can be passed
      * with the list of fields to retrieve. If the array is null, all fields
      * are returned. The case when a given field does not exist is left as
      * one's choice.
+     * @param array<string> $fields
+     * @return array<string, mixed>
      */
     public function fields(?array $fields = null): array;
 
     /**
      * Return an array with a representation of the object values. It is mostly
      * used prior to a serialization in REST API or other string responses.
+     * @return array<string, mixed>
      */
     public function extract(): array;
 
@@ -66,7 +71,7 @@ interface FlexibleEntityInterface
      * returns itself. If no status are provided, it returns the current
      * status.
      */
-    public function status(?int $status = null): int|self;
+    public function status(?int $status = null): int|static;
 
     /** Return columns modified */
     public function getModifiedColumns(): mixed;

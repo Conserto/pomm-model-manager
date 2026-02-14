@@ -26,7 +26,7 @@ trait ModifiedColumnEntityTrait
         return $this->modifiedColumns;
     }
 
-    public function addModifiedColumn(string $column): self
+    public function addModifiedColumn(string $column): static
     {
         if (!in_array($column, $this->modifiedColumns)) {
             $this->modifiedColumns[] = $column;
@@ -35,7 +35,7 @@ trait ModifiedColumnEntityTrait
         return $this;
     }
 
-    public function removeModifiedColumn(string $column): self
+    public function removeModifiedColumn(string $column): static
     {
         $key = array_search($column, $this->modifiedColumns, true);
 
